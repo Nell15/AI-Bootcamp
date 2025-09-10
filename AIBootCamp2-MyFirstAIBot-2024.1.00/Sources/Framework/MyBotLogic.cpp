@@ -36,7 +36,7 @@ void MyBotLogic::Init(const SInitData& _initData)
 	BOT_LOGIC_LOG(mLogger, "Init", true);
 
 	lvlData = LevelData{_initData};
-	PathFinder pathFinder{lvlData.getTilesType()};
+	PathFinder pathFinder{lvlData.getTilesType(), lvlData.getObjects()};
 
 	npcOrders.resize(_initData.nbNPCs);
 
@@ -59,6 +59,7 @@ void MyBotLogic::Init(const SInitData& _initData)
 
 		auto bestPath = pathFinder.FindPath(npcCoord, bestTile);
 
+
 		auto prev = bestPath.begin();
 		size_t j = 0;
 		npcOrders[i].resize(bestPath.size() - 1);
@@ -68,7 +69,9 @@ void MyBotLogic::Init(const SInitData& _initData)
 			const auto& nextCoord = *bestPathIt;
 			const auto& currCoord = *prev;
 
+			BOT_LOGIC_LOG(mLogger, format("Target tile coord = {}", currCoord), true);
 			const EHexCellDirection direction = currCoord.GetNeighborDirection(nextCoord);
+			BOT_LOGIC_LOG(mLogger, format("Target tile direction = {}", to_string(direction)), true);
 
 			npcOrders[i][j++] = SOrder{.orderType = Move, .npcUID = npcInfo.uid, .direction = direction};
 

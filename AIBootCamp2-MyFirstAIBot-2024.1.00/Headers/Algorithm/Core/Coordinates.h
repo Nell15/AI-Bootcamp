@@ -18,7 +18,9 @@ struct Coordinates
 	[[nodiscard]] DistanceType GetDistance(const Coordinates& goal) const;
 	[[nodiscard]] EHexCellDirection GetNeighborDirection(const Coordinates& goal) const;
 	[[nodiscard]] std::vector<Coordinates> GetNeighbors(
-		const std::unordered_map<Coordinates, EHexCellType>& tiles) const;
+		const std::unordered_map<Coordinates, EHexCellType>& tiles, const std::unordered_map<Coordinates, std::vector<SObjectInfo>>& objects) const;
+
+	static bool AnyBlockingObjectInDirection(EHexCellDirection direction, const std::vector<SObjectInfo>& objectsOnTile);
 
 	bool operator==(const Coordinates& other) const noexcept
 	{
@@ -29,6 +31,14 @@ struct Coordinates
 	{
 		return {.q = q + other.q, .r = r + other.r};
 	}
+
+	Coordinates operator*(const int scalar) const noexcept
+	{
+		return {.q = q * scalar, .r = r * scalar};
+	}
+private:
+	static EHexCellDirection GetOppositeDirection(Coordinates direction);
+	static bool IsObstacle(SObjectInfo object);
 };
 
 template <>

@@ -22,6 +22,8 @@ struct STurnData;
 class MyBotLogic : public virtual BotLogicIF
 {
 public:
+	Logger mLogger;
+
 	MyBotLogic() = default;
 	~MyBotLogic() override = default;
 
@@ -30,7 +32,6 @@ public:
 	virtual void GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _orders);
 
 protected:
-	Logger mLogger;
 
 private:
 	LevelData lvlData;

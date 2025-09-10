@@ -18,12 +18,18 @@ public:
 	{
         return tilesType;
 	}
+	[[nodiscard]] const std::unordered_map<Coordinates, std::vector<SObjectInfo>>& getObjects() const
+	{
+        return objects;
+	}
 
 private:
 	std::vector<Coordinates> goalTiles{};
 	std::unordered_map<Coordinates, EHexCellType> tilesType{};
+	std::unordered_map<Coordinates, std::vector<SObjectInfo>> objects{};
 
     void StoreTiles(const SInitData& initData);
+    void StoreObjects(const SInitData& initData);
 };
 
 
