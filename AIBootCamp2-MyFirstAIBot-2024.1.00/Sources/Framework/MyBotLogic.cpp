@@ -46,19 +46,20 @@ void MyBotLogic::Init(const SInitData& _initData)
 		const Coordinates npcCoord = {.q = npcInfo.q, .r = npcInfo.r};
 
 		int bestDistance = INT_MAX;
-		Coordinates bestTile{};
+		vector<Coordinates> bestPath{};
 
 		for (const Coordinates& goalTile : lvlData.getGoalTiles())
 		{
-			if (const int distance = npcCoord.GetDistance(goalTile); distance < bestDistance)
+			if (const auto path = pathFinder.FindPath(npcCoord, goalTile); path.has_value())
 			{
-				bestDistance = distance;
-				bestTile = goalTile;
+				const auto pathSize = path.value().size();
+				if (pathSize < bestDistance)
+				{
+					bestDistance = pathSize;
+					bestPath = path.value();
+				}
 			}
 		}
-
-		auto bestPath = pathFinder.FindPath(npcCoord, bestTile);
-
 
 		auto prev = bestPath.begin();
 		size_t j = 0;

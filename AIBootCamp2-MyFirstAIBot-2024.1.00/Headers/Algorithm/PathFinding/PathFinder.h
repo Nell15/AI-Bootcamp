@@ -3,6 +3,7 @@
 
 #include <queue>
 #include <vector>
+#include <optional>
 
 #include "Algorithm/Core/Coordinates.h"
 
@@ -14,7 +15,7 @@ public:
 	explicit PathFinder(const std::unordered_map<Coordinates, EHexCellType>& tilesType, const std::unordered_map<Coordinates, std::vector<SObjectInfo>>& objects)
 		: tilesType(tilesType), objects(objects) {}
 
-	[[nodiscard]] std::vector<Coordinates> FindPath(const Coordinates& start, const Coordinates& goal);
+	[[nodiscard]] std::optional<std::vector<Coordinates>> FindPath(const Coordinates& start, const Coordinates& goal);
 
 private:
 	using ScoreType = int;
@@ -39,6 +40,7 @@ private:
 	};
 
 	void Init(const Coordinates& start, const Coordinates& goal);
+	void Dispose();
 	void TryUpdatePath(const Coordinates& neighborPos, const PQNode& current, const Coordinates& goal);
 	[[nodiscard]] static bool isGoal(const Coordinates& a, const Coordinates& b)
 	{

@@ -2,9 +2,6 @@
 
 #include <algorithm>
 #include <queue>
-#include <stdexcept>
-
-#include "Algorithm/Utils/Utils.h"
 
 using namespace std;
 
@@ -15,23 +12,36 @@ void PathFinder::Init(const Coordinates& start, const Coordinates& goal)
 	openSet.push({start, fScores[start], gScores[start]});
 }
 
-vector<Coordinates> PathFinder::FindPath(const Coordinates& start, const Coordinates& goal)
+void PathFinder::Dispose()
+{
+	openSet = priority_queue<PQNode, vector<PQNode>, PQCompare>{};
+	predecessors.clear();
+	gScores.clear();
+	fScores.clear();
+}
+
+optional<vector<Coordinates>> PathFinder::FindPath(const Coordinates& start, const Coordinates& goal)
 {
 	Init(start, goal);
 
 	while (!openSet.empty())
 	{
-		const auto current = openSet.top();
+		const PQNode current = openSet.top();
 		openSet.pop();
 
 		if (isGoal(current.position, goal))
-			return ReconstructPath(current.position);
+		{
+			auto path = ReconstructPath(current.position);
+			Dispose();
+			return path;
+		}
 
 		for (const auto& neighbor : current.position.GetNeighbors(tilesType, objects))
 			TryUpdatePath(neighbor, current, goal);
 	}
 
-	throw Utils::LogAndThrow(start, goal);
+	Dispose();
+	return nullopt;
 }
 
 void PathFinder::TryUpdatePath(const Coordinates& neighborPos,
@@ -69,12 +79,6 @@ vector<Coordinates> PathFinder::ReconstructPath(const Coordinates& start)
 		currentIt = predecessors.find(node);
 	}
 
-	// clear to allow another utilisation of the algorithm (TODO: find another solution)
-	openSet = std::priority_queue<PQNode, std::vector<PQNode>, PQCompare>{};
-	predecessors.clear();
-	gScores.clear();
-	fScores.clear();
-
-	std::ranges::reverse(path);
+	ranges::reverse(path);
 	return path;
 }

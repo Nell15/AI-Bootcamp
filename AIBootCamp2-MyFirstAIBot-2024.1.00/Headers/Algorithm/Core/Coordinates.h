@@ -37,8 +37,8 @@ struct Coordinates
 		return {.q = q * scalar, .r = r * scalar};
 	}
 private:
-	static EHexCellDirection GetOppositeDirection(Coordinates direction);
-	static bool IsObstacle(SObjectInfo object);
+	static EHexCellDirection GetOppositeDirection(const Coordinates& coordinates);
+	static bool IsObstacle(const SObjectInfo& object);
 };
 
 template <>

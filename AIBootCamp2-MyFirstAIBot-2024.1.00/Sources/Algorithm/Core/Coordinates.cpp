@@ -4,12 +4,15 @@
 #include <stdexcept>
 #include <array>
 #include <algorithm>
+#include <cassert>
+
+#include "Algorithm/Utils/Utils.h"
 
 using namespace std;
 
 namespace
 {
-	constexpr auto coordinateDirections = std::to_array<Coordinates>
+	constexpr auto coordinateDirections = to_array<Coordinates>
 	({
 		Coordinates{.q = 0, .r = +1}, // E
 		Coordinates{.q = -1, .r = +1}, // NE
@@ -19,15 +22,15 @@ namespace
 		Coordinates{.q = +1, .r = 0} // SE
 	});
 
-	const unordered_map<Coordinates, EHexCellDirection> coordinatesToDir = 
+	const unordered_map<Coordinates, EHexCellDirection> coordinateToDir =
 	{
-		{{0, +1}, E},
-		{{-1, +1}, NE},
-		{{-1, 0}, NW},
-		{{0, -1}, W},
-		{{+1, -1}, SW},
-		{{+1, 0}, SE},
-		{{0, 0}, CENTER}
+		{{.q = 0, .r = +1}, E},
+		{{.q = -1, .r = +1}, NE},
+		{{.q = -1, .r = 0}, NW},
+		{{.q = 0, .r = -1}, W},
+		{{.q = +1, .r = -1}, SW},
+		{{.q = +1, .r = 0}, SE},
+		{{.q = 0, .r = 0}, CENTER}
 	};
 }
 
@@ -38,7 +41,7 @@ Coordinates::DistanceType Coordinates::GetDistance(const Coordinates& goal) cons
 	const int ds = q + r - (goal.q + goal.r);
 
 	// Hex distance formula: (|dq| + |dr| + |ds|) / 2
-	return (std::abs(dq) + std::abs(dr) + std::abs(ds)) / 2;
+	return (abs(dq) + abs(dr) + abs(ds)) / 2;
 }
 
 EHexCellDirection Coordinates::GetNeighborDirection(const Coordinates& goal) const
@@ -46,41 +49,38 @@ EHexCellDirection Coordinates::GetNeighborDirection(const Coordinates& goal) con
 	const int dq = goal.q - q;
 	const int dr = goal.r - r;
 
-	if (dq == 0 && dr == 0) return CENTER;
+	if (const auto directionIt = coordinateToDir.find(Coordinates{.q = dq, .r = dr}); directionIt != coordinateToDir.end())
+		return directionIt->second;
 
-	if (dq == 0 && dr == -1) return W;
-	if (dq == -1 && dr == 0) return NW;
-	if (dq == -1 && dr == +1) return NE;
-	if (dq == 0 && dr == +1) return E;
-	if (dq == +1 && dr == 0) return SE;
-	if (dq == +1 && dr == -1) return SW;
-
-	// TODO: log the error ?
-	throw std::runtime_error(
-		std::format("Cannot get direction: the given cell ({},{}) is not a neighbor of the cell ({},{})",
-		            goal.q, goal.r, q, r));
+	throw Utils::LogAndThrow(format(
+		"Cannot get direction: the given cell ({},{}) is not a neighbor of the cell ({},{})",
+		goal.q, goal.r, q, r));
 }
 
 bool Coordinates::AnyBlockingObjectInDirection(EHexCellDirection direction, const vector<SObjectInfo>& objectsOnTile)
 {
-	auto objectIt = ranges::find_if(objectsOnTile,
-	                          [direction](SObjectInfo obj) { return obj.cellPosition == direction; });	
+	const auto objectIt = ranges::find_if(objectsOnTile,
+	                                      [direction](const SObjectInfo& obj)
+	                                      {
+		                                      return obj.cellPosition == direction;
+	                                      });
 
 	return objectIt != objectsOnTile.end() && IsObstacle(*objectIt);
 }
 
 // TODO: check if not found
 vector<Coordinates> Coordinates::GetNeighbors(const unordered_map<Coordinates, EHexCellType>& tiles,
-	const std::unordered_map<Coordinates, std::vector<SObjectInfo>>& objects) const
+                                              const unordered_map<Coordinates, vector<SObjectInfo>>& objects)
+const
 {
 	vector<Coordinates> neighbors{};
 
-	if (auto objectsOnTileIt = objects.find(*this); objectsOnTileIt != objects.end())
+	if (const auto objectsOnTileIt = objects.find(*this); objectsOnTileIt != objects.end())
 	{
 		for (const auto& coordDir : coordinateDirections)
 		{
 			const Coordinates neighborPos = *this + coordDir;
-			const auto direction = coordinatesToDir.find(coordDir)->second;
+			const auto direction = coordinateToDir.find(coordDir)->second;
 			if (not AnyBlockingObjectInDirection(direction, objectsOnTileIt->second))
 			{
 				auto objectsOnNeighborTile = objects.find(neighborPos);
@@ -88,12 +88,12 @@ vector<Coordinates> Coordinates::GetNeighbors(const unordered_map<Coordinates, E
 				{
 					const EHexCellDirection oppositeDirection = GetOppositeDirection(coordDir);
 					if (not AnyBlockingObjectInDirection(oppositeDirection, objectsOnNeighborTile->second))
-						if (const auto& tile = tiles.find(neighborPos); tile != tiles.end() && tile->second != Forbidden)
+						if (const auto& tile = tiles.find(neighborPos); tile != tiles.end() && tile->second !=
+							Forbidden)
 							neighbors.emplace_back(neighborPos);
 				}
-				else
-					if (const auto& tile = tiles.find(neighborPos); tile != tiles.end() && tile->second != Forbidden)
-						neighbors.emplace_back(neighborPos);
+				else if (const auto& tile = tiles.find(neighborPos); tile != tiles.end() && tile->second != Forbidden)
+					neighbors.emplace_back(neighborPos);
 			}
 		}
 	}
@@ -111,26 +111,25 @@ vector<Coordinates> Coordinates::GetNeighbors(const unordered_map<Coordinates, E
 					if (const auto& tile = tiles.find(neighborPos); tile != tiles.end() && tile->second != Forbidden)
 						neighbors.emplace_back(neighborPos);
 			}
-			else
-				if (const auto& tile = tiles.find(neighborPos); tile != tiles.end() && tile->second != Forbidden)
-					neighbors.emplace_back(neighborPos);
+			else if (const auto& tile = tiles.find(neighborPos); tile != tiles.end() && tile->second != Forbidden)
+				neighbors.emplace_back(neighborPos);
 		}
 	}
 
 	return neighbors;
 }
 
-EHexCellDirection Coordinates::GetOppositeDirection(Coordinates coordinates)
+EHexCellDirection Coordinates::GetOppositeDirection(const Coordinates& coordinates)
 {
 	const Coordinates coord = coordinates * -1;
-	const auto direction = coordinatesToDir.find(coord);
+	const auto directionIt = coordinateToDir.find(coord);
 
-	// TODO: handle errors
+	assert(directionIt != coordinateToDir.end() && "Cannot get opposite direction");
 
-	return direction->second;
+	return directionIt->second;
 }
 
-bool Coordinates::IsObstacle(SObjectInfo object)
+bool Coordinates::IsObstacle(const SObjectInfo& object)
 {
-	return *object.types == EObjectType::Wall || *object.types == EObjectType::Window;
+	return *object.types == Wall || *object.types == Window;
 }
