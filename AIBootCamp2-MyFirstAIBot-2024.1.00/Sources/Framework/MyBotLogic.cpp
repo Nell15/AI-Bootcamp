@@ -3,6 +3,7 @@
 #include <vector>
 #include <array>
 #include <unordered_set>
+#include <algorithm>
 
 #include "Framework/Globals.h"
 #include "Framework/ConfigData.h"
@@ -34,8 +35,7 @@ void MyBotLogic::Configure(const SConfigData& _configData)
 void MyBotLogic::Init(const SInitData& _initData)
 {
 	BOT_LOGIC_LOG(mLogger, "Init", true);
-
-	lvlData = LevelData{_initData};
+	/*
 	PathFinder pathFinder{lvlData.getTilesType(), lvlData.getObjects()};
 
 	npcOrders.resize(_initData.nbNPCs);
@@ -79,13 +79,96 @@ void MyBotLogic::Init(const SInitData& _initData)
 			prev = bestPathIt;
 		}
 	}
+	*/
 }
+
+static Coordinates bestNeighbor(const vector<Coordinates> neighCoords,
+	const unordered_map<Coordinates, EHexCellType>& tiles,
+	const unordered_map<Coordinates, vector<SObjectInfo>>& objects)
+{
+	Coordinates bestNeighCoord;
+	int bestNeighScore = -1;
+	for (auto neighborCoord : neighCoords)
+	{
+		const auto neighNeighs = neighborCoord.GetNeighbors(tiles, objects);
+		const int neighScore = 6 - neighNeighs.size();
+
+		/*
+		if (auto objIt = objects.find(neighborCoord); objIt != objects.end())
+			neighScore - objIt->second.size();
+
+		for (auto neighNiegh : neighNeighs)
+		{
+			
+		}
+		*/
+
+		if (neighScore > bestNeighScore)
+		{
+			bestNeighCoord = neighborCoord;
+			bestNeighScore = neighScore;
+		}
+	}
+
+	return bestNeighCoord;
+}
+
 
 void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _orders)
 {
 	BOT_LOGIC_LOG(mLogger, "GetTurnOrders", true);
 
 	const auto currentTurn = _turnData.turnNb - 1;
+
+	// store explored data
 	for (int npcId = 0; npcId < _turnData.npcInfoArraySize; ++npcId)
-		_orders.emplace_back(npcOrders[npcId][currentTurn]);
+	{
+		lvlData.StoreTiles(_turnData.tileInfoArray, _turnData.tileInfoArraySize);
+		lvlData.StoreObjects(_turnData.objectInfoArray, _turnData.objectInfoArraySize);
+	}
+
+	// think
+	for (int i = 0; i < _turnData.npcInfoArraySize; ++i)
+	{
+		const SNPCInfo npcInfo = _turnData.npcInfoArray[i];
+		const Coordinates npcCoord = Coordinates{npcInfo.q, npcInfo.r};
+		if (lvlData.getGoalTiles().empty())
+		{
+			const auto neighbors = npcCoord.GetNeighbors(lvlData.getTilesType(), lvlData.getObjects());
+			
+			auto bestN = bestNeighbor(neighbors, lvlData.getTilesType(), lvlData.getObjects());
+			const SOrder order =
+			{
+				Move,
+				npcInfo.uid,
+				npcCoord.GetNeighborDirection(bestN)
+			};
+			_orders.emplace_back(order);
+		}
+		else
+		{
+			int bestDistance = INT_MAX;
+			vector<Coordinates> bestPath{};
+			for (const Coordinates& goalTile : lvlData.getGoalTiles())
+			{
+				if (const auto path = pathFinder.FindPath(npcCoord, goalTile); path.has_value())
+				{
+					const auto pathSize = path.value().size();
+					if (pathSize < bestDistance)
+					{
+						bestDistance = pathSize;
+						bestPath = path.value();
+					}
+				}
+			}
+
+			const SOrder order =
+			{
+				Move,
+				npcInfo.uid,
+				npcCoord.GetNeighborDirection(bestPath[0])
+			};
+			_orders.emplace_back(order);
+		}
+	}
 }

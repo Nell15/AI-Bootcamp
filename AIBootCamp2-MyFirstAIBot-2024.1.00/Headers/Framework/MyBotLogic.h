@@ -3,6 +3,7 @@
 #include "BotLogicIF.h"
 #include "Logger.h"
 #include "Algorithm/Core/LevelData.h"
+#include "Algorithm/PathFinding/PathFinder.h"
 
 #ifdef _DEBUG
 #define BOT_LOGIC_DEBUG
@@ -31,8 +32,7 @@ public:
 	virtual void Init(const SInitData& _initData);
 	virtual void GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _orders);
 
-protected:
-
 private:
-	LevelData lvlData;
+	LevelData lvlData{};
+	PathFinder pathFinder{ lvlData.getTilesType(), lvlData.getObjects() };
 };
