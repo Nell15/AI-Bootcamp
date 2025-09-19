@@ -28,7 +28,7 @@ void LevelData::StoreObjects(const SObjectInfo* objectArrayInfo, const int nbObj
 		Coordinates objectCoordinates{object.q, object.r};
 		auto& vec = objects[objectCoordinates];
 
-		if (ranges::find(goalTiles, objectCoordinates) == goalTiles.end())
+		if (ranges::find(vec, object) == vec.end())
 			vec.emplace_back(object);
 	}
 }
@@ -67,7 +67,7 @@ vector<Coordinates> LevelData::GetWalkableNeighbors(const Coordinates& tileCoord
 	for (const Coordinates& coordDir : Coordinates::CoordinateDirections())
 	{
 		const Coordinates neighborPos = tileCoord + coordDir;
-		if (IsPossibleToWalkTo(tileCoord, neighborPos))
+		if (IsPossibleToWalkTo(tileCoord, coordDir))
 			neighbors.emplace_back(neighborPos);
 	}
 
@@ -76,14 +76,15 @@ vector<Coordinates> LevelData::GetWalkableNeighbors(const Coordinates& tileCoord
 
 bool LevelData::HasBlockingObject(const Coordinates& tileCoord, const Coordinates& directionCoord) const
 {
+	const Coordinates neighborPos = tileCoord + directionCoord;
 	const EHexCellDirection direction = Coordinates::CoordinatesToDir(directionCoord);
 	const EHexCellDirection oppositeDirection = Coordinates::GetOppositeDirection(directionCoord);
 
 	const auto objectsOnTileIt = objects.find(tileCoord);
-	if (objectsOnTileIt == objects.end() || Coordinates::AnyBlockingObjectInDirection(direction, objectsOnTileIt->second))
-		return false;
+	if (objectsOnTileIt != objects.end() && Coordinates::AnyBlockingObjectInDirection(direction, objectsOnTileIt->second))
+		return true;
 
-	const auto objectOnNeighborIt = objects.find(tileCoord);
+	const auto objectOnNeighborIt = objects.find(neighborPos);
 	return objectOnNeighborIt != objects.end() && Coordinates::AnyBlockingObjectInDirection(oppositeDirection, objectOnNeighborIt->second);
 }
 
@@ -91,7 +92,7 @@ bool LevelData::IsPossibleToWalkTo(const Coordinates& tileCoord, const Coordinat
 {
 	const Coordinates neighborPos = tileCoord + directionCoord;
 
-	return IsPossibleToWalkOnTile(neighborPos) && not HasBlockingObject(neighborPos, directionCoord);
+	return IsPossibleToWalkOnTile(neighborPos) && not HasBlockingObject(tileCoord, directionCoord);
 }
 
 bool LevelData::IsPossibleToWalkOnTile(const Coordinates& coord) const

@@ -36,51 +36,6 @@ void MyBotLogic::Configure(const SConfigData& _configData)
 void MyBotLogic::Init(const SInitData& _initData)
 {
 	BOT_LOGIC_LOG(mLogger, "Init", true);
-	/*
-	PathFinder pathFinder{levelData.GetTiles(), levelData.GetObjects()};
-
-	npcOrders.resize(_initData.nbNPCs);
-
-	for (int i = 0; i < _initData.nbNPCs; ++i)
-	{
-		const SNPCInfo npcInfo = _initData.npcInfoArray[i];
-		const Coordinates npcCoord = {.q = npcInfo.q, .r = npcInfo.r};
-
-		int bestDistance = INT_MAX;
-		vector<Coordinates> bestPath{};
-
-		for (const Coordinates& goalTile : levelData.GetGoalTiles())
-		{
-			if (const auto path = pathFinder.FindPath(npcCoord, goalTile); path.has_value())
-			{
-				const auto pathSize = path.value().size();
-				if (pathSize < bestDistance)
-				{
-					bestDistance = pathSize;
-					bestPath = path.value();
-				}
-			}
-		}
-
-		auto prev = bestPath.begin();
-		size_t j = 0;
-		npcOrders[i].resize(bestPath.size() - 1);
-
-		for (auto bestPathIt = std::next(bestPath.begin()); bestPathIt != bestPath.end(); ++bestPathIt)
-		{
-			const auto& nextCoord = *bestPathIt;
-			const auto& currCoord = *prev;
-
-			BOT_LOGIC_LOG(mLogger, format("Target tile coord = {}", currCoord), true);
-			const EHexCellDirection direction = currCoord.GetNeighborDirection(nextCoord);
-			BOT_LOGIC_LOG(mLogger, format("Target tile direction = {}", to_string(direction)), true);
-
-			npcOrders[i][j++] = SOrder{.orderType = Move, .npcUID = npcInfo.uid, .direction = direction};
-
-			prev = bestPathIt;
-		}
-	}
-	*/
 }
 
 void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _orders)
@@ -106,7 +61,7 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 			};
 			_orders.emplace_back(order);
 		}
-		else // got to the goal
+		else // go to the goal
 		{
 			int bestDistance = INT_MAX;
 			vector<Coordinates> bestPath{};
@@ -128,7 +83,7 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 			{
 				Move,
 				npcInfo.uid,
-				npcCoord.GetNeighborDirection(bestPath[0])
+				npcCoord.GetNeighborDirection(bestPath[1])
 			};
 			_orders.emplace_back(order);
 		}

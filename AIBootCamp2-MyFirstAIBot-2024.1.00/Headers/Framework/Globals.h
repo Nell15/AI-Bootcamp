@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 enum EHexCellType
 {
 	Goal,
@@ -70,6 +72,12 @@ struct SObjectInfo
 
 	int* connectedTo;
 	int connectedToSize;
+
+	bool operator==(const SObjectInfo& other) const noexcept
+	{
+		return uid == other.uid && q == other.q && r == other.r &&
+			cellPosition == other.cellPosition;
+	}
 };
 
 struct SNPCInfo
