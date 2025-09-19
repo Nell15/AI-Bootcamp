@@ -83,37 +83,6 @@ void MyBotLogic::Init(const SInitData& _initData)
 	*/
 }
 
-static Coordinates bestNeighbor(const vector<Coordinates> neighCoords,
-                                const LevelData& levelData)
-{
-	Coordinates bestNeighCoord;
-	int bestNeighScore = -1;
-	for (auto neighborCoord : neighCoords)
-	{
-		const auto neighNeighs = levelData.GetNeighbors(neighborCoord);
-		const int neighScore = 6 - neighNeighs.size();
-
-		/*
-		if (auto objIt = objects.find(neighborCoord); objIt != objects.end())
-			neighScore - objIt->second.size();
-
-		for (auto neighNiegh : neighNeighs)
-		{
-			
-		}
-		*/
-
-		if (neighScore > bestNeighScore)
-		{
-			bestNeighCoord = neighborCoord;
-			bestNeighScore = neighScore;
-		}
-	}
-
-	return bestNeighCoord;
-}
-
-
 void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _orders)
 {
 	BOT_LOGIC_LOG(mLogger, "GetTurnOrders", true);
@@ -126,26 +95,25 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 	{
 		const SNPCInfo npcInfo = _turnData.npcInfoArray[i];
 		const auto npcCoord = Coordinates{npcInfo.q, npcInfo.r};
-		if (levelData.GetGoalTiles().empty())
+		if (levelData.GetGoalTiles().empty()) // searching
 		{
-			const auto neighbors = levelData.GetNeighbors(npcCoord);
-
-			auto bestN = bestNeighbor(neighbors, levelData);
+			auto bestNEighbor = levelData.GetBestNeighbor(npcCoord);
 			const SOrder order =
 			{
 				Move,
 				npcInfo.uid,
-				npcCoord.GetNeighborDirection(bestN)
+				npcCoord.GetNeighborDirection(bestNEighbor)
 			};
 			_orders.emplace_back(order);
 		}
-		else
+		else // got to the goal
 		{
 			int bestDistance = INT_MAX;
 			vector<Coordinates> bestPath{};
 			for (const Coordinates& goalTile : levelData.GetGoalTiles())
 			{
-				if (const auto path = pathFinder.FindPath(npcCoord, goalTile); path.has_value())
+				const auto path = pathFinder.FindPath(npcCoord, goalTile);
+				if (path.has_value())
 				{
 					const auto pathSize = path.value().size();
 					if (pathSize < bestDistance)

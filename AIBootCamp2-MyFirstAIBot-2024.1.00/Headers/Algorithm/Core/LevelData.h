@@ -30,7 +30,13 @@ public:
 	void StoreTiles(const STileInfo* tileArrayInfo, int nbTile);
 	void StoreObjects(const SObjectInfo* objectArrayInfo, int nbObject);
 
-	[[nodiscard]] std::vector<Coordinates> GetNeighbors(const Coordinates& tileCoord) const;
+	[[nodiscard]] std::vector<Coordinates> GetWalkableNeighbors(const Coordinates& tileCoord) const;
+	[[nodiscard]] bool IsPossibleToWalkTo(const Coordinates& tileCoord, const Coordinates& directionCoord) const;
+	[[nodiscard]] bool HasBlockingObject(const Coordinates& tileCoord, const Coordinates& directionCoord) const;
+	[[nodiscard]] bool IsPossibleToWalkOnTile(const Coordinates& coord) const;
+
+	// TODO: put this in another class ?
+	[[nodiscard]] Coordinates GetBestNeighbor(const Coordinates& tileCoord) const;
 
 private:
 	GoalTilesType goalTiles{};

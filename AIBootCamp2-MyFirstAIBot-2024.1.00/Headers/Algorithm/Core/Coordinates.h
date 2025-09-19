@@ -57,16 +57,15 @@ struct Coordinates
 	static constexpr std::array<Coordinates, NB_COORDINATES> CoordinateDirections() noexcept
 	{
 		return std::to_array<Coordinates>
-			({
-				Coordinates{.q = 0, .r = +1}, // E
-				Coordinates{.q = -1, .r = +1}, // NE
-				Coordinates{.q = -1, .r = 0}, // NW
-				Coordinates{.q = 0, .r = -1}, // W
-				Coordinates{.q = +1, .r = -1}, // SW
-				Coordinates{.q = +1, .r = 0} // SE
-				});
+		({
+			Coordinates{.q = 0, .r = +1}, // E
+			Coordinates{.q = -1, .r = +1}, // NE
+			Coordinates{.q = -1, .r = 0}, // NW
+			Coordinates{.q = 0, .r = -1}, // W
+			Coordinates{.q = +1, .r = -1}, // SW
+			Coordinates{.q = +1, .r = 0} // SE
+		});
 	}
-
 };
 
 template <>
