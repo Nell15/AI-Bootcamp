@@ -1,9 +1,9 @@
 #ifndef COORDINATES_H
 #define COORDINATES_H
 
+#include <array>
 #include <format>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "Framework/Globals.h"
@@ -12,15 +12,16 @@ struct Coordinates
 {
 	using DistanceType = int;
 
+	static constexpr std::size_t NB_COORDINATES = 6;
+
 	int q;
 	int r;
 
-	[[nodiscard]] DistanceType GetDistance(const Coordinates& goal) const;
-	[[nodiscard]] EHexCellDirection GetNeighborDirection(const Coordinates& goal) const;
-	[[nodiscard]] std::vector<Coordinates> GetNeighbors(
-		const std::unordered_map<Coordinates, EHexCellType>& tiles, const std::unordered_map<Coordinates, std::vector<SObjectInfo>>& objects) const;
+	[[nodiscard]] DistanceType GetDistance(const Coordinates& tileCoord) const;
+	[[nodiscard]] EHexCellDirection GetNeighborDirection(const Coordinates& neighborCoord) const;
 
-	static bool AnyBlockingObjectInDirection(EHexCellDirection direction, const std::vector<SObjectInfo>& objectsOnTile);
+	static bool AnyBlockingObjectInDirection(EHexCellDirection direction,
+	                                         const std::vector<SObjectInfo>& objectsOnTile);
 
 	bool operator==(const Coordinates& other) const noexcept
 	{
@@ -36,9 +37,36 @@ struct Coordinates
 	{
 		return {.q = q * scalar, .r = r * scalar};
 	}
-private:
+
 	static EHexCellDirection GetOppositeDirection(const Coordinates& coordinates);
 	static bool IsObstacle(const SObjectInfo& object);
+
+	static constexpr EHexCellDirection CoordinatesToDir(const Coordinates& coord)
+	{
+		if (coord.q == 0 && coord.r == +1) return E;
+		if (coord.q == -1 && coord.r == +1) return NE;
+		if (coord.q == -1 && coord.r == 0) return NW;
+		if (coord.q == 0 && coord.r == -1) return W;
+		if (coord.q == +1 && coord.r == -1) return SW;
+		if (coord.q == +1 && coord.r == 0) return SE;
+		if (coord.q == 0 && coord.r == 0) return CENTER;
+
+		throw std::out_of_range("Invalid Coordinates for CoordinatesToDir");
+	}
+
+	static constexpr std::array<Coordinates, NB_COORDINATES> CoordinateDirections() noexcept
+	{
+		return std::to_array<Coordinates>
+			({
+				Coordinates{.q = 0, .r = +1}, // E
+				Coordinates{.q = -1, .r = +1}, // NE
+				Coordinates{.q = -1, .r = 0}, // NW
+				Coordinates{.q = 0, .r = -1}, // W
+				Coordinates{.q = +1, .r = -1}, // SW
+				Coordinates{.q = +1, .r = 0} // SE
+				});
+	}
+
 };
 
 template <>

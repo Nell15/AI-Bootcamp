@@ -2,8 +2,10 @@
 
 #include "BotLogicIF.h"
 #include "Logger.h"
+#include "Algorithm/Core/Agent.h"
 #include "Algorithm/Core/LevelData.h"
 #include "Algorithm/PathFinding/PathFinder.h"
+#include "Framework/Globals.h"
 
 #ifdef _DEBUG
 #define BOT_LOGIC_DEBUG
@@ -25,14 +27,15 @@ class MyBotLogic : public virtual BotLogicIF
 public:
 	Logger mLogger;
 
-	MyBotLogic() = default;
-	~MyBotLogic() override = default;
-
-	virtual void Configure(const SConfigData& _configData);
-	virtual void Init(const SInitData& _initData);
-	virtual void GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _orders);
+	void Configure(const SConfigData& _configData) override;
+	void Init(const SInitData& _initData) override;
+	void GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _orders) override;
 
 private:
-	LevelData lvlData{};
-	PathFinder pathFinder{ lvlData.getTilesType(), lvlData.getObjects() };
+	LevelData levelData{};
+	std::vector<Agent> agents{};
+	PathFinder pathFinder{ levelData };
+
+	void StoreTurnData(const STurnData& turnData);
+	void UpdateAgentsState();
 };

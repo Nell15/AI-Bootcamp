@@ -4,6 +4,7 @@
 #include <array>
 #include <unordered_set>
 #include <algorithm>
+#include <ranges>
 
 #include "Framework/Globals.h"
 #include "Framework/ConfigData.h"
@@ -36,7 +37,7 @@ void MyBotLogic::Init(const SInitData& _initData)
 {
 	BOT_LOGIC_LOG(mLogger, "Init", true);
 	/*
-	PathFinder pathFinder{lvlData.getTilesType(), lvlData.getObjects()};
+	PathFinder pathFinder{levelData.GetTiles(), levelData.GetObjects()};
 
 	npcOrders.resize(_initData.nbNPCs);
 
@@ -48,7 +49,7 @@ void MyBotLogic::Init(const SInitData& _initData)
 		int bestDistance = INT_MAX;
 		vector<Coordinates> bestPath{};
 
-		for (const Coordinates& goalTile : lvlData.getGoalTiles())
+		for (const Coordinates& goalTile : levelData.GetGoalTiles())
 		{
 			if (const auto path = pathFinder.FindPath(npcCoord, goalTile); path.has_value())
 			{
@@ -83,14 +84,13 @@ void MyBotLogic::Init(const SInitData& _initData)
 }
 
 static Coordinates bestNeighbor(const vector<Coordinates> neighCoords,
-	const unordered_map<Coordinates, EHexCellType>& tiles,
-	const unordered_map<Coordinates, vector<SObjectInfo>>& objects)
+                                const LevelData& levelData)
 {
 	Coordinates bestNeighCoord;
 	int bestNeighScore = -1;
 	for (auto neighborCoord : neighCoords)
 	{
-		const auto neighNeighs = neighborCoord.GetNeighbors(tiles, objects);
+		const auto neighNeighs = levelData.GetNeighbors(neighborCoord);
 		const int neighScore = 6 - neighNeighs.size();
 
 		/*
@@ -118,25 +118,19 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 {
 	BOT_LOGIC_LOG(mLogger, "GetTurnOrders", true);
 
-	const auto currentTurn = _turnData.turnNb - 1;
-
-	// store explored data
-	for (int npcId = 0; npcId < _turnData.npcInfoArraySize; ++npcId)
-	{
-		lvlData.StoreTiles(_turnData.tileInfoArray, _turnData.tileInfoArraySize);
-		lvlData.StoreObjects(_turnData.objectInfoArray, _turnData.objectInfoArraySize);
-	}
+	StoreTurnData(_turnData);
+	UpdateAgentsState();
 
 	// think
 	for (int i = 0; i < _turnData.npcInfoArraySize; ++i)
 	{
 		const SNPCInfo npcInfo = _turnData.npcInfoArray[i];
-		const Coordinates npcCoord = Coordinates{npcInfo.q, npcInfo.r};
-		if (lvlData.getGoalTiles().empty())
+		const auto npcCoord = Coordinates{npcInfo.q, npcInfo.r};
+		if (levelData.GetGoalTiles().empty())
 		{
-			const auto neighbors = npcCoord.GetNeighbors(lvlData.getTilesType(), lvlData.getObjects());
-			
-			auto bestN = bestNeighbor(neighbors, lvlData.getTilesType(), lvlData.getObjects());
+			const auto neighbors = levelData.GetNeighbors(npcCoord);
+
+			auto bestN = bestNeighbor(neighbors, levelData);
 			const SOrder order =
 			{
 				Move,
@@ -149,7 +143,7 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 		{
 			int bestDistance = INT_MAX;
 			vector<Coordinates> bestPath{};
-			for (const Coordinates& goalTile : lvlData.getGoalTiles())
+			for (const Coordinates& goalTile : levelData.GetGoalTiles())
 			{
 				if (const auto path = pathFinder.FindPath(npcCoord, goalTile); path.has_value())
 				{
@@ -171,4 +165,23 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 			_orders.emplace_back(order);
 		}
 	}
+}
+
+void MyBotLogic::StoreTurnData(const STurnData& turnData)
+{
+	auto npcIndices = views::iota(0, turnData.npcInfoArraySize);
+
+	ranges::for_each(npcIndices, [&](auto)
+	{
+		levelData.StoreTiles(turnData.tileInfoArray, turnData.tileInfoArraySize);
+		levelData.StoreObjects(turnData.objectInfoArray, turnData.objectInfoArraySize);
+	});
+}
+
+void MyBotLogic::UpdateAgentsState()
+{
+	ranges::for_each(agents, [&](Agent& agent)
+	{
+		agent.UpdateState(levelData);
+	});
 }

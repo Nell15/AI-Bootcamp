@@ -4,16 +4,17 @@
 #include <queue>
 #include <vector>
 #include <optional>
+#include <unordered_map>
 
 #include "Algorithm/Core/Coordinates.h"
+#include "Algorithm/Core/LevelData.h"
 
 class PathFinder
 {
 public:
 	PathFinder() = delete;
 
-	explicit PathFinder(const std::unordered_map<Coordinates, EHexCellType>& tilesType, const std::unordered_map<Coordinates, std::vector<SObjectInfo>>& objects)
-		: tilesType(tilesType), objects(objects) {}
+	explicit PathFinder(const LevelData& levelData) : levelData{levelData} {}
 
 	[[nodiscard]] std::optional<std::vector<Coordinates>> FindPath(const Coordinates& start, const Coordinates& goal);
 
@@ -49,11 +50,9 @@ private:
 
 	[[nodiscard]] std::vector<Coordinates> ReconstructPath(const Coordinates& start);
 
-
-	std::unordered_map<Coordinates, EHexCellType> tilesType;
+	const LevelData& levelData;
 	std::priority_queue<PQNode, std::vector<PQNode>, PQCompare> openSet;
 	std::unordered_map<Coordinates, Coordinates> predecessors;
-	std::unordered_map<Coordinates, std::vector<SObjectInfo>> objects;
 	ScoreMap gScores;
 	ScoreMap fScores;
 };

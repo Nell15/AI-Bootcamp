@@ -22,7 +22,9 @@ SET( AIBOT_HEADERS
     Headers/Algorithm/PathFinding/PathFinder.h
     Headers/Algorithm/Core/Coordinates.h
     Headers/Algorithm/Core/LevelData.h
+    Headers/Algorithm/Core/Agent.h
     Headers/Algorithm/Utils/Utils.h
+    Headers/Algorithm/Core/AgentState.h
 
     Headers/Framework/AIBot.h
     Headers/Framework/BotLogicIF.h
@@ -41,7 +43,9 @@ SET( AIBOT_HEADERS
 SET( AIBOT_SRC
     Sources/Algorithm/PathFinding/PathFinder.cpp
     Sources/Algorithm/Core/Coordinates.cpp
+    Sources/Algorithm/Core/Agent.cpp
     Sources/Algorithm/Core/LevelData.cpp
+    Sources/Algorithm/Core/AgentState.cpp
 
     Sources/Framework/AIBot.cpp
     Sources/Framework/Logger.cpp
