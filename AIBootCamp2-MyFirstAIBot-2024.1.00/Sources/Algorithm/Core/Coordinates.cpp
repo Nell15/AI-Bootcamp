@@ -43,5 +43,6 @@ EHexCellDirection Coordinates::GetOppositeDirection(const Coordinates& coordinat
 
 bool Coordinates::IsObstacle(const SObjectInfo& object)
 {
-	return *object.types == Wall || *object.types == Window;
+	const auto type = static_cast<EObjectType>(object.typesSize - 1);
+	return type == Wall || type == Window;
 }

@@ -15,7 +15,7 @@ set AIBOT_PATH=build-solution-x64\Debug\myfirstaibot.dll
 set TEAM=myfirstaibot
 
 rem in s, -1 = default
-set ConnectToProcessDelay=8
+set ConnectToProcessDelay=6
 
 rem in ms, -1 = default
 set InitTime=50000000

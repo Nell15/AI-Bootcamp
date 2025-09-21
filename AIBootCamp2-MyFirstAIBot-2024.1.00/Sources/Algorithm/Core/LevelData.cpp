@@ -44,8 +44,8 @@ Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord) const
 
 		for (const Coordinates& coordDir : Coordinates::CoordinateDirections())
 		{
-			const Coordinates neighborPos = tileCoord + coordDir;
-			if (tiles.contains(neighborPos) || HasBlockingObject(tileCoord, neighborPos))
+			const Coordinates neighborPos = neighborCoord + coordDir;
+			if (tiles.contains(neighborPos) || HasBlockingObject(neighborCoord, coordDir))
 				--score;
 		}
 

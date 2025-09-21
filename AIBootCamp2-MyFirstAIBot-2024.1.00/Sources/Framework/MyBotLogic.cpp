@@ -1,25 +1,19 @@
 #include "Framework/MyBotLogic.h"
 
 #include <vector>
-#include <array>
 #include <unordered_set>
 #include <algorithm>
 #include <ranges>
+#include <span>
 
 #include "Framework/Globals.h"
 #include "Framework/ConfigData.h"
-#include "Framework/InitData.h"
 #include "Framework/TurnData.h"
 
 #include "Algorithm/Core/Coordinates.h"
 #include "Algorithm/PathFinding/PathFinder.h"
 
 using namespace std;
-
-namespace
-{
-	vector<vector<SOrder>> npcOrders; // TODO: avoid global
-}
 
 void MyBotLogic::Configure(const SConfigData& _configData)
 {
@@ -43,7 +37,7 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 	BOT_LOGIC_LOG(mLogger, "GetTurnOrders", true);
 
 	StoreTurnData(_turnData);
-	UpdateAgentsState();
+	UpdateAgentsState(_turnData.npcInfoArray, _turnData.npcInfoArraySize);
 
 	// think
 	for (int i = 0; i < _turnData.npcInfoArraySize; ++i)
@@ -78,6 +72,7 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 					}
 				}
 			}
+			// TODO: do the other branch if it's not possible to go to the goal
 
 			const SOrder order =
 			{
@@ -94,17 +89,32 @@ void MyBotLogic::StoreTurnData(const STurnData& turnData)
 {
 	auto npcIndices = views::iota(0, turnData.npcInfoArraySize);
 
-	ranges::for_each(npcIndices, [&](auto)
+	ranges::for_each(npcIndices, [&](int)
 	{
 		levelData.StoreTiles(turnData.tileInfoArray, turnData.tileInfoArraySize);
 		levelData.StoreObjects(turnData.objectInfoArray, turnData.objectInfoArraySize);
 	});
 }
 
-void MyBotLogic::UpdateAgentsState()
+void MyBotLogic::UpdateAgentsState(const SNPCInfo* npcInfoArray, const int nbNpc)
 {
-	ranges::for_each(agents, [&](Agent& agent)
+	const span npcInfos{npcInfoArray, static_cast<size_t>(nbNpc)};
+
+	if (agents.empty())
 	{
-		agent.UpdateState(levelData);
-	});
+		for (const auto npcInfo : npcInfos)
+			agents.emplace(npcInfo.uid, Agent{npcInfo.uid, Coordinates{.q = npcInfo.q, .r = npcInfo.r}});
+	}
+	else
+	{
+		for (const auto npcInfo : npcInfos)
+		{
+			auto agentIt = agents.find(npcInfo.uid);
+
+			if (agentIt == agents.end()) [[unlikely]]
+				throw runtime_error("Cannot find agent");
+
+			agentIt->second.UpdateState(levelData, Coordinates{.q = npcInfo.q, .r = npcInfo.r});
+		}
+	}
 }
