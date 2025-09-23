@@ -79,6 +79,6 @@ vector<Coordinates> PathFinder::ReconstructPath(const Coordinates& start)
 		currentIt = predecessors.find(node);
 	}
 
-	ranges::reverse(path);
+	path.pop_back();
 	return path;
 }

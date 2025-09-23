@@ -3,6 +3,7 @@
 #include <array>
 #include <span>
 #include <algorithm>
+#include <cassert>
 
 using namespace std;
 
@@ -35,7 +36,7 @@ void LevelData::StoreObjects(const SObjectInfo* objectArrayInfo, const int nbObj
 
 Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord) const
 {
-	Coordinates bestNeighCoord;
+	Coordinates bestNeighCoord = tileCoord;
 	int bestNeighScore = -1;
 
 	for (const auto neighborCoord : GetWalkableNeighbors(tileCoord))
@@ -56,10 +57,11 @@ Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord) const
 		}
 	}
 
+	assert(bestNeighCoord != tileCoord && "NPC is bloqued or an error occured");
+
 	return bestNeighCoord;
 }
 
-// TODO: check if not found
 vector<Coordinates> LevelData::GetWalkableNeighbors(const Coordinates& tileCoord) const
 {
 	vector<Coordinates> neighbors{};

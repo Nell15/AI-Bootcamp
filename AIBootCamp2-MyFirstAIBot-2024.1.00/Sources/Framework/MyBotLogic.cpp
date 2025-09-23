@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include <algorithm>
 #include <ranges>
+#include <cassert>
 #include <span>
 
 #include "Framework/Globals.h"
@@ -12,6 +13,7 @@
 
 #include "Algorithm/Core/Coordinates.h"
 #include "Algorithm/PathFinding/PathFinder.h"
+#include "Framework/InitData.h"
 
 using namespace std;
 
@@ -30,6 +32,11 @@ void MyBotLogic::Configure(const SConfigData& _configData)
 void MyBotLogic::Init(const SInitData& _initData)
 {
 	BOT_LOGIC_LOG(mLogger, "Init", true);
+
+	const span npcInfos{ _initData.npcInfoArray, static_cast<size_t>(_initData.nbNPCs) };
+
+	for (const auto& npcInfo : npcInfos)
+		agents.emplace_back(Agent{ npcInfo.uid, Coordinates{.q = npcInfo.q, .r = npcInfo.r} });
 }
 
 void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _orders)
@@ -37,51 +44,11 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 	BOT_LOGIC_LOG(mLogger, "GetTurnOrders", true);
 
 	StoreTurnData(_turnData);
-	UpdateAgentsState(_turnData.npcInfoArray, _turnData.npcInfoArraySize);
+	ThinkAgentOrders(_turnData.npcInfoArray, _turnData.npcInfoArraySize);
 
-	// think
-	for (int i = 0; i < _turnData.npcInfoArraySize; ++i)
+	for (auto& agent : agents)
 	{
-		const SNPCInfo npcInfo = _turnData.npcInfoArray[i];
-		const auto npcCoord = Coordinates{npcInfo.q, npcInfo.r};
-		if (levelData.GetGoalTiles().empty()) // searching
-		{
-			auto bestNEighbor = levelData.GetBestNeighbor(npcCoord);
-			const SOrder order =
-			{
-				Move,
-				npcInfo.uid,
-				npcCoord.GetNeighborDirection(bestNEighbor)
-			};
-			_orders.emplace_back(order);
-		}
-		else // go to the goal
-		{
-			int bestDistance = INT_MAX;
-			vector<Coordinates> bestPath{};
-			for (const Coordinates& goalTile : levelData.GetGoalTiles())
-			{
-				const auto path = pathFinder.FindPath(npcCoord, goalTile);
-				if (path.has_value())
-				{
-					const auto pathSize = path.value().size();
-					if (pathSize < bestDistance)
-					{
-						bestDistance = pathSize;
-						bestPath = path.value();
-					}
-				}
-			}
-			// TODO: do the other branch if it's not possible to go to the goal
-
-			const SOrder order =
-			{
-				Move,
-				npcInfo.uid,
-				npcCoord.GetNeighborDirection(bestPath[1])
-			};
-			_orders.emplace_back(order);
-		}
+		_orders.emplace_back(SOrder{ .orderType = Move, .npcUID = agent.GetId(), .direction = agent.PopAndReturnBack() });
 	}
 }
 
@@ -96,25 +63,17 @@ void MyBotLogic::StoreTurnData(const STurnData& turnData)
 	});
 }
 
-void MyBotLogic::UpdateAgentsState(const SNPCInfo* npcInfoArray, const int nbNpc)
+void MyBotLogic::ThinkAgentOrders(const SNPCInfo* npcInfoArray, const int nbNpc)
 {
 	const span npcInfos{npcInfoArray, static_cast<size_t>(nbNpc)};
 
-	if (agents.empty())
+	for (const auto& npcInfo : npcInfos)
 	{
-		for (const auto npcInfo : npcInfos)
-			agents.emplace(npcInfo.uid, Agent{npcInfo.uid, Coordinates{.q = npcInfo.q, .r = npcInfo.r}});
-	}
-	else
-	{
-		for (const auto npcInfo : npcInfos)
-		{
-			auto agentIt = agents.find(npcInfo.uid);
+		auto agentIt = ranges::find_if(agents, [&](const Agent& agent) { return agent.GetId() == npcInfo.uid; });
 
-			if (agentIt == agents.end()) [[unlikely]]
-				throw runtime_error("Cannot find agent");
+		assert(agentIt != agents.end() && "Cannot find agent");
 
-			agentIt->second.UpdateState(levelData, Coordinates{.q = npcInfo.q, .r = npcInfo.r});
-		}
+		agentIt->UpdateState(levelData, Coordinates{ .q = npcInfo.q, .r = npcInfo.r });
+		agentIt->SetOrder(levelData);
 	}
 }

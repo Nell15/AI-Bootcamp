@@ -33,9 +33,9 @@ public:
 
 private:
 	LevelData levelData{};
-	std::unordered_map<int, Agent> agents{};
+	std::vector<Agent> agents{};
 	PathFinder pathFinder{ levelData };
 
 	void StoreTurnData(const STurnData& turnData);
-	void UpdateAgentsState(const SNPCInfo* npcInfoArray, int nbNpc);
+	void ThinkAgentOrders(const SNPCInfo* npcInfoArray, int nbNpc);
 };
