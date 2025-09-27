@@ -46,6 +46,8 @@ public:
 		state->SetOrder(levelData, *this);
 	}
 
+	[[nodiscard]] bool IsPathEmpty() const { return path.empty();  }
+
 private:
 	int id;
 	Coordinates coordinates;

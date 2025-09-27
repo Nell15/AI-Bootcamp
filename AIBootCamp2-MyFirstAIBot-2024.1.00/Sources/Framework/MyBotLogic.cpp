@@ -16,7 +16,7 @@
 
 using namespace std;
 
-constexpr std::string_view to_string(EHexCellDirection dir) noexcept
+static constexpr std::string_view to_string(EHexCellDirection dir) noexcept
 {
 	switch (dir)
 	{
