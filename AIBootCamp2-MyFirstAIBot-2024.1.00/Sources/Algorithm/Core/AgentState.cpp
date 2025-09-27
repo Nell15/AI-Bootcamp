@@ -9,7 +9,7 @@ using namespace std;
 
 void Waiting::UpdateState(const LevelData& levelData, Agent& agent)
 {
-	// TODO: pour l'instant ont fait rien
+	// TODO: pour l'instant on fait rien
 }
 
 void Waiting::SetOrder(const LevelData& levelData, Agent& agent)
@@ -19,16 +19,11 @@ void Waiting::SetOrder(const LevelData& levelData, Agent& agent)
 
 void Exploring::UpdateState(const LevelData& levelData, Agent& agent)
 {
-	const auto& goalTiles = levelData.GetGoalTiles();
-	if (ranges::find(goalTiles, agent.GetCoordinates()) != goalTiles.end())
-	{
-		agent.SetState(make_unique<Waiting>());
-	}
-	else if (not levelData.GetGoalTiles().empty())
+	if (not levelData.GetAvailableGoalTiles().empty())
 	{
 		PathFinder pathFinder{ levelData }; // TODO(opti): make pathfinder singleton ?
 
-		for (const Coordinates& goalTile : levelData.GetGoalTiles())
+		for (const Coordinates& goalTile : levelData.GetAvailableGoalTiles())
 		{
 			// TODO(opti): create a fonction DoGoalExist ?
 			const auto path = pathFinder.FindPath(agent.GetCoordinates(), goalTile);
@@ -51,10 +46,14 @@ void Exploring::SetOrder(const LevelData& levelData, Agent& agent)
 
 void Seeking::UpdateState(const LevelData& levelData, Agent& agent)
 {
-	const auto& goalTiles = levelData.GetGoalTiles();
+	const auto& goalTiles = levelData.GetAvailableGoalTiles();
 	if (ranges::find(goalTiles, agent.GetCoordinates()) != goalTiles.end())
 	{
 		agent.SetState(make_unique<Waiting>());
+	}
+	else if ()
+	{
+		
 	}
 	// TODO: si tous les goals connus sont occupes, passer en Exploring
 }
@@ -65,7 +64,7 @@ void Seeking::SetOrder(const LevelData& levelData, Agent& agent)
 
 	size_t bestDistance = INT_MAX;
 	vector<Coordinates> bestPath{};
-	for (const Coordinates& goalTile : levelData.GetGoalTiles())
+	for (const Coordinates& goalTile : levelData.GetAvailableGoalTiles())
 	{
 		const auto path = pathFinder.FindPath(agent.GetCoordinates(), goalTile);
 		if (path.has_value())
@@ -79,17 +78,16 @@ void Seeking::SetOrder(const LevelData& levelData, Agent& agent)
 		}
 	}
 
-	// TODO: make it better
 	vector<EHexCellDirection> npcPath;
 	npcPath.resize(bestPath.size());
+
 	Coordinates currCoord = agent.GetCoordinates();
 
 	for (size_t i = 0; i < bestPath.size(); ++i)
 	{
-		const Coordinates& nextCoord = bestPath[i];
+		const Coordinates& nextCoord = bestPath[bestPath.size() - 1 - i];
 
-		npcPath[i] = currCoord.GetNeighborDirection(nextCoord);
-
+		npcPath[bestPath.size() - 1 - i] = currCoord.GetNeighborDirection(nextCoord);
 		currCoord = nextCoord;
 	}
 

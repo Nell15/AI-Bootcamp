@@ -4,6 +4,7 @@
 #include <span>
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 
 using namespace std;
 
@@ -37,16 +38,19 @@ void LevelData::StoreObjects(const SObjectInfo* objectArrayInfo, const int nbObj
 Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord) const
 {
 	Coordinates bestNeighCoord = tileCoord;
-	int bestNeighScore = -1;
+	int bestNeighScore = 0;
 
 	for (const auto neighborCoord : GetWalkableNeighbors(tileCoord))
 	{
+		if (IsTileOccupied(neighborCoord))
+			continue;
+
 		int score = Coordinates::NB_COORDINATES;
 
 		for (const Coordinates& coordDir : Coordinates::CoordinateDirections())
 		{
 			const Coordinates neighborPos = neighborCoord + coordDir;
-			if (tiles.contains(neighborPos) || HasBlockingObject(neighborCoord, coordDir))
+			if (tiles.contains(neighborPos) || not DoTileExist(neighborPos) || HasBlockingObject(neighborCoord, coordDir))
 				--score;
 		}
 
@@ -56,8 +60,6 @@ Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord) const
 			bestNeighScore = score;
 		}
 	}
-
-	assert(bestNeighCoord != tileCoord && "NPC is bloqued or an error occured");
 
 	return bestNeighCoord;
 }
@@ -102,4 +104,19 @@ bool LevelData::IsPossibleToWalkOnTile(const Coordinates& coord) const
 	const auto& tileIt = tiles.find(coord);
 
 	return tileIt != tiles.end() && tileIt->second != Forbidden;
+}
+
+bool LevelData::DoTileExist(const Coordinates& tileCoord) const
+{
+	const int q = tileCoord.q;
+	const int r = tileCoord.r;
+
+	if (q < 0 || q >= qMax) // 0 < q < qMax
+		return false;
+
+	const int offset = q / 2;
+	if (r < -offset || r >= rMax - offset) // 0 - (q / 2) < r < rMax - (q / 2)
+		return false;
+
+	return true;
 }

@@ -1,9 +1,7 @@
 #include "Algorithm/Core/Coordinates.h"
 
 #include <format>
-#include <stdexcept>
 #include <algorithm>
-#include <array>
 
 using namespace std;
 

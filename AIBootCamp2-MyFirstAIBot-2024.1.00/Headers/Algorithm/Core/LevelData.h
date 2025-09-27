@@ -2,6 +2,7 @@
 #define LEVEL_DATA_H
 
 #include <unordered_map>
+#include <unordered_set>
 
 #include "Coordinates.h"
 
@@ -12,28 +13,40 @@ public:
 	using TileArrayType = std::unordered_map<Coordinates, EHexCellType>;
 	using ObjectArrayType = std::unordered_map<Coordinates, std::vector<SObjectInfo>>;
 
-    LevelData() = default;
+	int qMax;
+	int rMax;
+	int currentTurn;
 
 	[[nodiscard]] const GoalTilesType& GetGoalTiles() const
 	{
-        return goalTiles;
+		return goalTiles;
 	}
+
 	[[nodiscard]] const TileArrayType& GetTiles() const
 	{
-        return tiles;
+		return tiles;
 	}
+
 	[[nodiscard]] const ObjectArrayType& GetObjects() const
 	{
-        return objects;
+		return objects;
 	}
 
 	void StoreTiles(const STileInfo* tileArrayInfo, int nbTile);
 	void StoreObjects(const SObjectInfo* objectArrayInfo, int nbObject);
 
+	void ClearOccupiedTiles() { occupiedTiles.clear(); }
+	void AddOccupiedTiles(const Coordinates& tileCoord) { occupiedTiles.emplace(tileCoord); }
+	[[nodiscard]] bool IsTileOccupied(const Coordinates& tileCoord) const
+	{
+		return occupiedTiles.contains(tileCoord);
+	}
+
 	[[nodiscard]] std::vector<Coordinates> GetWalkableNeighbors(const Coordinates& tileCoord) const;
 	[[nodiscard]] bool IsPossibleToWalkTo(const Coordinates& tileCoord, const Coordinates& directionCoord) const;
 	[[nodiscard]] bool HasBlockingObject(const Coordinates& tileCoord, const Coordinates& directionCoord) const;
 	[[nodiscard]] bool IsPossibleToWalkOnTile(const Coordinates& coord) const;
+	[[nodiscard]] bool DoTileExist(const Coordinates& tileCoord) const;
 
 	// TODO: put this in another class ?
 	[[nodiscard]] Coordinates GetBestNeighbor(const Coordinates& tileCoord) const;
@@ -42,6 +55,8 @@ private:
 	GoalTilesType goalTiles{};
 	TileArrayType tiles{};
 	ObjectArrayType objects{};
+
+	std::unordered_set<Coordinates> occupiedTiles{};
 };
 
 

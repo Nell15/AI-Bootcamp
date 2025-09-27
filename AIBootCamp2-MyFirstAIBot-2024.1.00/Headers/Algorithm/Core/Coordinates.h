@@ -54,6 +54,23 @@ struct Coordinates
 		throw std::out_of_range("Invalid Coordinates for CoordinatesToDir");
 	}
 
+	static constexpr Coordinates DirToCoordinates(const EHexCellDirection dir)
+	{
+		switch (dir)
+		{
+		case E:      return { 0, 1 };
+		case NE:     return { -1, 1 };
+		case NW:     return { -1, 0 };
+		case W:      return { 0, -1 };
+		case SW:     return { 1, -1 };
+		case SE:     return { 1, 0 };
+		case CENTER: return { 0, 0 };
+		default:
+			throw std::out_of_range("Invalid EHexCellDirection for DirToCoordinates");
+		}
+	}
+
+
 	static constexpr std::array<Coordinates, NB_COORDINATES> CoordinateDirections() noexcept
 	{
 		return std::to_array<Coordinates>

@@ -25,6 +25,7 @@ struct STurnData;
 class MyBotLogic : public virtual BotLogicIF
 {
 public:
+	MyBotLogic() = default;
 	Logger mLogger;
 
 	void Configure(const SConfigData& _configData) override;
@@ -34,7 +35,7 @@ public:
 private:
 	LevelData levelData{};
 	std::vector<Agent> agents{};
-	PathFinder pathFinder{ levelData };
+	PathFinder pathFinder { levelData };
 
 	void StoreTurnData(const STurnData& turnData);
 	void ThinkAgentOrders(const SNPCInfo* npcInfoArray, int nbNpc);
