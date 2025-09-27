@@ -46,16 +46,15 @@ void Exploring::SetOrder(const LevelData& levelData, Agent& agent)
 
 void Seeking::UpdateState(const LevelData& levelData, Agent& agent)
 {
-	const auto& goalTiles = levelData.GetAvailableGoalTiles();
-	if (ranges::find(goalTiles, agent.GetCoordinates()) != goalTiles.end())
+	auto goalTiles = levelData.GetAvailableGoalTiles();
+	if (goalTiles.empty())
+	{
+		agent.SetState(make_unique<Exploring>());
+	}
+	else if (ranges::find(goalTiles, agent.GetCoordinates()) != goalTiles.end())
 	{
 		agent.SetState(make_unique<Waiting>());
 	}
-	else if ()
-	{
-		
-	}
-	// TODO: si tous les goals connus sont occupes, passer en Exploring
 }
 
 void Seeking::SetOrder(const LevelData& levelData, Agent& agent)

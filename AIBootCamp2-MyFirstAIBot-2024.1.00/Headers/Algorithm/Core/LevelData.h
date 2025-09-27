@@ -1,6 +1,7 @@
 #ifndef LEVEL_DATA_H
 #define LEVEL_DATA_H
 
+#include <ranges>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -17,9 +18,12 @@ public:
 	int rMax;
 	int currentTurn;
 
-	[[nodiscard]] const GoalTilesType& GetGoalTiles() const
+	[[nodiscard]] auto GetAvailableGoalTiles() const
 	{
-		return goalTiles;
+		return goalTiles | std::views::filter([&](const Coordinates& tile)
+			{
+				return not IsTileOccupied(tile);
+			});
 	}
 
 	[[nodiscard]] const TileArrayType& GetTiles() const

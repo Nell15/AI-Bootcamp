@@ -3,8 +3,6 @@
 #include <array>
 #include <span>
 #include <algorithm>
-#include <cassert>
-#include <cmath>
 
 using namespace std;
 
@@ -27,7 +25,7 @@ void LevelData::StoreObjects(const SObjectInfo* objectArrayInfo, const int nbObj
 
 	for (const auto& object : objectInfos)
 	{
-		Coordinates objectCoordinates{object.q, object.r};
+		Coordinates objectCoordinates{.q = object.q, .r = object.r};
 		auto& vec = objects[objectCoordinates];
 
 		if (ranges::find(vec, object) == vec.end())
