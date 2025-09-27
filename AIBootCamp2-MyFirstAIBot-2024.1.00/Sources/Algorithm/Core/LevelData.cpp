@@ -3,8 +3,55 @@
 #include <array>
 #include <span>
 #include <algorithm>
+#include <queue>
+
+#include "Algorithm/PathFinding/PathFinder.h"
 
 using namespace std;
+
+int LevelData::CalculateTileScore(const Coordinates& tileCoord) const
+{
+	int score = Coordinates::NB_COORDINATES;
+
+	for (const Coordinates& coordDir : Coordinates::CoordinateDirections())
+	{
+		const Coordinates neighborPos = tileCoord + coordDir;
+		if (tiles.contains(neighborPos) || not DoTileExist(neighborPos) || HasBlockingObject(tileCoord, coordDir))
+			--score;
+	}
+
+	return score;
+}
+
+vector<Coordinates> LevelData::GetBestExploringTile(const Coordinates& tileCoord) const
+{
+	using TileScore = std::pair<int, Coordinates>;
+	struct MinScoreCompare
+	{
+		bool operator()(TileScore const& a, TileScore const& b) const
+		{
+			return a.first < b.first;
+		}
+	};
+
+	priority_queue<TileScore, vector<TileScore>, MinScoreCompare> tileScores;
+	for (const auto key : tiles | views::keys)
+		tileScores.emplace(CalculateTileScore(key), key);
+
+	PathFinder pathFinder{ *this };
+	optional<vector<Coordinates>> path;
+	while (true)
+	{
+		const Coordinates goal = tileScores.top().second;
+		path = pathFinder.FindPath(tileCoord, goal);
+		if (path.has_value() && !path->empty())
+			break;
+
+		tileScores.pop();
+	}
+
+	return path.value();
+}
 
 void LevelData::StoreTiles(const STileInfo* tileArrayInfo, const int nbTile)
 {
@@ -48,7 +95,8 @@ Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord) const
 		for (const Coordinates& coordDir : Coordinates::CoordinateDirections())
 		{
 			const Coordinates neighborPos = neighborCoord + coordDir;
-			if (tiles.contains(neighborPos) || not DoTileExist(neighborPos) || HasBlockingObject(neighborCoord, coordDir))
+			if (tiles.contains(neighborPos) || not DoTileExist(neighborPos) || HasBlockingObject(
+				neighborCoord, coordDir))
 				--score;
 		}
 
@@ -83,11 +131,13 @@ bool LevelData::HasBlockingObject(const Coordinates& tileCoord, const Coordinate
 	const EHexCellDirection oppositeDirection = Coordinates::GetOppositeDirection(directionCoord);
 
 	const auto objectsOnTileIt = objects.find(tileCoord);
-	if (objectsOnTileIt != objects.end() && Coordinates::AnyBlockingObjectInDirection(direction, objectsOnTileIt->second))
+	if (objectsOnTileIt != objects.end() && Coordinates::AnyBlockingObjectInDirection(
+		direction, objectsOnTileIt->second))
 		return true;
 
 	const auto objectOnNeighborIt = objects.find(neighborPos);
-	return objectOnNeighborIt != objects.end() && Coordinates::AnyBlockingObjectInDirection(oppositeDirection, objectOnNeighborIt->second);
+	return objectOnNeighborIt != objects.end() && Coordinates::AnyBlockingObjectInDirection(
+		oppositeDirection, objectOnNeighborIt->second);
 }
 
 bool LevelData::IsPossibleToWalkTo(const Coordinates& tileCoord, const Coordinates& directionCoord) const

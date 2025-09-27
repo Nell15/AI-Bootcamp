@@ -18,6 +18,9 @@ public:
 	int rMax;
 	int currentTurn;
 
+	[[nodiscard]] int CalculateTileScore(const Coordinates& tileCoord) const;
+	[[nodiscard]] std::vector<Coordinates> GetBestExploringTile(const Coordinates& tileCoord) const;
+
 	[[nodiscard]] auto GetAvailableGoalTiles() const
 	{
 		return goalTiles | std::views::filter([&](const Coordinates& tile)

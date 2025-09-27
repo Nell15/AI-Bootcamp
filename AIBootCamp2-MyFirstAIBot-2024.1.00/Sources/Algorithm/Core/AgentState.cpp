@@ -38,10 +38,39 @@ void Exploring::UpdateState(const LevelData& levelData, Agent& agent)
 
 void Exploring::SetOrder(const LevelData& levelData, Agent& agent)
 {
-	const Coordinates agentCoord = agent.GetCoordinates();
-	const auto bestNeighbor = levelData.GetBestNeighbor(agentCoord);
+	const auto isPathCorrect = [&]()
+	{
+		PathFinder pathFinder{ levelData };
 
-	agent.SetPath({agentCoord.GetNeighborDirection(bestNeighbor)});
+		const Coordinates nextMove = agent.GetNextMove();
+		const auto path = pathFinder.FindPath(agent.GetCoordinates(), nextMove);
+
+		return path.has_value() && not path->empty();
+	};
+
+	static int a = 0;
+	++a;
+
+	if (agent.IsPathEmpty() || not isPathCorrect())
+	{
+		const Coordinates agentCoord = agent.GetCoordinates();
+		const auto bestExploringPath = levelData.GetBestExploringTile(agentCoord);
+
+		vector<EHexCellDirection> npcPath;
+		npcPath.resize(bestExploringPath.size());
+
+		Coordinates currCoord = agent.GetCoordinates();
+
+		for (size_t i = 0; i < bestExploringPath.size(); ++i)
+		{
+			const Coordinates& nextCoord = bestExploringPath[bestExploringPath.size() - 1 - i];
+
+			npcPath[bestExploringPath.size() - 1 - i] = currCoord.GetNeighborDirection(nextCoord);
+			currCoord = nextCoord;
+		}
+
+		agent.SetPath(std::move(npcPath));
+	}
 }
 
 void Seeking::UpdateState(const LevelData& levelData, Agent& agent)

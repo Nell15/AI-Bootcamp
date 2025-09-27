@@ -47,6 +47,11 @@ public:
 	}
 
 	[[nodiscard]] bool IsPathEmpty() const { return path.empty();  }
+	[[nodiscard]] Coordinates GetNextMove() const
+	{
+		const auto nextMove = coordinates + Coordinates::DirToCoordinates(path.back());
+		return nextMove;
+	}
 
 private:
 	int id;

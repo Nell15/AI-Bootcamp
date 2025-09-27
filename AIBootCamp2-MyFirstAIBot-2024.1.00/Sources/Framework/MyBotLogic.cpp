@@ -86,13 +86,14 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 		agentIt->SetOrder(levelData);
 
 		auto order = SOrder{.orderType = Move, .npcUID = agentIt->GetId(), .direction = agentIt->PopAndReturnBack()};
-		BOT_LOGIC_LOG(
-			mLogger,
-			std::format("Turn{} - Agent{} - Direction choice: {}", _turnData.turnNb, agentIt->GetId(), order.direction),
-			true);
 
 		const Coordinates directionCoord = agentIt->GetCoordinates() + Coordinates::DirToCoordinates(order.direction);
 		levelData.AddOccupiedTiles(directionCoord);
+
+		BOT_LOGIC_LOG(
+			mLogger,
+			std::format("Turn{} - Agent{} - Direction choice: {} -> {}", _turnData.turnNb, agentIt->GetId(), order.direction, directionCoord),
+			true);
 
 		_orders.emplace_back(order);
 	}

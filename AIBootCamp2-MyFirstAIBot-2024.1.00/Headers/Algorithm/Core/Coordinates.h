@@ -33,6 +33,11 @@ struct Coordinates
 		return {.q = q + other.q, .r = r + other.r};
 	}
 
+	Coordinates operator-(const Coordinates& other) const noexcept
+	{
+		return {.q = q - other.q, .r = r - other.r};
+	}
+
 	Coordinates operator*(const int scalar) const noexcept
 	{
 		return {.q = q * scalar, .r = r * scalar};
