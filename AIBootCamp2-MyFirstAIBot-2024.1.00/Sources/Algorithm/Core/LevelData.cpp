@@ -36,7 +36,7 @@ void LevelData::StoreObjects(const SObjectInfo* objectArrayInfo, const int nbObj
 Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord) const
 {
 	Coordinates bestNeighCoord = tileCoord;
-	int bestNeighScore = 0;
+	int bestNeighScore = -1;
 
 	for (const auto neighborCoord : GetWalkableNeighbors(tileCoord))
 	{
