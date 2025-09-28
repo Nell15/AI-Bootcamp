@@ -117,7 +117,7 @@ vector<Coordinates> LevelData::GetWalkableNeighbors(const Coordinates& tileCoord
 	for (const Coordinates& coordDir : Coordinates::CoordinateDirections())
 	{
 		const Coordinates neighborPos = tileCoord + coordDir;
-		if (IsPossibleToWalkTo(tileCoord, coordDir))
+		if (IsPossibleToWalkTo(tileCoord, coordDir) && not IsTileOccupied(neighborPos))
 			neighbors.emplace_back(neighborPos);
 	}
 

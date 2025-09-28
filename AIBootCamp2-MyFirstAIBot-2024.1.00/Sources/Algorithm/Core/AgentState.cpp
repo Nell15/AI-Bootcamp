@@ -56,11 +56,12 @@ void Exploring::SetOrder(const LevelData& levelData, Agent& agent)
 
 	agent.SetPath(std::move(npcPath));
 
+	/*
 	if (levelData.IsTileOccupied(agent.GetNextMove()))
 	{
 		agent.AddMovement(CENTER);
-		return;
 	}
+	*/
 }
 
 void Seeking::UpdateState(const LevelData& levelData, Agent& agent)
