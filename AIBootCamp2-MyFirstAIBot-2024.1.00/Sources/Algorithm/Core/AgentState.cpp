@@ -55,13 +55,6 @@ void Exploring::SetOrder(const LevelData& levelData, Agent& agent)
 	}
 
 	agent.SetPath(std::move(npcPath));
-
-	/*
-	if (levelData.IsTileOccupied(agent.GetNextMove()))
-	{
-		agent.AddMovement(CENTER);
-	}
-	*/
 }
 
 void Seeking::UpdateState(const LevelData& levelData, Agent& agent)
@@ -71,6 +64,7 @@ void Seeking::UpdateState(const LevelData& levelData, Agent& agent)
 	if (goalTiles.empty())
 	{
 		agent.SetState(make_unique<Exploring>());
+		agent.SetChosenGoal(std::nullopt);
 	}
 	else if (ranges::find(goalTiles, agentCoord) != goalTiles.end())
 	{
@@ -96,6 +90,7 @@ void Seeking::SetOrder(const LevelData& levelData, Agent& agent)
 				{
 					bestDistance = pathSize;
 					bestPath = path.value();
+					agent.SetChosenGoal(goalTile);
 				}
 			}
 		}
@@ -115,4 +110,6 @@ void Seeking::SetOrder(const LevelData& levelData, Agent& agent)
 
 		agent.SetPath(std::move(npcPath));
 	}
+	else if (levelData.IsTileOccupied(agent.GetNextMove()))
+		agent.AddMovement(CENTER);
 }

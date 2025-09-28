@@ -2,7 +2,6 @@
 
 #include "BotLogicIF.h"
 #include "Logger.h"
-#include "Algorithm/Core/Agent.h"
 #include "Algorithm/Core/LevelData.h"
 #include "Algorithm/PathFinding/PathFinder.h"
 #include "Framework/Globals.h"
@@ -34,7 +33,6 @@ public:
 
 private:
 	LevelData levelData{};
-	std::vector<Agent> agents{};
 	PathFinder pathFinder { levelData };
 
 	void StoreTurnData(const STurnData& turnData);

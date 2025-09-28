@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "Agent.h"
 #include "Coordinates.h"
 
 class LevelData
@@ -25,7 +26,7 @@ public:
 	{
 		return goalTiles | std::views::filter([&](const Coordinates& tile)
 			{
-				return not IsTileOccupied(tile);
+				return not IsTileOccupied(tile) && not IsGoalChosen(tile);
 			});
 	}
 
@@ -66,12 +67,25 @@ public:
 	// TODO: put this in another class ?
 	[[nodiscard]] Coordinates GetBestNeighbor(const Coordinates& tileCoord) const;
 
+	[[nodiscard]] std::vector<Agent>& GetAgents() { return agents; }
+
 private:
 	GoalTilesType goalTiles{};
 	TileArrayType tiles{};
 	ObjectArrayType objects{};
 
+	std::vector<Agent> agents{};
+
 	std::unordered_set<Coordinates> occupiedTiles{};
+
+	[[nodiscard]] bool IsGoalChosen(const Coordinates& goal) const
+	{
+		for (const auto& agent : agents)
+			if (agent.GetChosenGoal() == goal)
+				return true;
+
+		return false;
+	}
 };
 
 

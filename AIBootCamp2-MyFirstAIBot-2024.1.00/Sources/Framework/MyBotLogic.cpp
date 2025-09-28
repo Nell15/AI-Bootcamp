@@ -67,7 +67,7 @@ void MyBotLogic::Init(const SInitData& _initData)
 		BOT_LOGIC_LOG(mLogger, std::format("Agent{} - Start Position: {}", npcInfo.uid, agentPos), true);
 
 		levelData.AddOccupiedTiles(agentPos);
-		agents.emplace_back(npcInfo.uid, agentPos);
+		levelData.GetAgents().emplace_back(npcInfo.uid, agentPos);
 	}
 }
 
@@ -80,8 +80,7 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 	const span npcInfos{_turnData.npcInfoArray, static_cast<size_t>(_turnData.npcInfoArraySize)};
 	for (const auto& npcInfo : npcInfos)
 	{
-		auto agentIt = ranges::find_if(agents, [&](const Agent& agent) { return agent.GetId() == npcInfo.uid; });
-		assert(agentIt != agents.end() && "Cannot find agent");
+		auto agentIt = ranges::find_if(levelData.GetAgents(), [&](const Agent& agent) { return agent.GetId() == npcInfo.uid; });
 
 		agentIt->UpdateState(levelData, Coordinates{.q = npcInfo.q, .r = npcInfo.r});
 		agentIt->SetOrder(levelData);

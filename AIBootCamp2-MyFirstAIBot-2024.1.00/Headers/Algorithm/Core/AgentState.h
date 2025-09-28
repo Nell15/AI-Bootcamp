@@ -1,16 +1,17 @@
 #ifndef AGENT_STATE_H
 #define AGENT_STATE_H
 
-#include "LevelData.h"
+#include <string_view>
 
 class Agent;
+class LevelData;
 
 class AgentState
 {
 public:
 	virtual void UpdateState(const LevelData& levelData, Agent& agent) = 0;
 	virtual void SetOrder(const LevelData& levelData, Agent& agent) = 0;
-	virtual std::string_view GetStateName() const = 0;
+	[[nodiscard]] virtual std::string_view GetStateName() const = 0;
 
 	virtual ~AgentState() = default;
 

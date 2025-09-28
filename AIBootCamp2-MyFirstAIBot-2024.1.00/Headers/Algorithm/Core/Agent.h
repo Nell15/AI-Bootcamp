@@ -3,8 +3,10 @@
 
 #include <vector>
 #include <cassert>
+#include <optional>
 
 #include "AgentState.h"
+#include "Coordinates.h"
 #include "Framework/Globals.h"
 
 class Agent
@@ -12,7 +14,7 @@ class Agent
 public:
 	Agent() = delete;
 
-	explicit Agent(const int id, const Coordinates coord) : id{id}, coordinates{coord}, state{std::make_unique<Exploring>()}
+	explicit Agent(const int id, const Coordinates coord) : id{ id }, coordinates{ coord }, state{ std::make_unique<Exploring>() }
 	{
 	}
 
@@ -20,6 +22,16 @@ public:
 	[[nodiscard]] Coordinates GetCoordinates() const
 	{
 		return coordinates;
+	}
+
+	void SetChosenGoal(const std::optional<Coordinates> goal)
+	{
+		chosenGoal = goal;
+	}
+
+	[[nodiscard]] const std::optional<Coordinates>& GetChosenGoal() const
+	{
+		return chosenGoal;
 	}
 
 	void SetState(std::unique_ptr<AgentState> newState)
@@ -49,7 +61,7 @@ public:
 		state->SetOrder(levelData, *this);
 	}
 
-	[[nodiscard]] bool IsPathEmpty() const { return path.empty();  }
+	[[nodiscard]] bool IsPathEmpty() const { return path.empty(); }
 	[[nodiscard]] Coordinates GetNextMove() const
 	{
 		const auto nextMove = coordinates + Coordinates::DirToCoordinates(path.back());
@@ -64,6 +76,7 @@ public:
 private:
 	int id;
 	Coordinates coordinates;
+	std::optional<Coordinates> chosenGoal = std::nullopt;
 	std::vector<EHexCellDirection> path{};
 	std::unique_ptr<AgentState> state{};
 };
