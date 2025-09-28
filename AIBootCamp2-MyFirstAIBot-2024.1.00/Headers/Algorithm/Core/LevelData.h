@@ -29,6 +29,8 @@ public:
 			});
 	}
 
+	[[nodiscard]] const GoalTilesType& GetGoalTiles() const { return goalTiles; }
+
 	[[nodiscard]] const TileArrayType& GetTiles() const
 	{
 		return tiles;

@@ -56,6 +56,11 @@ public:
 		return nextMove;
 	}
 
+	[[nodiscard]] std::string_view GetStateName() const
+	{
+		return state->GetStateName();
+	}
+
 private:
 	int id;
 	Coordinates coordinates;

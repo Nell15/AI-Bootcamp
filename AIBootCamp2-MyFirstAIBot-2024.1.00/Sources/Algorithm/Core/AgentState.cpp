@@ -65,7 +65,7 @@ void Exploring::SetOrder(const LevelData& levelData, Agent& agent)
 
 void Seeking::UpdateState(const LevelData& levelData, Agent& agent)
 {
-	auto goalTiles = levelData.GetAvailableGoalTiles();
+	const auto& goalTiles = levelData.GetGoalTiles();
 	const Coordinates agentCoord = agent.GetCoordinates();
 	if (goalTiles.empty())
 	{

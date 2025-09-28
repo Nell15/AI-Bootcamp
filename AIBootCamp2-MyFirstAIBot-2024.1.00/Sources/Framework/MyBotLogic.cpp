@@ -77,13 +77,13 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 
 	StoreTurnData(_turnData);
 
-	const span npcInfos{ _turnData.npcInfoArray, static_cast<size_t>(_turnData.npcInfoArraySize) };
+	const span npcInfos{_turnData.npcInfoArray, static_cast<size_t>(_turnData.npcInfoArraySize)};
 	for (const auto& npcInfo : npcInfos)
 	{
 		auto agentIt = ranges::find_if(agents, [&](const Agent& agent) { return agent.GetId() == npcInfo.uid; });
 		assert(agentIt != agents.end() && "Cannot find agent");
 
-		agentIt->UpdateState(levelData, Coordinates{ .q = npcInfo.q, .r = npcInfo.r });
+		agentIt->UpdateState(levelData, Coordinates{.q = npcInfo.q, .r = npcInfo.r});
 		agentIt->SetOrder(levelData);
 
 		auto order = SOrder{.orderType = Move, .npcUID = agentIt->GetId(), .direction = agentIt->PopAndReturnBack()};
@@ -93,7 +93,8 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 
 		BOT_LOGIC_LOG(
 			mLogger,
-			std::format("Turn{} - Agent{} - Direction choice: {} -> {}", _turnData.turnNb, agentIt->GetId(), order.direction, directionCoord),
+			std::format("Turn{} - Agent{} - State {} - Direction choice: {} -> {}", _turnData.turnNb, agentIt->GetId(),
+				agentIt->GetStateName(), order.direction, directionCoord),
 			true);
 
 		_orders.emplace_back(order);
@@ -117,5 +118,4 @@ void MyBotLogic::StoreTurnData(const STurnData& turnData)
 
 void MyBotLogic::ThinkAgentOrders(const SNPCInfo* npcInfoArray, const int nbNpc)
 {
-
 }
