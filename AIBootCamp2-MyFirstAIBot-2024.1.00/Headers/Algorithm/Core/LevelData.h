@@ -42,8 +42,14 @@ public:
 	void StoreTiles(const STileInfo* tileArrayInfo, int nbTile);
 	void StoreObjects(const SObjectInfo* objectArrayInfo, int nbObject);
 
-	void ClearOccupiedTiles() { occupiedTiles.clear(); }
 	void AddOccupiedTiles(const Coordinates& tileCoord) { occupiedTiles.emplace(tileCoord); }
+	void UpdateOccupiedTile(const Coordinates& oldTile, const Coordinates& newTile)
+	{
+		occupiedTiles.erase(oldTile);
+		occupiedTiles.emplace(newTile);
+	}
+
+
 	[[nodiscard]] bool IsTileOccupied(const Coordinates& tileCoord) const
 	{
 		return occupiedTiles.contains(tileCoord);

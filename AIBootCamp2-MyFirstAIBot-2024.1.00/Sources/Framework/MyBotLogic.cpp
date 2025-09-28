@@ -66,6 +66,7 @@ void MyBotLogic::Init(const SInitData& _initData)
 		auto agentPos = Coordinates{.q = npcInfo.q, .r = npcInfo.r};
 		BOT_LOGIC_LOG(mLogger, std::format("Agent{} - Start Position: {}", npcInfo.uid, agentPos), true);
 
+		levelData.AddOccupiedTiles(agentPos);
 		agents.emplace_back(npcInfo.uid, agentPos);
 	}
 }
@@ -88,7 +89,7 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 		auto order = SOrder{.orderType = Move, .npcUID = agentIt->GetId(), .direction = agentIt->PopAndReturnBack()};
 
 		const Coordinates directionCoord = agentIt->GetCoordinates() + Coordinates::DirToCoordinates(order.direction);
-		levelData.AddOccupiedTiles(directionCoord);
+		levelData.UpdateOccupiedTile(agentIt->GetCoordinates(), directionCoord);
 
 		BOT_LOGIC_LOG(
 			mLogger,
@@ -102,7 +103,6 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 void MyBotLogic::StoreTurnData(const STurnData& turnData)
 {
 	auto npcIndices = views::iota(0, turnData.npcInfoArraySize);
-	levelData.ClearOccupiedTiles();
 
 #ifdef BOT_LOGIC_DEBUG
 	levelData.currentTurn = turnData.turnNb;

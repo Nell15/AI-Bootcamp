@@ -17,7 +17,10 @@ public:
 	}
 
 	[[nodiscard]] int GetId() const noexcept { return id; }
-	[[nodiscard]] Coordinates GetCoordinates() const { return coordinates; }
+	[[nodiscard]] Coordinates GetCoordinates() const
+	{
+		return coordinates;
+	}
 
 	void SetState(std::unique_ptr<AgentState> newState)
 	{
