@@ -36,5 +36,4 @@ private:
 	PathFinder pathFinder { levelData };
 
 	void StoreTurnData(const STurnData& turnData);
-	void ThinkAgentOrders(const SNPCInfo* npcInfoArray, int nbNpc);
 };

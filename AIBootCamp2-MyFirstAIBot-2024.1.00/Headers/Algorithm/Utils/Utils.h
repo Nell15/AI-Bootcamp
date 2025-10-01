@@ -1,28 +1,36 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <fstream>
+#include <string_view>
 
-#include "Algorithm/Core/Coordinates.h"
+#include "Framework/Globals.h"
 
 namespace Utils
 {
-	[[maybe_unused]] [[nodiscard]] static std::runtime_error LogAndThrow(const Coordinates& start, const Coordinates& goal)
+	static constexpr std::string_view to_string(const EHexCellDirection direction) noexcept
 	{
-		std::ofstream log("Errors.log", std::ios::app);
-		const auto message = std::format("Could not find path for start {} and goal {}\n", start, goal);
+		switch (direction)
+		{
+		case W: return "W";
+		case NW: return "NW";
+		case NE: return "NE";
+		case E: return "E";
+		case SE: return "SE";
+		case SW: return "SW";
+		case CENTER: return "CENTER";
+		}
 
-		log << message;
-		return std::runtime_error(message);
-	}
-
-	[[nodiscard]] static std::runtime_error LogAndThrow(const std::string& errorMessage)
-	{
-		std::ofstream log("Errors.log", std::ios::app);
-
-		log << errorMessage;
-		return std::runtime_error(errorMessage);
+		return "?";
 	}
 }
+
+template <>
+struct std::formatter<EHexCellDirection> : std::formatter<std::string_view>
+{
+	auto format(const EHexCellDirection direction, std::format_context& context) const
+	{
+		return std::formatter<std::string_view>::format(Utils::to_string(direction), context);
+	}
+};
 
 #endif

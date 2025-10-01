@@ -15,8 +15,8 @@ public:
 	using TileArrayType = std::unordered_map<Coordinates, EHexCellType>;
 	using ObjectArrayType = std::unordered_map<Coordinates, std::vector<SObjectInfo>>;
 
-	int qMax;
-	int rMax;
+	int rowCount;
+	int colCount;
 	int currentTurn;
 
 	[[nodiscard]] int CalculateTileScore(const Coordinates& tileCoord) const;

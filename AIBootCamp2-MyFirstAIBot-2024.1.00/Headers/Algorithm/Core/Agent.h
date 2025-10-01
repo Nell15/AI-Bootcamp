@@ -2,53 +2,36 @@
 #define AGENT_H
 
 #include <vector>
-#include <cassert>
 #include <optional>
 
 #include "AgentState.h"
 #include "Coordinates.h"
 #include "Framework/Globals.h"
 
+#include "Algorithm/Utils/VerboseAssertion.h"
+
 class Agent
 {
 public:
 	Agent() = delete;
 
-	explicit Agent(const int id, const Coordinates coord) : id{ id }, coordinates{ coord }, state{ std::make_unique<Exploring>() }
+	explicit Agent(const int id, const Coordinates coord) : id{id}, coordinates{coord},
+	                                                        state{std::make_unique<Exploring>()}
 	{
 	}
 
-	[[nodiscard]] int GetId() const noexcept { return id; }
-	[[nodiscard]] Coordinates GetCoordinates() const
+	[[nodiscard]] int GetId() const { return id; }
+	[[nodiscard]] Coordinates GetCoordinates() const { return coordinates; }
+	[[nodiscard]] const std::optional<Coordinates>& GetChosenGoal() const { return chosenGoal; }
+	[[nodiscard]] bool IsPathEmpty() const { return path.empty(); }
+
+	[[nodiscard]] Coordinates GetNextMove() const
 	{
-		return coordinates;
+		const auto nextMove = coordinates + Coordinates::DirToCoordinates(path.back());
+		return nextMove;
 	}
 
-	void SetChosenGoal(const std::optional<Coordinates> goal)
-	{
-		chosenGoal = goal;
-	}
-
-	[[nodiscard]] const std::optional<Coordinates>& GetChosenGoal() const
-	{
-		return chosenGoal;
-	}
-
-	void SetState(std::unique_ptr<AgentState> newState)
-	{
-		state = std::move(newState);
-	}
-	void SetPath(std::vector<EHexCellDirection> newPath) { path = std::move(newPath); }
-	void AddMovement(EHexCellDirection movement) { path.emplace_back(movement); }
-
-	[[nodiscard]] EHexCellDirection PopAndReturnBack()
-	{
-		assert(not path.empty() && "Cannot pop from an empty vector");
-
-		const EHexCellDirection direction = path.back();
-		path.pop_back();
-		return direction;
-	}
+	[[nodiscard]] std::string_view GetStateName() const { return state->GetStateName(); }
 
 	void UpdateState(const LevelData& levelData, const Coordinates& newCoord)
 	{
@@ -56,21 +39,20 @@ public:
 		state->UpdateState(levelData, *this);
 	}
 
-	void SetOrder(const LevelData& levelData)
-	{
-		state->SetOrder(levelData, *this);
-	}
+	void SetOrder(const LevelData& levelData) { state->SetOrder(levelData, *this); }
+	void SetState(std::unique_ptr<AgentState> newState) { state = std::move(newState); }
+	void SetChosenGoal(const std::optional<Coordinates> goal) { chosenGoal = goal; }
+	void SetPath(std::vector<EHexCellDirection> newPath) { path = std::move(newPath); }
 
-	[[nodiscard]] bool IsPathEmpty() const { return path.empty(); }
-	[[nodiscard]] Coordinates GetNextMove() const
-	{
-		const auto nextMove = coordinates + Coordinates::DirToCoordinates(path.back());
-		return nextMove;
-	}
+	void AddMovement(EHexCellDirection movement) { path.emplace_back(movement); }
 
-	[[nodiscard]] std::string_view GetStateName() const
+	[[nodiscard]] EHexCellDirection PopAndReturnNextAgentMove()
 	{
-		return state->GetStateName();
+		vassert(!path.empty() && "Agent path is empty: cannot pop from it");
+
+		const EHexCellDirection direction = path.back();
+		path.pop_back();
+		return direction;
 	}
 
 private:

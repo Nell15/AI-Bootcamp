@@ -24,6 +24,7 @@ SET( AIBOT_HEADERS
     Headers/Algorithm/Core/LevelData.h
     Headers/Algorithm/Core/Agent.h
     Headers/Algorithm/Utils/Utils.h
+    Headers/Algorithm/Utils/VerboseAssertion.h
     Headers/Algorithm/Core/AgentState.h
 
     Headers/Framework/AIBot.h

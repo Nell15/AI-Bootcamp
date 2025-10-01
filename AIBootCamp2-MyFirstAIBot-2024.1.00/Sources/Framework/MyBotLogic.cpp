@@ -4,7 +4,6 @@
 #include <unordered_set>
 #include <algorithm>
 #include <ranges>
-#include <cassert>
 #include <span>
 
 #include "Framework/Globals.h"
@@ -12,33 +11,10 @@
 #include "Framework/TurnData.h"
 
 #include "Algorithm/Core/Coordinates.h"
+#include "Algorithm/Utils/Utils.h"
 #include "Framework/InitData.h"
 
 using namespace std;
-
-static constexpr std::string_view to_string(EHexCellDirection dir) noexcept
-{
-	switch (dir)
-	{
-	case W: return "W";
-	case NW: return "NW";
-	case NE: return "NE";
-	case E: return "E";
-	case SE: return "SE";
-	case SW: return "SW";
-	case CENTER: return "CENTER";
-	default: return "?";
-	}
-}
-
-template <>
-struct std::formatter<EHexCellDirection> : std::formatter<std::string_view>
-{
-	auto format(EHexCellDirection dir, std::format_context& ctx) const
-	{
-		return std::formatter<std::string_view>::format(to_string(dir), ctx);
-	}
-};
 
 void MyBotLogic::Configure(const SConfigData& _configData)
 {
@@ -47,17 +23,14 @@ void MyBotLogic::Configure(const SConfigData& _configData)
 #endif
 
 	BOT_LOGIC_LOG(mLogger, "Configure", true);
-
-	//Write Code Here
 }
 
-// TODO: put this in another class or something
 void MyBotLogic::Init(const SInitData& _initData)
 {
 	BOT_LOGIC_LOG(mLogger, "Init", true);
 
-	levelData.qMax = _initData.rowCount;
-	levelData.rMax = _initData.colCount;
+	levelData.rowCount = _initData.rowCount;
+	levelData.colCount = _initData.colCount;
 
 	const span npcInfos{_initData.npcInfoArray, static_cast<size_t>(_initData.nbNPCs)};
 
@@ -80,12 +53,12 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 	const span npcInfos{_turnData.npcInfoArray, static_cast<size_t>(_turnData.npcInfoArraySize)};
 	for (const auto& npcInfo : npcInfos)
 	{
-		auto agentIt = ranges::find_if(levelData.GetAgents(), [&](const Agent& agent) { return agent.GetId() == npcInfo.uid; });
+		const auto agentIt = ranges::find_if(levelData.GetAgents(), [&](const Agent& agent) { return agent.GetId() == npcInfo.uid; });
 
 		agentIt->UpdateState(levelData, Coordinates{.q = npcInfo.q, .r = npcInfo.r});
 		agentIt->SetOrder(levelData);
 
-		auto order = SOrder{.orderType = Move, .npcUID = agentIt->GetId(), .direction = agentIt->PopAndReturnBack()};
+		auto order = SOrder{.orderType = Move, .npcUID = agentIt->GetId(), .direction = agentIt->PopAndReturnNextAgentMove()};
 
 		const Coordinates directionCoord = agentIt->GetCoordinates() + Coordinates::DirToCoordinates(order.direction);
 		levelData.UpdateOccupiedTile(agentIt->GetCoordinates(), directionCoord);
@@ -113,8 +86,4 @@ void MyBotLogic::StoreTurnData(const STurnData& turnData)
 		levelData.StoreTiles(turnData.tileInfoArray, turnData.tileInfoArraySize);
 		levelData.StoreObjects(turnData.objectInfoArray, turnData.objectInfoArraySize);
 	});
-}
-
-void MyBotLogic::ThinkAgentOrders(const SNPCInfo* npcInfoArray, const int nbNpc)
-{
 }

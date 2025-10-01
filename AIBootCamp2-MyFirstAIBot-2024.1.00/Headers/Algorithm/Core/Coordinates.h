@@ -75,7 +75,6 @@ struct Coordinates
 		}
 	}
 
-
 	static constexpr std::array<Coordinates, NB_COORDINATES> CoordinateDirections() noexcept
 	{
 		return std::to_array<Coordinates>
