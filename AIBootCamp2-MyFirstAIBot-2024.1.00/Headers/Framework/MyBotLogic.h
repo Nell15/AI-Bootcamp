@@ -32,7 +32,6 @@ public:
 	void GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _orders) override;
 
 private:
-	LevelData levelData{};
 	PathFinder pathFinder{};
 
 	static void StoreTurnData(const STurnData& turnData);

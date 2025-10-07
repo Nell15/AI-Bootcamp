@@ -14,15 +14,27 @@ public:
 	using GoalTilesType = std::vector<Coordinates>;
 	using TileArrayType = std::unordered_map<Coordinates, EHexCellType>;
 	using ObjectArrayType = std::unordered_map<Coordinates, std::vector<SObjectInfo>>;
+	LevelData(const LevelData&) = delete;
+	LevelData& operator=(const LevelData&) = delete;
 
-	inline static int rowCount{};
-	inline static int colCount{};
-	inline static int currentTurn{};
+private:
+	LevelData() = default;
+	~LevelData() = default;
 
-	[[nodiscard]] static int CalculateTileScore(const Coordinates& tileCoord);
-	[[nodiscard]] static std::vector<Coordinates> GetBestExploringTile(const Coordinates& tileCoord);
+public:
+	int rowCount{};
+	int colCount{};
+	int currentTurn{};
 
-	[[nodiscard]] static auto GetAvailableGoalTiles()
+	static LevelData& Get() {
+		static LevelData instance;
+		return instance;
+	}
+
+	[[nodiscard]] int CalculateTileScore(const Coordinates& tileCoord);
+	[[nodiscard]] std::vector<Coordinates> GetBestExploringTile(const Coordinates& tileCoord);
+
+	[[nodiscard]] auto GetAvailableGoalTiles()
 	{
 		return goalTiles | std::views::filter([&](const Coordinates& tile)
 			{
@@ -30,58 +42,58 @@ public:
 			});
 	}
 
-	[[nodiscard]] static const GoalTilesType& GetGoalTiles() { return goalTiles; }
+	[[nodiscard]] const GoalTilesType& GetGoalTiles() { return goalTiles; }
 
-	[[nodiscard]] static const TileArrayType& GetTiles()
+	[[nodiscard]] const TileArrayType& GetTiles()
 	{
 		return tiles;
 	}
 
-	[[nodiscard]] static const ObjectArrayType& GetObjects()
+	[[nodiscard]] const ObjectArrayType& GetObjects()
 	{
 		return objects;
 	}
 
-	static void StoreTiles(const STileInfo* tileArrayInfo, int nbTile);
-	static void StoreObjects(const SObjectInfo* objectArrayInfo, int nbObject);
+	void StoreTiles(const STileInfo* tileArrayInfo, int nbTile);
+	void StoreObjects(const SObjectInfo* objectArrayInfo, int nbObject);
 
-	static void AddOccupiedTiles(const Coordinates& tileCoord) { occupiedTiles.emplace(tileCoord); }
+	void AddOccupiedTiles(const Coordinates& tileCoord) { occupiedTiles.emplace(tileCoord); }
 
-	static void UpdateOccupiedTile(const Coordinates& oldTile, const Coordinates& newTile)
+	void UpdateOccupiedTile(const Coordinates& oldTile, const Coordinates& newTile)
 	{
 		occupiedTiles.erase(oldTile);
 		occupiedTiles.emplace(newTile);
 	}
 
 
-	[[nodiscard]] static bool IsTileOccupied(const Coordinates& tileCoord)
+	[[nodiscard]] bool IsTileOccupied(const Coordinates& tileCoord) const
 	{
 		return occupiedTiles.contains(tileCoord);
 	}
 
-	[[nodiscard]] static std::vector<Coordinates> GetWalkableNeighbors(const Coordinates& tileCoord);
-	[[nodiscard]] static bool IsPossibleToWalkTo(const Coordinates& tileCoord, const Coordinates& directionCoord);
-	[[nodiscard]] static bool HasBlockingObject(const Coordinates& tileCoord, const Coordinates& directionCoord);
-	[[nodiscard]] static bool IsPossibleToWalkOnTile(const Coordinates& coord);
-	[[nodiscard]] static bool DoTileExist(const Coordinates& tileCoord);
+	[[nodiscard]] std::vector<Coordinates> GetWalkableNeighbors(const Coordinates& tileCoord);
+	[[nodiscard]] bool IsPossibleToWalkTo(const Coordinates& tileCoord, const Coordinates& directionCoord);
+	[[nodiscard]] bool HasBlockingObject(const Coordinates& tileCoord, const Coordinates& directionCoord);
+	[[nodiscard]] bool IsPossibleToWalkOnTile(const Coordinates& coord);
+	[[nodiscard]] bool DoTileExist(const Coordinates& tileCoord) const;
 
 	// TODO: put this in another class ?
-	static [[nodiscard]] Coordinates GetBestNeighbor(const Coordinates& tileCoord);
+	[[nodiscard]] Coordinates GetBestNeighbor(const Coordinates& tileCoord);
 
-	static [[nodiscard]] std::vector<Agent>& GetAgents() { return agents; }
+	[[nodiscard]] std::vector<Agent>& GetAgents() { return agents; }
 
 	
 
 private:
-	inline static GoalTilesType goalTiles{};
-	inline static TileArrayType tiles{};
-	inline static ObjectArrayType objects{};
+	GoalTilesType goalTiles{};
+	TileArrayType tiles{};
+	ObjectArrayType objects{};
 
-	inline static std::vector<Agent> agents{};
+	std::vector<Agent> agents{};
 
-	inline static std::unordered_set<Coordinates> occupiedTiles{};
+	std::unordered_set<Coordinates> occupiedTiles{};
 
-	static [[nodiscard]] bool IsGoalChosen(const Coordinates& goal)
+	[[nodiscard]] bool IsGoalChosen(const Coordinates& goal) const
 	{
 		for (const auto& agent : agents)
 			if (agent.GetChosenGoal() == goal)

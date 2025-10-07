@@ -29,8 +29,8 @@ void MyBotLogic::Init(const SInitData& _initData)
 {
 	BOT_LOGIC_LOG(mLogger, "Init", true);
 
-	LevelData::rowCount = _initData.rowCount;
-	LevelData::colCount = _initData.colCount;
+	LevelData::Get().rowCount = _initData.rowCount;
+	LevelData::Get().colCount = _initData.colCount;
 
 	const span npcInfos{_initData.npcInfoArray, static_cast<size_t>(_initData.nbNPCs)};
 
@@ -39,8 +39,8 @@ void MyBotLogic::Init(const SInitData& _initData)
 		auto agentPos = Coordinates{.q = npcInfo.q, .r = npcInfo.r};
 		BOT_LOGIC_LOG(mLogger, std::format("Agent{} - Start Position: {}", npcInfo.uid, agentPos), true);
 
-		LevelData::AddOccupiedTiles(agentPos);
-		LevelData::GetAgents().emplace_back(npcInfo.uid, agentPos);
+		LevelData::Get().AddOccupiedTiles(agentPos);
+		LevelData::Get().GetAgents().emplace_back(npcInfo.uid, agentPos);
 	}
 }
 
@@ -53,7 +53,7 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 	const span npcInfos{_turnData.npcInfoArray, static_cast<size_t>(_turnData.npcInfoArraySize)};
 	for (const auto& npcInfo : npcInfos)
 	{
-		const auto agentIt = ranges::find_if(LevelData::GetAgents(), [&](const Agent& agent) { return agent.GetId() == npcInfo.uid; });
+		const auto agentIt = ranges::find_if(LevelData::Get().GetAgents(), [&](const Agent& agent) { return agent.GetId() == npcInfo.uid; });
 
 		agentIt->UpdateState(Coordinates{.q = npcInfo.q, .r = npcInfo.r});
 		agentIt->SetOrder();
@@ -61,7 +61,7 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 		auto order = SOrder{.orderType = Move, .npcUID = agentIt->GetId(), .direction = agentIt->PopAndReturnNextAgentMove()};
 
 		const Coordinates directionCoord = agentIt->GetCoordinates() + Coordinates::DirToCoordinates(order.direction);
-		LevelData::UpdateOccupiedTile(agentIt->GetCoordinates(), directionCoord);
+		LevelData::Get().UpdateOccupiedTile(agentIt->GetCoordinates(), directionCoord);
 
 		BOT_LOGIC_LOG(
 			mLogger,
@@ -78,12 +78,12 @@ void MyBotLogic::StoreTurnData(const STurnData& turnData)
 	auto npcIndices = views::iota(0, turnData.npcInfoArraySize);
 
 #ifdef BOT_LOGIC_DEBUG
-	LevelData::currentTurn = turnData.turnNb;
+	LevelData::Get().currentTurn = turnData.turnNb;
 #endif
 
 	ranges::for_each(npcIndices, [&](int)
 	{
-		LevelData::StoreTiles(turnData.tileInfoArray, turnData.tileInfoArraySize);
-		LevelData::StoreObjects(turnData.objectInfoArray, turnData.objectInfoArraySize);
+		LevelData::Get().StoreTiles(turnData.tileInfoArray, turnData.tileInfoArraySize);
+		LevelData::Get().StoreObjects(turnData.objectInfoArray, turnData.objectInfoArraySize);
 	});
 }

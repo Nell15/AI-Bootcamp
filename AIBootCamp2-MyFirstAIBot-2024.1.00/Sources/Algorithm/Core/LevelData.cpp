@@ -154,7 +154,7 @@ bool LevelData::IsPossibleToWalkOnTile(const Coordinates& coord)
 	return tileIt != tiles.end() && tileIt->second != Forbidden;
 }
 
-bool LevelData::DoTileExist(const Coordinates& tileCoord)
+bool LevelData::DoTileExist(const Coordinates& tileCoord) const
 {
 	const int q = tileCoord.q;
 	const int r = tileCoord.r;
