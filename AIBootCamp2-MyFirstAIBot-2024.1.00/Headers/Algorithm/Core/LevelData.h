@@ -15,14 +15,14 @@ public:
 	using TileArrayType = std::unordered_map<Coordinates, EHexCellType>;
 	using ObjectArrayType = std::unordered_map<Coordinates, std::vector<SObjectInfo>>;
 
-	int rowCount;
-	int colCount;
-	int currentTurn;
+	inline static int rowCount{};
+	inline static int colCount{};
+	inline static int currentTurn{};
 
-	[[nodiscard]] int CalculateTileScore(const Coordinates& tileCoord) const;
-	[[nodiscard]] std::vector<Coordinates> GetBestExploringTile(const Coordinates& tileCoord) const;
+	[[nodiscard]] static int CalculateTileScore(const Coordinates& tileCoord);
+	[[nodiscard]] static std::vector<Coordinates> GetBestExploringTile(const Coordinates& tileCoord);
 
-	[[nodiscard]] auto GetAvailableGoalTiles() const
+	[[nodiscard]] static auto GetAvailableGoalTiles()
 	{
 		return goalTiles | std::views::filter([&](const Coordinates& tile)
 			{
@@ -30,55 +30,58 @@ public:
 			});
 	}
 
-	[[nodiscard]] const GoalTilesType& GetGoalTiles() const { return goalTiles; }
+	[[nodiscard]] static const GoalTilesType& GetGoalTiles() { return goalTiles; }
 
-	[[nodiscard]] const TileArrayType& GetTiles() const
+	[[nodiscard]] static const TileArrayType& GetTiles()
 	{
 		return tiles;
 	}
 
-	[[nodiscard]] const ObjectArrayType& GetObjects() const
+	[[nodiscard]] static const ObjectArrayType& GetObjects()
 	{
 		return objects;
 	}
 
-	void StoreTiles(const STileInfo* tileArrayInfo, int nbTile);
-	void StoreObjects(const SObjectInfo* objectArrayInfo, int nbObject);
+	static void StoreTiles(const STileInfo* tileArrayInfo, int nbTile);
+	static void StoreObjects(const SObjectInfo* objectArrayInfo, int nbObject);
 
-	void AddOccupiedTiles(const Coordinates& tileCoord) { occupiedTiles.emplace(tileCoord); }
-	void UpdateOccupiedTile(const Coordinates& oldTile, const Coordinates& newTile)
+	static void AddOccupiedTiles(const Coordinates& tileCoord) { occupiedTiles.emplace(tileCoord); }
+
+	static void UpdateOccupiedTile(const Coordinates& oldTile, const Coordinates& newTile)
 	{
 		occupiedTiles.erase(oldTile);
 		occupiedTiles.emplace(newTile);
 	}
 
 
-	[[nodiscard]] bool IsTileOccupied(const Coordinates& tileCoord) const
+	[[nodiscard]] static bool IsTileOccupied(const Coordinates& tileCoord)
 	{
 		return occupiedTiles.contains(tileCoord);
 	}
 
-	[[nodiscard]] std::vector<Coordinates> GetWalkableNeighbors(const Coordinates& tileCoord) const;
-	[[nodiscard]] bool IsPossibleToWalkTo(const Coordinates& tileCoord, const Coordinates& directionCoord) const;
-	[[nodiscard]] bool HasBlockingObject(const Coordinates& tileCoord, const Coordinates& directionCoord) const;
-	[[nodiscard]] bool IsPossibleToWalkOnTile(const Coordinates& coord) const;
-	[[nodiscard]] bool DoTileExist(const Coordinates& tileCoord) const;
+	[[nodiscard]] static std::vector<Coordinates> GetWalkableNeighbors(const Coordinates& tileCoord);
+	[[nodiscard]] static bool IsPossibleToWalkTo(const Coordinates& tileCoord, const Coordinates& directionCoord);
+	[[nodiscard]] static bool HasBlockingObject(const Coordinates& tileCoord, const Coordinates& directionCoord);
+	[[nodiscard]] static bool IsPossibleToWalkOnTile(const Coordinates& coord);
+	[[nodiscard]] static bool DoTileExist(const Coordinates& tileCoord);
 
 	// TODO: put this in another class ?
-	[[nodiscard]] Coordinates GetBestNeighbor(const Coordinates& tileCoord) const;
+	static [[nodiscard]] Coordinates GetBestNeighbor(const Coordinates& tileCoord);
 
-	[[nodiscard]] std::vector<Agent>& GetAgents() { return agents; }
+	static [[nodiscard]] std::vector<Agent>& GetAgents() { return agents; }
+
+	
 
 private:
-	GoalTilesType goalTiles{};
-	TileArrayType tiles{};
-	ObjectArrayType objects{};
+	inline static GoalTilesType goalTiles{};
+	inline static TileArrayType tiles{};
+	inline static ObjectArrayType objects{};
 
-	std::vector<Agent> agents{};
+	inline static std::vector<Agent> agents{};
 
-	std::unordered_set<Coordinates> occupiedTiles{};
+	inline static std::unordered_set<Coordinates> occupiedTiles{};
 
-	[[nodiscard]] bool IsGoalChosen(const Coordinates& goal) const
+	static [[nodiscard]] bool IsGoalChosen(const Coordinates& goal)
 	{
 		for (const auto& agent : agents)
 			if (agent.GetChosenGoal() == goal)

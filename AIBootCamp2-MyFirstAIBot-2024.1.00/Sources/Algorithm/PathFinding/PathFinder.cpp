@@ -36,7 +36,7 @@ optional<vector<Coordinates>> PathFinder::FindPath(const Coordinates& start, con
 			return path;
 		}
 
-		for (const auto& neighbor : levelData.GetWalkableNeighbors(current.position))
+		for (const auto& neighbor : LevelData::GetWalkableNeighbors(current.position))
 			TryUpdatePath(neighbor, current, goal);
 	}
 

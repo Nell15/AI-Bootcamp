@@ -9,8 +9,8 @@ class LevelData;
 class AgentState
 {
 public:
-	virtual void UpdateState(const LevelData& levelData, Agent& agent) = 0;
-	virtual void SetOrder(const LevelData& levelData, Agent& agent) = 0;
+	virtual void UpdateState(Agent& agent) = 0;
+	virtual void SetOrder(Agent& agent) = 0;
 	[[nodiscard]] virtual std::string_view GetStateName() const = 0;
 
 	virtual ~AgentState() = default;
@@ -25,8 +25,8 @@ public:
 class Waiting : public AgentState
 {
 public:
-	void UpdateState(const LevelData& levelData, Agent& agent) override;
-	void SetOrder(const LevelData& levelData, Agent& agent) override;
+	void UpdateState(Agent& agent) override;
+	void SetOrder( Agent& agent) override;
 
 	[[nodiscard]] std::string_view GetStateName() const override
 	{
@@ -37,8 +37,8 @@ public:
 class Exploring : public AgentState
 {
 public:
-	void UpdateState(const LevelData& levelData, Agent& agent) override;
-	void SetOrder(const LevelData& levelData, Agent& agent) override;
+	void UpdateState(Agent& agent) override;
+	void SetOrder(Agent& agent) override;
 
 	[[nodiscard]] std::string_view GetStateName() const override
 	{
@@ -49,8 +49,8 @@ public:
 class Seeking : public AgentState
 {
 public:
-	void UpdateState(const LevelData& levelData, Agent& agent) override;
-	void SetOrder(const LevelData& levelData, Agent& agent) override;
+	void UpdateState(Agent& agent) override;
+	void SetOrder(Agent& agent) override;
 
 	[[nodiscard]] std::string_view GetStateName() const override
 	{

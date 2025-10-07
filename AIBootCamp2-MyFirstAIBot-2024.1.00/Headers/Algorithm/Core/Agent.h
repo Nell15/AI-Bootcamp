@@ -33,13 +33,13 @@ public:
 
 	[[nodiscard]] std::string_view GetStateName() const { return state->GetStateName(); }
 
-	void UpdateState(const LevelData& levelData, const Coordinates& newCoord)
+	void UpdateState(const Coordinates& newCoord)
 	{
 		coordinates = newCoord;
-		state->UpdateState(levelData, *this);
+		state->UpdateState(*this);
 	}
 
-	void SetOrder(const LevelData& levelData) { state->SetOrder(levelData, *this); }
+	void SetOrder() { state->SetOrder(*this); }
 	void SetState(std::unique_ptr<AgentState> newState) { state = std::move(newState); }
 	void SetChosenGoal(const std::optional<Coordinates> goal) { chosenGoal = goal; }
 	void SetPath(std::vector<EHexCellDirection> newPath) { path = std::move(newPath); }

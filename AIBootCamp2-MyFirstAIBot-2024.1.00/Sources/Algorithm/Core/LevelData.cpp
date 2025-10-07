@@ -9,7 +9,7 @@
 
 using namespace std;
 
-int LevelData::CalculateTileScore(const Coordinates& tileCoord) const
+int LevelData::CalculateTileScore(const Coordinates& tileCoord)
 {
 	int score = Coordinates::NB_COORDINATES;
 
@@ -23,7 +23,7 @@ int LevelData::CalculateTileScore(const Coordinates& tileCoord) const
 	return score;
 }
 
-vector<Coordinates> LevelData::GetBestExploringTile(const Coordinates& tileCoord) const
+vector<Coordinates> LevelData::GetBestExploringTile(const Coordinates& tileCoord)
 {
 	using TileScore = std::pair<int, Coordinates>;
 	struct MinScoreCompare
@@ -38,7 +38,7 @@ vector<Coordinates> LevelData::GetBestExploringTile(const Coordinates& tileCoord
 	for (const auto key : tiles | views::keys)
 		tileScores.emplace(CalculateTileScore(key), key);
 
-	PathFinder pathFinder{ *this };
+	PathFinder pathFinder{};
 	optional<vector<Coordinates>> path;
 	while (true)
 	{
@@ -80,7 +80,7 @@ void LevelData::StoreObjects(const SObjectInfo* objectArrayInfo, const int nbObj
 	}
 }
 
-Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord) const
+Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord)
 {
 	Coordinates bestNeighCoord = tileCoord;
 	int bestNeighScore = -1;
@@ -110,7 +110,7 @@ Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord) const
 	return bestNeighCoord;
 }
 
-vector<Coordinates> LevelData::GetWalkableNeighbors(const Coordinates& tileCoord) const
+vector<Coordinates> LevelData::GetWalkableNeighbors(const Coordinates& tileCoord)
 {
 	vector<Coordinates> neighbors{};
 
@@ -124,7 +124,7 @@ vector<Coordinates> LevelData::GetWalkableNeighbors(const Coordinates& tileCoord
 	return neighbors;
 }
 
-bool LevelData::HasBlockingObject(const Coordinates& tileCoord, const Coordinates& directionCoord) const
+bool LevelData::HasBlockingObject(const Coordinates& tileCoord, const Coordinates& directionCoord)
 {
 	const Coordinates neighborPos = tileCoord + directionCoord;
 	const EHexCellDirection direction = Coordinates::CoordinatesToDir(directionCoord);
@@ -140,21 +140,21 @@ bool LevelData::HasBlockingObject(const Coordinates& tileCoord, const Coordinate
 		oppositeDirection, objectOnNeighborIt->second);
 }
 
-bool LevelData::IsPossibleToWalkTo(const Coordinates& tileCoord, const Coordinates& directionCoord) const
+bool LevelData::IsPossibleToWalkTo(const Coordinates& tileCoord, const Coordinates& directionCoord)
 {
 	const Coordinates neighborPos = tileCoord + directionCoord;
 
 	return IsPossibleToWalkOnTile(neighborPos) && not HasBlockingObject(tileCoord, directionCoord);
 }
 
-bool LevelData::IsPossibleToWalkOnTile(const Coordinates& coord) const
+bool LevelData::IsPossibleToWalkOnTile(const Coordinates& coord)
 {
 	const auto& tileIt = tiles.find(coord);
 
 	return tileIt != tiles.end() && tileIt->second != Forbidden;
 }
 
-bool LevelData::DoTileExist(const Coordinates& tileCoord) const
+bool LevelData::DoTileExist(const Coordinates& tileCoord)
 {
 	const int q = tileCoord.q;
 	const int r = tileCoord.r;

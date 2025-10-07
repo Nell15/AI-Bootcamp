@@ -7,23 +7,23 @@
 
 using namespace std;
 
-void Waiting::UpdateState(const LevelData& levelData, Agent& agent)
+void Waiting::UpdateState(Agent& agent)
 {
 	// TODO: pour l'instant on fait rien
 }
 
-void Waiting::SetOrder(const LevelData& levelData, Agent& agent)
+void Waiting::SetOrder(Agent& agent)
 {
 	agent.AddMovement(CENTER);
 }
 
-void Exploring::UpdateState(const LevelData& levelData, Agent& agent)
+void Exploring::UpdateState(Agent& agent)
 {
-	if (not levelData.GetAvailableGoalTiles().empty())
+	if (not LevelData::GetAvailableGoalTiles().empty())
 	{
-		PathFinder pathFinder{ levelData }; // TODO(opti): make pathfinder singleton ?
+		PathFinder pathFinder{}; // TODO(opti): make pathfinder singleton ?
 
-		for (const Coordinates& goalTile : levelData.GetAvailableGoalTiles())
+		for (const Coordinates& goalTile : LevelData::GetAvailableGoalTiles())
 		{
 			// TODO(opti): create a fonction DoGoalExist ?
 			const auto path = pathFinder.FindPath(agent.GetCoordinates(), goalTile);
@@ -36,10 +36,10 @@ void Exploring::UpdateState(const LevelData& levelData, Agent& agent)
 	}
 }
 
-void Exploring::SetOrder(const LevelData& levelData, Agent& agent)
+void Exploring::SetOrder(Agent& agent)
 {
 	const Coordinates agentCoord = agent.GetCoordinates();
-	const auto bestExploringPath = levelData.GetBestExploringTile(agentCoord);
+	const auto bestExploringPath = LevelData::GetBestExploringTile(agentCoord);
 
 	vector<EHexCellDirection> npcPath;
 	npcPath.resize(bestExploringPath.size());
@@ -57,9 +57,9 @@ void Exploring::SetOrder(const LevelData& levelData, Agent& agent)
 	agent.SetPath(std::move(npcPath));
 }
 
-void Seeking::UpdateState(const LevelData& levelData, Agent& agent)
+void Seeking::UpdateState(Agent& agent)
 {
-	const auto& goalTiles = levelData.GetGoalTiles();
+	const auto& goalTiles = LevelData::GetGoalTiles();
 	const Coordinates agentCoord = agent.GetCoordinates();
 	if (goalTiles.empty())
 	{
@@ -72,15 +72,15 @@ void Seeking::UpdateState(const LevelData& levelData, Agent& agent)
 	}
 }
 
-void Seeking::SetOrder(const LevelData& levelData, Agent& agent)
+void Seeking::SetOrder(Agent& agent)
 {
 	if (agent.IsPathEmpty())
 	{
-		PathFinder pathFinder{ levelData }; // TODO(opti): make pathfinder singleton ? Avoid calculating path every turn
+		PathFinder pathFinder{}; // TODO(opti): make pathfinder singleton ? Avoid calculating path every turn
 
 		size_t bestDistance = INT_MAX;
 		vector<Coordinates> bestPath{};
-		for (const Coordinates& goalTile : levelData.GetAvailableGoalTiles())
+		for (const Coordinates& goalTile : LevelData::GetAvailableGoalTiles())
 		{
 			const auto path = pathFinder.FindPath(agent.GetCoordinates(), goalTile);
 			if (path.has_value())
@@ -110,6 +110,6 @@ void Seeking::SetOrder(const LevelData& levelData, Agent& agent)
 
 		agent.SetPath(std::move(npcPath));
 	}
-	else if (levelData.IsTileOccupied(agent.GetNextMove()))
+	else if (LevelData::IsTileOccupied(agent.GetNextMove()))
 		agent.AddMovement(CENTER);
 }

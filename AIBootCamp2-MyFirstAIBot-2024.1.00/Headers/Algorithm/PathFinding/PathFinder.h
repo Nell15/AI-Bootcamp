@@ -12,10 +12,6 @@
 class PathFinder
 {
 public:
-	PathFinder() = delete;
-
-	explicit PathFinder(const LevelData& levelData) : levelData{levelData} {}
-
 	[[nodiscard]] std::optional<std::vector<Coordinates>> FindPath(const Coordinates& start, const Coordinates& goal);
 
 private:
@@ -50,7 +46,6 @@ private:
 
 	[[nodiscard]] std::vector<Coordinates> ReconstructPath(const Coordinates& start);
 
-	const LevelData& levelData;
 	std::priority_queue<PQNode, std::vector<PQNode>, PQCompare> openSet;
 	std::unordered_map<Coordinates, Coordinates> predecessors;
 	ScoreMap gScores;

@@ -33,7 +33,7 @@ public:
 
 private:
 	LevelData levelData{};
-	PathFinder pathFinder { levelData };
+	PathFinder pathFinder{};
 
-	void StoreTurnData(const STurnData& turnData);
+	static void StoreTurnData(const STurnData& turnData);
 };
