@@ -1,0 +1,14 @@
+
+You are about to play a local match with the following parameters:
+
+   mapname                = [L_050]
+   AIBOOTCAMP2_ENGINE_DIR = [..\AIBootCamp2]
+   AIBOT_PATH             = [build-solution-x64\Release\myfirstaibot.dll]
+   TEAM                   = [SylvainBRUNET]
+   ConnectToProcessDelay  = [-1]
+   InitTime               = [-1]
+   TurnTime               = [-1]
+   replayfile             = [20251011_095317]
+
+Press Enter to continue...
+Match Completed : Failure

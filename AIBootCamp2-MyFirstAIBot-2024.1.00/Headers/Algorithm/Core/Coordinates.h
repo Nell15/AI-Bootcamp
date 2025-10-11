@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "Object.h"
 #include "Framework/Globals.h"
 
 struct Coordinates
@@ -21,7 +22,7 @@ struct Coordinates
 	[[nodiscard]] EHexCellDirection GetNeighborDirection(const Coordinates& neighborCoord) const;
 
 	static bool AnyBlockingObjectInDirection(EHexCellDirection direction,
-	                                         const std::vector<SObjectInfo>& objectsOnTile);
+	                                         const std::vector<Object>& objectsOnTile);
 
 	bool operator==(const Coordinates& other) const noexcept
 	{
@@ -44,7 +45,7 @@ struct Coordinates
 	}
 
 	static EHexCellDirection GetOppositeDirection(const Coordinates& coordinates);
-	static bool IsObstacle(const SObjectInfo& object);
+	static bool IsObstacle(const Object& object);
 
 	static constexpr EHexCellDirection CoordinatesToDir(const Coordinates& coord)
 	{

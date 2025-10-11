@@ -23,12 +23,12 @@ EHexCellDirection Coordinates::GetNeighborDirection(const Coordinates& neighborC
 	return CoordinatesToDir(Coordinates{.q = dq, .r = dr});
 }
 
-bool Coordinates::AnyBlockingObjectInDirection(EHexCellDirection direction, const vector<SObjectInfo>& objectsOnTile)
+bool Coordinates::AnyBlockingObjectInDirection(EHexCellDirection direction, const vector<Object>& objectsOnTile)
 {
 	const auto objectIt = ranges::find_if(objectsOnTile,
-	                                      [direction](const SObjectInfo& obj)
+	                                      [direction](const Object& obj)
 	                                      {
-		                                      return obj.cellPosition == direction;
+		                                      return obj.direction == direction;
 	                                      });
 
 	return objectIt != objectsOnTile.end() && IsObstacle(*objectIt);
@@ -39,8 +39,7 @@ EHexCellDirection Coordinates::GetOppositeDirection(const Coordinates& coordinat
 	return CoordinatesToDir(coordinates * -1);
 }
 
-bool Coordinates::IsObstacle(const SObjectInfo& object)
+bool Coordinates::IsObstacle(const Object& object)
 {
-	const auto type = static_cast<EObjectType>(object.typesSize - 1);
-	return type == Wall || type == Window;
+	return object.type == Wall || object.type == Window;
 }

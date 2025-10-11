@@ -1,32 +1,33 @@
 #ifndef LEVEL_DATA_H
 #define LEVEL_DATA_H
 
+#include <algorithm>
 #include <ranges>
 #include <unordered_map>
 #include <unordered_set>
 
 #include "Agent.h"
 #include "Coordinates.h"
+#include "Object.h"
 
 class LevelData
 {
 public:
 	using GoalTilesType = std::vector<Coordinates>;
 	using TileArrayType = std::unordered_map<Coordinates, EHexCellType>;
-	using ObjectArrayType = std::unordered_map<Coordinates, std::vector<SObjectInfo>>;
+	using ObjectArrayType = std::unordered_map<Coordinates, std::vector<Object>>;
+
 	LevelData(const LevelData&) = delete;
 	LevelData& operator=(const LevelData&) = delete;
+	LevelData(LevelData&&) = delete;
+	LevelData& operator=(LevelData&&) = delete;
 
-private:
-	LevelData() = default;
-	~LevelData() = default;
-
-public:
 	int rowCount{};
 	int colCount{};
 	int currentTurn{};
 
-	static LevelData& Get() {
+	static LevelData& Get()
+	{
 		static LevelData instance;
 		return instance;
 	}
@@ -34,12 +35,15 @@ public:
 	[[nodiscard]] int CalculateTileScore(const Coordinates& tileCoord);
 	[[nodiscard]] std::vector<Coordinates> GetBestExploringTile(const Coordinates& tileCoord);
 
-	[[nodiscard]] auto GetAvailableGoalTiles()
+	[[nodiscard]] std::vector<Coordinates> GetAvailableGoalTiles()
 	{
-		return goalTiles | std::views::filter([&](const Coordinates& tile)
+		auto availableGoals = goalTiles
+			| std::views::filter([this](const Coordinates& coord)
 			{
-				return not IsTileOccupied(tile) && not IsGoalChosen(tile);
+				return !IsTileOccupied(coord) && !IsGoalChosen(coord);
 			});
+
+		return {availableGoals.begin(), availableGoals.end()};
 	}
 
 	[[nodiscard]] const GoalTilesType& GetGoalTiles() { return goalTiles; }
@@ -82,24 +86,23 @@ public:
 
 	[[nodiscard]] std::vector<Agent>& GetAgents() { return agents; }
 
-	
-
 private:
 	GoalTilesType goalTiles{};
 	TileArrayType tiles{};
 	ObjectArrayType objects{};
 
 	std::vector<Agent> agents{};
-
 	std::unordered_set<Coordinates> occupiedTiles{};
+
+	LevelData() = default;
+	~LevelData() = default;
 
 	[[nodiscard]] bool IsGoalChosen(const Coordinates& goal) const
 	{
-		for (const auto& agent : agents)
-			if (agent.GetChosenGoal() == goal)
-				return true;
-
-		return false;
+		return std::ranges::any_of(agents, [&](const auto& agent)
+		{
+			return agent.GetChosenGoal() == goal;
+		});
 	}
 };
 

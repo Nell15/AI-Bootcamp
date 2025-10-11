@@ -21,6 +21,7 @@ SET( AIBOT_BUILDFILES
 SET( AIBOT_HEADERS
     Headers/Algorithm/PathFinding/PathFinder.h
     Headers/Algorithm/Core/Coordinates.h
+    Headers/Algorithm/Core/Object.h
     Headers/Algorithm/Core/LevelData.h
     Headers/Algorithm/Core/Agent.h
     Headers/Algorithm/Utils/Utils.h

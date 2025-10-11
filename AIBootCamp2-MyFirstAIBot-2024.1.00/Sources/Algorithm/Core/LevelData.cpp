@@ -70,8 +70,14 @@ void LevelData::StoreObjects(const SObjectInfo* objectArrayInfo, const int nbObj
 {
 	const span objectInfos{objectArrayInfo, static_cast<size_t>(nbObject)};
 
-	for (const auto& object : objectInfos)
+	for (const auto& objectInfo : objectInfos)
 	{
+		Object object =
+		{
+			.q = objectInfo.q, .r = objectInfo.r, .direction = objectInfo.cellPosition,
+			.type = static_cast<EObjectType>(*objectInfo.types)
+		};
+
 		Coordinates objectCoordinates{.q = object.q, .r = object.r};
 		auto& vec = objects[objectCoordinates];
 
