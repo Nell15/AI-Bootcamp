@@ -24,8 +24,9 @@ struct STurnData;
 class MyBotLogic : public virtual BotLogicIF
 {
 public:
-	MyBotLogic() = default;
 	Logger mLogger;
+
+	MyBotLogic() = default;
 
 	void Configure(const SConfigData& _configData) override;
 	void Init(const SInitData& _initData) override;

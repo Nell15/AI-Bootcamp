@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "Framework/Globals.h"
-
 struct Coordinates
 {
 	int q;

@@ -49,7 +49,7 @@ public:
 
 	[[nodiscard]] EHexCellDirection PopAndReturnNextAgentMove()
 	{
-		vassert(!path.empty() && "Agent path is empty: cannot pop from it");
+		vassert(!path.empty(), "Agent path is empty: cannot pop from it");
 
 		const EHexCellDirection direction = path.back();
 		path.pop_back();

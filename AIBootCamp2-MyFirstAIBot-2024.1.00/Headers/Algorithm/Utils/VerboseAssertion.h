@@ -3,28 +3,36 @@
 
 #include <source_location>
 #include <string>
-#include <cstdlib>
 #include <windows.h>
 
-inline void VerboseAssertion(const bool expr, const char* expr_str,
-    const std::source_location& loc = std::source_location::current())
+inline void VerboseAssertion(const bool expr, const char* exprStr,
+	const std::string& message = "",
+	const std::source_location& location = std::source_location::current())
 {
-    if (!expr)
-    {
-        std::string msg = "Assertion failed: ";
-        msg += expr_str;
-        msg += "\nIn function: ";
-        msg += loc.function_name();
-        msg += "\nFile: ";
-        msg += loc.file_name();
-        msg += ":";
-        msg += std::to_string(loc.line());
+	if (!expr)
+	{
+		std::string msg = "Assertion failed: ";
+		msg += exprStr;
 
-        MessageBoxA(nullptr, msg.c_str(), "Assertion Failed", MB_ICONERROR | MB_OK);
-        std::exit(EXIT_FAILURE);
-    }
+		if (!message.empty())
+		{
+			msg += "\n\nMessage: ";
+			msg += message;
+			msg += '\n';
+		}
+
+		msg += "\nIn function: ";
+		msg += location.function_name();
+		msg += "\nFile: ";
+		msg += location.file_name();
+		msg += ":";
+		msg += std::to_string(location.line());
+
+		MessageBoxA(nullptr, msg.c_str(), "Assertion Failed", MB_ICONERROR | MB_OK);
+		std::abort();
+	}
 }
 
-#define vassert(expr) VerboseAssertion((expr), #expr)
+#define vassert(expr, msg) VerboseAssertion((expr), #expr, (msg))
 
 #endif

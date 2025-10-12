@@ -4,6 +4,7 @@
 #include <array>
 
 #include "Algorithm/Core/Coordinates.h"
+#include "Framework/Globals.h"
 
 namespace CoordUtils
 {
