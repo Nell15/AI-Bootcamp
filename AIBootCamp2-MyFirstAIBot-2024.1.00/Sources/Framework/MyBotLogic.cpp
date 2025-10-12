@@ -75,15 +75,10 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 
 void MyBotLogic::StoreTurnData(const STurnData& turnData)
 {
-	auto npcIndices = views::iota(0, turnData.npcInfoArraySize);
-
 #ifdef BOT_LOGIC_DEBUG
 	LevelData::Get().currentTurn = turnData.turnNb;
 #endif
 
-	ranges::for_each(npcIndices, [&](int)
-	{
-		LevelData::Get().StoreTiles(turnData.tileInfoArray, turnData.tileInfoArraySize);
-		LevelData::Get().StoreObjects(turnData.objectInfoArray, turnData.objectInfoArraySize);
-	});
+	LevelData::Get().StoreTiles(turnData.tileInfoArray, turnData.tileInfoArraySize);
+	LevelData::Get().StoreObjects(turnData.objectInfoArray, turnData.objectInfoArraySize);
 }
