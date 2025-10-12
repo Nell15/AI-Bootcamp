@@ -6,14 +6,15 @@
 #include <queue>
 
 #include "Algorithm/PathFinding/PathFinder.h"
+#include "Algorithm/Utils/CoordUtils.h"
 
 using namespace std;
 
 int LevelData::CalculateTileScore(const Coordinates& tileCoord)
 {
-	int score = Coordinates::NB_COORDINATES;
+	int score = CoordUtils::NB_COORDINATES;
 
-	for (const Coordinates& coordDir : Coordinates::CoordinateDirections())
+	for (const Coordinates& coordDir : CoordUtils::CoordinateDirections())
 	{
 		const Coordinates neighborPos = tileCoord + coordDir;
 		if (tiles.contains(neighborPos) || not DoTileExist(neighborPos) || HasBlockingObject(tileCoord, coordDir))
@@ -96,9 +97,9 @@ Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord)
 		if (IsTileOccupied(neighborCoord))
 			continue;
 
-		int score = Coordinates::NB_COORDINATES;
+		int score = CoordUtils::NB_COORDINATES;
 
-		for (const Coordinates& coordDir : Coordinates::CoordinateDirections())
+		for (const Coordinates& coordDir : CoordUtils::CoordinateDirections())
 		{
 			const Coordinates neighborPos = neighborCoord + coordDir;
 			if (tiles.contains(neighborPos) || not DoTileExist(neighborPos) || HasBlockingObject(
@@ -120,7 +121,7 @@ vector<Coordinates> LevelData::GetWalkableNeighbors(const Coordinates& tileCoord
 {
 	vector<Coordinates> neighbors{};
 
-	for (const Coordinates& coordDir : Coordinates::CoordinateDirections())
+	for (const Coordinates& coordDir : CoordUtils::CoordinateDirections())
 	{
 		const Coordinates neighborPos = tileCoord + coordDir;
 		if (IsPossibleToWalkTo(tileCoord, coordDir) && not IsTileOccupied(neighborPos))
@@ -133,8 +134,8 @@ vector<Coordinates> LevelData::GetWalkableNeighbors(const Coordinates& tileCoord
 bool LevelData::HasBlockingObject(const Coordinates& tileCoord, const Coordinates& directionCoord)
 {
 	const Coordinates neighborPos = tileCoord + directionCoord;
-	const EHexCellDirection direction = Coordinates::CoordinatesToDir(directionCoord);
-	const EHexCellDirection oppositeDirection = Coordinates::GetOppositeDirection(directionCoord);
+	const EHexCellDirection direction = CoordUtils::CoordinatesToDir(directionCoord);
+	const EHexCellDirection oppositeDirection = CoordUtils::GetOppositeDirection(directionCoord);
 
 	const auto objectsOnTileIt = objects.find(tileCoord);
 	if (objectsOnTileIt != objects.end() && AnyBlockingObjectInDirection(

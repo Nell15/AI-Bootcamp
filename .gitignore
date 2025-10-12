@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Project specific
+AIBootCamp2-MyFirstAIBot-2024.1.00/temp_output.txt
+
 # User-specific files
 *.rsuser
 *.suo

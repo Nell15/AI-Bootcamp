@@ -6,6 +6,7 @@
 
 #include "AgentState.h"
 #include "Coordinates.h"
+#include "Algorithm/Utils/CoordUtils.h"
 #include "Framework/Globals.h"
 
 #include "Algorithm/Utils/VerboseAssertion.h"
@@ -27,7 +28,7 @@ public:
 
 	[[nodiscard]] Coordinates GetNextMove() const
 	{
-		const auto nextMove = coordinates + Coordinates::DirToCoordinates(path.back());
+		const auto nextMove = coordinates + CoordUtils::DirToCoordinates(path.back());
 		return nextMove;
 	}
 

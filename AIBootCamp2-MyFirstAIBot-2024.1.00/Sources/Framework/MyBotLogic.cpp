@@ -60,7 +60,7 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 
 		auto order = SOrder{.orderType = Move, .npcUID = agentIt->GetId(), .direction = agentIt->PopAndReturnNextAgentMove()};
 
-		const Coordinates directionCoord = agentIt->GetCoordinates() + Coordinates::DirToCoordinates(order.direction);
+		const Coordinates directionCoord = agentIt->GetCoordinates() + CoordUtils::DirToCoordinates(order.direction);
 		LevelData::Get().UpdateOccupiedTile(agentIt->GetCoordinates(), directionCoord);
 
 		BOT_LOGIC_LOG(

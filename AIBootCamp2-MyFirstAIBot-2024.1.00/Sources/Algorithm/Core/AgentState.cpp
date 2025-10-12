@@ -50,7 +50,7 @@ void Exploring::SetOrder(Agent& agent)
 	{
 		const Coordinates& nextCoord = bestExploringPath[bestExploringPath.size() - 1 - i];
 
-		npcPath[bestExploringPath.size() - 1 - i] = currCoord.GetNeighborDirection(nextCoord);
+		npcPath[bestExploringPath.size() - 1 - i] = CoordUtils::GetNeighborDirection(currCoord, nextCoord);
 		currCoord = nextCoord;
 	}
 
@@ -104,7 +104,7 @@ void Seeking::SetOrder(Agent& agent)
 		{
 			const Coordinates& nextCoord = bestPath[bestPath.size() - 1 - i];
 
-			npcPath[bestPath.size() - 1 - i] = currCoord.GetNeighborDirection(nextCoord);
+			npcPath[bestPath.size() - 1 - i] = CoordUtils::GetNeighborDirection(currCoord, nextCoord);
 			currCoord = nextCoord;
 		}
 

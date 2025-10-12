@@ -26,6 +26,7 @@ SET( AIBOT_HEADERS
     Headers/Algorithm/Core/Agent.h
     Headers/Algorithm/Utils/Utils.h
     Headers/Algorithm/Utils/VerboseAssertion.h
+    Headers/Algorithm/Utils/CoordUtils.h
     Headers/Algorithm/Core/AgentState.h
 
     Headers/Framework/AIBot.h
@@ -44,7 +45,6 @@ SET( AIBOT_HEADERS
 
 SET( AIBOT_SRC
     Sources/Algorithm/PathFinding/PathFinder.cpp
-    Sources/Algorithm/Core/Coordinates.cpp
     Sources/Algorithm/Core/Agent.cpp
     Sources/Algorithm/Core/LevelData.cpp
     Sources/Algorithm/Core/AgentState.cpp

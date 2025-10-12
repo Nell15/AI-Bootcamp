@@ -8,7 +8,7 @@ using namespace std;
 void PathFinder::Init(const Coordinates& start, const Coordinates& goal)
 {
 	gScores[start] = 0;
-	fScores[start] = start.GetDistance(goal);
+	fScores[start] = CoordUtils::GetDistance(start, goal);
 	openSet.push({start, fScores[start], gScores[start]});
 }
 
@@ -53,7 +53,7 @@ void PathFinder::TryUpdatePath(const Coordinates& neighborPos,
 	if (const auto neighIt = gScores.find(neighborPos);
 		neighIt == gScores.end() || tentativeG < neighIt->second)
 	{
-		const ScoreType tentativeH = neighborPos.GetDistance(goal);
+		const ScoreType tentativeH = CoordUtils::GetDistance(neighborPos, goal);
 		const ScoreType tentativeF = tentativeG + tentativeH;
 
 		predecessors[neighborPos] = current.position;
