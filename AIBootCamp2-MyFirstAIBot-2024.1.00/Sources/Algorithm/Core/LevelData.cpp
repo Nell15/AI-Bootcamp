@@ -137,12 +137,12 @@ bool LevelData::HasBlockingObject(const Coordinates& tileCoord, const Coordinate
 	const EHexCellDirection oppositeDirection = Coordinates::GetOppositeDirection(directionCoord);
 
 	const auto objectsOnTileIt = objects.find(tileCoord);
-	if (objectsOnTileIt != objects.end() && Coordinates::AnyBlockingObjectInDirection(
+	if (objectsOnTileIt != objects.end() && AnyBlockingObjectInDirection(
 		direction, objectsOnTileIt->second))
 		return true;
 
 	const auto objectOnNeighborIt = objects.find(neighborPos);
-	return objectOnNeighborIt != objects.end() && Coordinates::AnyBlockingObjectInDirection(
+	return objectOnNeighborIt != objects.end() && AnyBlockingObjectInDirection(
 		oppositeDirection, objectOnNeighborIt->second);
 }
 

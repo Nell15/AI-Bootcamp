@@ -21,9 +21,6 @@ struct Coordinates
 	[[nodiscard]] DistanceType GetDistance(const Coordinates& tileCoord) const;
 	[[nodiscard]] EHexCellDirection GetNeighborDirection(const Coordinates& neighborCoord) const;
 
-	static bool AnyBlockingObjectInDirection(EHexCellDirection direction,
-	                                         const std::vector<Object>& objectsOnTile);
-
 	bool operator==(const Coordinates& other) const noexcept
 	{
 		return q == other.q && r == other.r;
@@ -45,7 +42,6 @@ struct Coordinates
 	}
 
 	static EHexCellDirection GetOppositeDirection(const Coordinates& coordinates);
-	static bool IsObstacle(const Object& object);
 
 	static constexpr EHexCellDirection CoordinatesToDir(const Coordinates& coord)
 	{

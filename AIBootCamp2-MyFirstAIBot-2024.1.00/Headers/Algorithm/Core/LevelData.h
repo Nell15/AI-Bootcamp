@@ -86,6 +86,23 @@ public:
 
 	[[nodiscard]] std::vector<Agent>& GetAgents() { return agents; }
 
+	static bool AnyBlockingObjectInDirection(EHexCellDirection direction, const std::vector<Object>& objectsOnTile)
+	{
+		const auto objectIt = std::ranges::find_if(objectsOnTile,
+			[direction](const Object& obj)
+			{
+				return obj.direction == direction;
+			});
+
+		return objectIt != objectsOnTile.end() && IsObstacle(*objectIt);
+	}
+
+	static bool IsObstacle(const Object& object)
+	{
+		return object.type == Wall || object.type == Window;
+	}
+
+
 private:
 	GoalTilesType goalTiles{};
 	TileArrayType tiles{};
