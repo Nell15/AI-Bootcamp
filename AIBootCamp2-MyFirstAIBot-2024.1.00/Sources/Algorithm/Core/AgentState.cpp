@@ -14,16 +14,20 @@ void Waiting::UpdateState(Agent& agent)
 
 void Waiting::SetOrder(Agent& agent)
 {
-	agent.AddMovement(CENTER);
+	agent.AddOrder({
+		.orderType = Move,
+		.npcUID = agent.GetId(),
+		.direction = CENTER
+	});
 }
 
 void Exploring::UpdateState(Agent& agent)
 {
-	if (not LevelData::Get().Get().GetAvailableGoalTiles().empty())
+	if (not LevelData::Get().GetAvailableGoalTiles().empty())
 	{
 		PathFinder pathFinder{}; // TODO(opti): make pathfinder singleton ?
 
-		for (const Coordinates& goalTile : LevelData::Get().Get().GetAvailableGoalTiles())
+		for (const Coordinates& goalTile : LevelData::Get().GetAvailableGoalTiles())
 		{
 			// TODO(opti): create a fonction DoGoalExist ?
 			const auto path = pathFinder.FindPath(agent.GetCoordinates(), goalTile);
@@ -41,20 +45,26 @@ void Exploring::SetOrder(Agent& agent)
 	const Coordinates agentCoord = agent.GetCoordinates();
 	const auto bestExploringPath = LevelData::Get().GetBestExploringTile(agentCoord);
 
-	vector<EHexCellDirection> npcPath;
-	npcPath.resize(bestExploringPath.size());
+	vector<SOrder> npcOrders;
+	npcOrders.resize(bestExploringPath.size());
 
 	Coordinates currCoord = agent.GetCoordinates();
 
 	for (size_t i = 0; i < bestExploringPath.size(); ++i)
 	{
 		const Coordinates& nextCoord = bestExploringPath[bestExploringPath.size() - 1 - i];
+		const SOrder order =
+		{
+			.orderType = Move,
+			.npcUID = agent.GetId(),
+			.direction = CoordUtils::GetNeighborDirection(currCoord, nextCoord)
+		};
 
-		npcPath[bestExploringPath.size() - 1 - i] = CoordUtils::GetNeighborDirection(currCoord, nextCoord);
+		npcOrders[bestExploringPath.size() - 1 - i] = order;
 		currCoord = nextCoord;
 	}
 
-	agent.SetPath(std::move(npcPath));
+	agent.SetPath(std::move(npcOrders));
 }
 
 void Seeking::UpdateState(Agent& agent)
@@ -95,21 +105,34 @@ void Seeking::SetOrder(Agent& agent)
 			}
 		}
 
-		vector<EHexCellDirection> npcPath;
-		npcPath.resize(bestPath.size());
+		vector<SOrder> npcOrders;
+		npcOrders.resize(bestPath.size());
 
 		Coordinates currCoord = agent.GetCoordinates();
 
 		for (size_t i = 0; i < bestPath.size(); ++i)
 		{
 			const Coordinates& nextCoord = bestPath[bestPath.size() - 1 - i];
+			const SOrder order =
+			{
+				.orderType = Move,
+				.npcUID = agent.GetId(),
+				.direction = CoordUtils::GetNeighborDirection(currCoord, nextCoord)
+			};
 
-			npcPath[bestPath.size() - 1 - i] = CoordUtils::GetNeighborDirection(currCoord, nextCoord);
+			npcOrders[bestPath.size() - 1 - i] = order;
 			currCoord = nextCoord;
 		}
 
-		agent.SetPath(std::move(npcPath));
+		agent.SetPath(std::move(npcOrders));
 	}
 	else if (LevelData::Get().IsTileOccupied(agent.GetNextMove()))
-		agent.AddMovement(CENTER);
+	{
+		agent.AddOrder(
+			{
+				.orderType = Move,
+				.npcUID = agent.GetId(),
+				.direction = CENTER
+			});
+	}
 }

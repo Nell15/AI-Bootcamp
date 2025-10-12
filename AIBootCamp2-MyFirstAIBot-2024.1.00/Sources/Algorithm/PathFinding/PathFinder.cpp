@@ -1,6 +1,5 @@
 #include "Algorithm/PathFinding/PathFinder.h"
 
-#include <algorithm>
 #include <queue>
 
 using namespace std;

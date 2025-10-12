@@ -28,7 +28,7 @@ public:
 
 	[[nodiscard]] Coordinates GetNextMove() const
 	{
-		const auto nextMove = coordinates + CoordUtils::DirToCoordinates(path.back());
+		const auto nextMove = coordinates + CoordUtils::DirToCoordinates(path.back().direction);
 		return nextMove;
 	}
 
@@ -43,16 +43,17 @@ public:
 	void SetOrder() { state->SetOrder(*this); }
 	void SetState(std::unique_ptr<AgentState> newState) { state = std::move(newState); }
 	void SetChosenGoal(const std::optional<Coordinates> goal) { chosenGoal = goal; }
-	void SetPath(std::vector<EHexCellDirection> newPath) { path = std::move(newPath); }
+	void SetPath(std::vector<SOrder>&& newOrders) { path = std::move(newOrders); }
 
-	void AddMovement(EHexCellDirection movement) { path.emplace_back(movement); }
+	void AddOrder(SOrder order) { path.emplace_back(order); }
 
-	[[nodiscard]] EHexCellDirection PopAndReturnNextAgentMove()
+	[[nodiscard]] SOrder PopAndReturnNextAgentMove()
 	{
 		vassert(!path.empty(), "Agent path is empty: cannot pop from it");
 
-		const EHexCellDirection direction = path.back();
+		const auto direction = path.back();
 		path.pop_back();
+
 		return direction;
 	}
 
@@ -60,7 +61,7 @@ private:
 	int id;
 	Coordinates coordinates;
 	std::optional<Coordinates> chosenGoal = std::nullopt;
-	std::vector<EHexCellDirection> path{};
+	std::vector<SOrder> path{};
 	std::unique_ptr<AgentState> state{};
 };
 
