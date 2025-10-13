@@ -69,7 +69,7 @@ public:
 	}
 
 	[[nodiscard]] std::vector<Coordinates> GetWalkableNeighbors(const Coordinates& tileCoord);
-	[[nodiscard]] bool IsPossibleToWalkTo(const Coordinates& tileCoord, const Coordinates& directionCoord);
+	[[nodiscard]] bool IsPossibleToWalkTo(Coordinates tileCoord, EHexCellDirection direction);
 	[[nodiscard]] bool IsPossibleToWalkOnTile(const Coordinates& coord);
 	[[nodiscard]] bool DoTileExist(const Coordinates& tileCoord) const;
 

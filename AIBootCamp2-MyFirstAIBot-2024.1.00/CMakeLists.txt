@@ -28,6 +28,7 @@ SET( AIBOT_HEADERS
     Headers/Algorithm/Utils/VerboseAssertion.h
     Headers/Algorithm/Utils/CoordUtils.h
     Headers/Algorithm/Core/AgentState.h
+
     Headers/Systems/ObjectSystem.h
     Headers/Systems/TileSystem.h
     Headers/Systems/Locator.h
@@ -52,6 +53,10 @@ SET( AIBOT_SRC
     Sources/Algorithm/Core/Agent.cpp
     Sources/Algorithm/Core/LevelData.cpp
     Sources/Algorithm/Core/AgentState.cpp
+
+    Sources/Systems/ObjectSystem.cpp
+    Sources/Systems/TileSystem.cpp
+    Sources/Systems/AgentSystem.cpp
 
     Sources/Framework/AIBot.cpp
     Sources/Framework/Logger.cpp

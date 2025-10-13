@@ -10,7 +10,18 @@ namespace CoordUtils
 {
 	using DistanceType = int;
 
-	static constexpr std::size_t NB_COORDINATES = 6;
+	static constexpr std::size_t NB_DIRECTION = 7;
+	static constexpr std::size_t NB_NEIGHBOR_DIRECTION = 6;
+
+	static constexpr std::array neighborDirection =
+	{
+		E,
+		NE,
+		NW,
+		W,
+		SW,
+		SE,
+	};
 
 	static constexpr EHexCellDirection CoordinatesToDir(const Coordinates& coord)
 	{
@@ -41,7 +52,7 @@ namespace CoordUtils
 		throw std::out_of_range("Invalid EHexCellDirection for DirToCoordinates");
 	}
 
-	static constexpr std::array<Coordinates, NB_COORDINATES> CoordinateDirections() noexcept
+	static constexpr std::array<Coordinates, NB_NEIGHBOR_DIRECTION> CoordinateDirections() noexcept
 	{
 		return std::to_array<Coordinates>
 			({
@@ -57,6 +68,22 @@ namespace CoordUtils
 	static constexpr EHexCellDirection GetOppositeDirection(const Coordinates& coord)
 	{
 		return CoordinatesToDir(coord * -1);
+	}
+
+	static constexpr EHexCellDirection GetOppositeDirection(const EHexCellDirection direction)
+	{
+		switch (direction)
+		{
+		case W:  return E;
+		case NW: return SE;
+		case NE: return SW;
+		case E:  return W;
+		case SE: return NW;
+		case SW: return NE;
+		case CENTER: return CENTER;
+		}
+
+		throw std::out_of_range("Invalid EHexCellDirection for GetOppositeDirection");
 	}
 
 	static DistanceType GetDistance(const Coordinates& source, const Coordinates& destination)
@@ -76,7 +103,17 @@ namespace CoordUtils
 
 		return CoordinatesToDir(Coordinates{ .q = dq, .r = dr });
 	}
+}
 
+static Coordinates operator+(const Coordinates& coords, const EHexCellDirection dir) noexcept
+{
+	const auto offset = CoordUtils::DirToCoordinates(dir);
+	return coords + offset;
+}
+
+static Coordinates operator+(const EHexCellDirection dir, const Coordinates& coords) noexcept
+{
+	return coords + dir;
 }
 
 #endif
