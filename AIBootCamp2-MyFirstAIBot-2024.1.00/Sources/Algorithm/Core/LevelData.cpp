@@ -7,17 +7,19 @@
 
 #include "Algorithm/PathFinding/PathFinder.h"
 #include "Algorithm/Utils/CoordUtils.h"
+#include "Systems/Locator.h"
+#include "Systems/ObjectSystem.h"
 
 using namespace std;
 
-int LevelData::CalculateTileScore(const Coordinates& tileCoord)
+int LevelData::CalculateTileScore(const Coordinates& tileCoord) const
 {
 	int score = CoordUtils::NB_COORDINATES;
 
 	for (const Coordinates& coordDir : CoordUtils::CoordinateDirections())
 	{
 		const Coordinates neighborPos = tileCoord + coordDir;
-		if (tiles.contains(neighborPos) || not DoTileExist(neighborPos) || HasBlockingObject(tileCoord, coordDir))
+		if (tiles.contains(neighborPos) || not DoTileExist(neighborPos) || ObjectSystem::HasBlockingObject(tileCoord, coordDir))
 			--score;
 	}
 
@@ -67,26 +69,6 @@ void LevelData::StoreTiles(const STileInfo* tileArrayInfo, const int nbTile)
 	}
 }
 
-void LevelData::StoreObjects(const SObjectInfo* objectArrayInfo, const int nbObject)
-{
-	const span objectInfos{objectArrayInfo, static_cast<size_t>(nbObject)};
-
-	for (const auto& objectInfo : objectInfos)
-	{
-		Object object =
-		{
-			.q = objectInfo.q, .r = objectInfo.r, .direction = objectInfo.cellPosition,
-			.type = static_cast<EObjectType>(*objectInfo.types)
-		};
-
-		Coordinates objectCoordinates{.q = object.q, .r = object.r};
-		auto& vec = objects[objectCoordinates];
-
-		if (ranges::find(vec, object) == vec.end())
-			vec.emplace_back(object);
-	}
-}
-
 Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord)
 {
 	Coordinates bestNeighCoord = tileCoord;
@@ -102,7 +84,7 @@ Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord)
 		for (const Coordinates& coordDir : CoordUtils::CoordinateDirections())
 		{
 			const Coordinates neighborPos = neighborCoord + coordDir;
-			if (tiles.contains(neighborPos) || not DoTileExist(neighborPos) || HasBlockingObject(
+			if (tiles.contains(neighborPos) || not DoTileExist(neighborPos) || ObjectSystem::HasBlockingObject(
 				neighborCoord, coordDir))
 				--score;
 		}
@@ -131,27 +113,11 @@ vector<Coordinates> LevelData::GetWalkableNeighbors(const Coordinates& tileCoord
 	return neighbors;
 }
 
-bool LevelData::HasBlockingObject(const Coordinates& tileCoord, const Coordinates& directionCoord)
-{
-	const Coordinates neighborPos = tileCoord + directionCoord;
-	const EHexCellDirection direction = CoordUtils::CoordinatesToDir(directionCoord);
-	const EHexCellDirection oppositeDirection = CoordUtils::GetOppositeDirection(directionCoord);
-
-	const auto objectsOnTileIt = objects.find(tileCoord);
-	if (objectsOnTileIt != objects.end() && AnyBlockingObjectInDirection(
-		direction, objectsOnTileIt->second))
-		return true;
-
-	const auto objectOnNeighborIt = objects.find(neighborPos);
-	return objectOnNeighborIt != objects.end() && AnyBlockingObjectInDirection(
-		oppositeDirection, objectOnNeighborIt->second);
-}
-
 bool LevelData::IsPossibleToWalkTo(const Coordinates& tileCoord, const Coordinates& directionCoord)
 {
 	const Coordinates neighborPos = tileCoord + directionCoord;
 
-	return IsPossibleToWalkOnTile(neighborPos) && not HasBlockingObject(tileCoord, directionCoord);
+	return IsPossibleToWalkOnTile(neighborPos) && not ObjectSystem::HasBlockingObject(tileCoord, directionCoord);
 }
 
 bool LevelData::IsPossibleToWalkOnTile(const Coordinates& coord)

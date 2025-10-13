@@ -28,6 +28,10 @@ SET( AIBOT_HEADERS
     Headers/Algorithm/Utils/VerboseAssertion.h
     Headers/Algorithm/Utils/CoordUtils.h
     Headers/Algorithm/Core/AgentState.h
+    Headers/Systems/ObjectSystem.h
+    Headers/Systems/TileSystem.h
+    Headers/Systems/Locator.h
+    Headers/Systems/AgentSystem.h
 
     Headers/Framework/AIBot.h
     Headers/Framework/BotLogicIF.h

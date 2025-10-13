@@ -13,6 +13,8 @@
 #include "Algorithm/Core/Coordinates.h"
 #include "Algorithm/Utils/Utils.h"
 #include "Framework/InitData.h"
+#include "Systems/Locator.h"
+#include "Systems/ObjectSystem.h"
 
 using namespace std;
 
@@ -28,6 +30,8 @@ void MyBotLogic::Configure(const SConfigData& _configData)
 void MyBotLogic::Init(const SInitData& _initData)
 {
 	BOT_LOGIC_LOG(mLogger, "Init", true);
+
+	Locator::Set(make_shared<ObjectSystem>());
 
 	LevelData::Get().rowCount = _initData.rowCount;
 	LevelData::Get().colCount = _initData.colCount;
@@ -79,6 +83,8 @@ void MyBotLogic::StoreTurnData(const STurnData& turnData)
 	LevelData::Get().currentTurn = turnData.turnNb;
 #endif
 
+	auto& objectSystem = Locator::Get<ObjectSystem>();
+
 	LevelData::Get().StoreTiles(turnData.tileInfoArray, turnData.tileInfoArraySize);
-	LevelData::Get().StoreObjects(turnData.objectInfoArray, turnData.objectInfoArraySize);
+	objectSystem.StoreObjects(turnData.objectInfoArray, turnData.objectInfoArraySize);
 }

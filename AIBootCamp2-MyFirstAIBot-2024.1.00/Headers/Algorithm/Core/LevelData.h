@@ -15,7 +15,6 @@ class LevelData
 public:
 	using GoalTilesType = std::vector<Coordinates>;
 	using TileArrayType = std::unordered_map<Coordinates, EHexCellType>;
-	using ObjectArrayType = std::unordered_map<Coordinates, std::vector<Object>>;
 
 	LevelData(const LevelData&) = delete;
 	LevelData& operator=(const LevelData&) = delete;
@@ -32,7 +31,7 @@ public:
 		return instance;
 	}
 
-	[[nodiscard]] int CalculateTileScore(const Coordinates& tileCoord);
+	[[nodiscard]] int CalculateTileScore(const Coordinates& tileCoord) const;
 	[[nodiscard]] std::vector<Coordinates> GetBestExploringTile(const Coordinates& tileCoord);
 
 	[[nodiscard]] std::vector<Coordinates> GetAvailableGoalTiles()
@@ -53,13 +52,7 @@ public:
 		return tiles;
 	}
 
-	[[nodiscard]] const ObjectArrayType& GetObjects()
-	{
-		return objects;
-	}
-
 	void StoreTiles(const STileInfo* tileArrayInfo, int nbTile);
-	void StoreObjects(const SObjectInfo* objectArrayInfo, int nbObject);
 
 	void AddOccupiedTiles(const Coordinates& tileCoord) { occupiedTiles.emplace(tileCoord); }
 
@@ -77,7 +70,6 @@ public:
 
 	[[nodiscard]] std::vector<Coordinates> GetWalkableNeighbors(const Coordinates& tileCoord);
 	[[nodiscard]] bool IsPossibleToWalkTo(const Coordinates& tileCoord, const Coordinates& directionCoord);
-	[[nodiscard]] bool HasBlockingObject(const Coordinates& tileCoord, const Coordinates& directionCoord);
 	[[nodiscard]] bool IsPossibleToWalkOnTile(const Coordinates& coord);
 	[[nodiscard]] bool DoTileExist(const Coordinates& tileCoord) const;
 
@@ -86,28 +78,11 @@ public:
 
 	[[nodiscard]] std::vector<Agent>& GetAgents() { return agents; }
 
-	static bool AnyBlockingObjectInDirection(EHexCellDirection direction, const std::vector<Object>& objectsOnTile)
-	{
-		const auto objectIt = std::ranges::find_if(objectsOnTile,
-			[direction](const Object& obj)
-			{
-				return obj.direction == direction;
-			});
-
-		return objectIt != objectsOnTile.end() && IsObstacle(*objectIt);
-	}
-
-	static bool IsObstacle(const Object& object)
-	{
-		return object.type == Wall || object.type == Window;
-	}
-
 
 private:
 	GoalTilesType goalTiles{};
 	TileArrayType tiles{};
-	ObjectArrayType objects{};
-
+	
 	std::vector<Agent> agents{};
 	std::unordered_set<Coordinates> occupiedTiles{};
 
