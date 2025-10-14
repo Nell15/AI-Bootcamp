@@ -31,8 +31,16 @@ float ScoreSystem::CalculateScore(const Coordinates position, const int distance
 	if (IsWorthToExplore(position))
 		baseScore *= frontierBonus;
 
+	// Bonus if contains a pressure plate, weighted by distance to linked door(s?)
+	const auto& objectSystem = Locator::Get<ObjectSystem>();
+	// check if has pressure plate :
+	bool hasPlate = objectSystem.HasPressurePlateAt(position);
+	// check connections && their distance
+	float plateWeight = 3.0f; // TODO
+	float plateBias = hasPlate * plateWeight;
+
 	// Penalize by distance (nonlinear decay works better than linear)
-	const float score = baseScore / (1.f + distancePenalty * distance * distance);
+	const float score = (baseScore + plateBias) / (1.f + distancePenalty * distance * distance);
 
 	return score;
 }

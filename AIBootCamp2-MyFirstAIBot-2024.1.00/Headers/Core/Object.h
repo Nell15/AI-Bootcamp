@@ -1,6 +1,8 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
+#include <optional>
+
 #include "Framework/Globals.h"
 
 struct Object
@@ -10,6 +12,10 @@ struct Object
 
 	EHexCellDirection direction;
 	EObjectType type;
+
+	std::optional<EObjectState> state;
+
+	// TODO : add connections
 
 	bool operator==(const Object& other) const noexcept
 	{

@@ -15,17 +15,21 @@ public:
 
 	void StoreObjects(const SObjectInfo* objectArrayInfo, int nbObject);
 
+	bool HasPressurePlateAt(Coordinates coord) const;
+
 private:
 	ObjectList objects{};
 
 	static bool IsObstacle(const Object& object)
 	{
-		return object.type == Wall || object.type == Window;
+		return object.type == Wall
+			|| object.type == Window
+			|| (object.type == Door && object.state.has_value() && object.state.value() == Closed);
 	}
 
 	[[nodiscard]] static bool HasBlockingObjectInDirection(EHexCellDirection direction, const std::vector<Object>& objectsOnTile);
 	[[nodiscard]] bool IsDirectionBlocked(Coordinates tilePos, EHexCellDirection direction) const;
-	
+
 };
 
 #endif

@@ -31,12 +31,30 @@ void ObjectSystem::StoreObjects(const SObjectInfo* objectArrayInfo, const int nb
 			.type = static_cast<EObjectType>(*objectInfo.types)
 		};
 
+		if (objectInfo.statesSize > 0)
+			object.state = static_cast<EObjectState>(objectInfo.states[0]); // todo verif
+
 		Coordinates objectPos{ .q = object.q, .r = object.r };
 		auto& objectAtPos = objects[objectPos];
 
 		if (ranges::find(objectAtPos, object) == objectAtPos.end())
 			objectAtPos.emplace_back(object);
 	}
+}
+
+bool ObjectSystem::HasPressurePlateAt(Coordinates coord) const
+{
+	const auto objectIt = objects.find(coord);
+
+	if (objectIt == objects.end()) return false;
+
+	std::vector<Object> objectsOnTile = objectIt->second;
+	for (const auto& object : objectsOnTile)
+	{
+		if (object.type == PressurePlate) return true;
+	}
+
+	return false;
 }
 
 bool ObjectSystem::IsDirectionBlocked(const Coordinates tilePos, const EHexCellDirection direction) const
