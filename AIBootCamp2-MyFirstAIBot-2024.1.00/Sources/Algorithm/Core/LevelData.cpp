@@ -4,6 +4,7 @@
 #include <span>
 #include <algorithm>
 #include <queue>
+#include <ranges>
 
 #include "Algorithm/PathFinding/PathFinder.h"
 #include "Algorithm/Utils/CoordUtils.h"

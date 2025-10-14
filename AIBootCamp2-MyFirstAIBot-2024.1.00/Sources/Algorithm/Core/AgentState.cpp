@@ -3,7 +3,9 @@
 #include "Algorithm/Core/AgentState.h"
 
 #include "Algorithm/Core/Agent.h"
+#include "Algorithm/Core/LevelData.h"
 #include "Algorithm/PathFinding/PathFinder.h"
+#include "Systems/Locator.h"
 #include "Systems/TileSystem.h"
 
 using namespace std;

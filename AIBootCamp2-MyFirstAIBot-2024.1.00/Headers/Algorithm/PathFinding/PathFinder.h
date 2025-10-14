@@ -7,7 +7,6 @@
 #include <unordered_map>
 
 #include "Algorithm/Core/Coordinates.h"
-#include "Algorithm/Core/LevelData.h"
 
 class PathFinder
 {

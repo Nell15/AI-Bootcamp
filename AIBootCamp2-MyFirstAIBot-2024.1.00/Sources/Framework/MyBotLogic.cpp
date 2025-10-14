@@ -18,6 +18,10 @@
 
 using namespace std;
 
+// ===============================================
+// Core API
+// ===============================================
+
 void MyBotLogic::Configure(const SConfigData& _configData)
 {
 #ifdef BOT_LOGIC_DEBUG
@@ -31,27 +35,11 @@ void MyBotLogic::Init(const SInitData& _initData)
 {
 	BOT_LOGIC_LOG(mLogger, "Init", true);
 
-	Locator::Set(make_shared<ObjectSystem>());
-	Locator::Set(make_shared<AgentSystem>());
-	Locator::Set(make_shared<TileSystem>());
-
-	auto& agentSystem = Locator::Get<AgentSystem>();
+	SetLocators();
+	StoreAgents(_initData);
 
 	LevelData::Get().rowCount = _initData.rowCount;
 	LevelData::Get().colCount = _initData.colCount;
-
-	const span npcInfos{_initData.npcInfoArray, static_cast<size_t>(_initData.nbNPCs)};
-
-	for (const auto& npcInfo : npcInfos)
-	{
-		Coordinates agentPos = {.q = npcInfo.q, .r = npcInfo.r};
-		Agent agent{npcInfo.uid, agentPos};
-
-		BOT_LOGIC_LOG(mLogger, std::format("Agent{} - Start Position: {}", npcInfo.uid, agentPos), true);
-
-		agentSystem.AddOccupiedTiles(agentPos);
-		agentSystem.AddAgent(std::move(agent));
-	}
 }
 
 void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _orders)
@@ -65,25 +53,14 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 
 	for (const auto& npcInfo : npcInfos)
 	{
-		Agent& agent = agentSystem.GetAgent(npcInfo.uid);
-
-		agent.UpdateState(Coordinates{.q = npcInfo.q, .r = npcInfo.r});
-		agent.SetOrder();
-
-		auto agentNextOrder = agent.PopAndReturnNextAgentMove();
-
-		const Coordinates agentMoveDirection = agent.GetCoordinates() + agentNextOrder.direction;
-		agentSystem.UpdateOccupiedPosition(agent.GetCoordinates(), agentMoveDirection);
-
-		BOT_LOGIC_LOG(
-			mLogger,
-			std::format("Turn{} - Agent{} - State {} - Direction choice: {} -> {}", _turnData.turnNb, agentIt->GetId(),
-				agentIt->GetStateName(), order.direction, directionCoord),
-			true);
-
-		_orders.emplace_back(agentNextOrder);
+		const SOrder npcOrder = PlayAgentTurn(agentSystem, npcInfo);
+		_orders.emplace_back(npcOrder);
 	}
 }
+
+// ===============================================
+// Utils function
+// ===============================================
 
 void MyBotLogic::StoreTurnData(const STurnData& turnData)
 {
@@ -96,4 +73,49 @@ void MyBotLogic::StoreTurnData(const STurnData& turnData)
 
 	tileSystem.StoreTiles(turnData.tileInfoArray, turnData.tileInfoArraySize);
 	objectSystem.StoreObjects(turnData.objectInfoArray, turnData.objectInfoArraySize);
+}
+
+void MyBotLogic::SetLocators()
+{
+	Locator::Set(make_shared<ObjectSystem>());
+	Locator::Set(make_shared<AgentSystem>());
+	Locator::Set(make_shared<TileSystem>());
+}
+
+void MyBotLogic::StoreAgents(const SInitData& _initData)
+{
+	auto& agentSystem = Locator::Get<AgentSystem>();
+	const span npcInfos{ _initData.npcInfoArray, static_cast<size_t>(_initData.nbNPCs) };
+
+	for (const auto& npcInfo : npcInfos)
+	{
+		const Coordinates agentPos = { .q = npcInfo.q, .r = npcInfo.r };
+		Agent agent{ npcInfo.uid, agentPos };
+
+		BOT_LOGIC_LOG(mLogger, std::format("Agent{} - Start Position: {}", npcInfo.uid, agentPos), true);
+
+		agentSystem.AddOccupiedTiles(agentPos);
+		agentSystem.AddAgent(std::move(agent));
+	}
+}
+
+SOrder MyBotLogic::PlayAgentTurn(AgentSystem& agentSystem, const SNPCInfo& npcInfo)
+{
+	Agent& agent = agentSystem.GetAgent(npcInfo.uid);
+
+	agent.UpdateState(Coordinates{ .q = npcInfo.q, .r = npcInfo.r });
+	agent.SetOrder();
+
+	const SOrder agentNextOrder = agent.PopAndReturnNextAgentMove();
+
+	const Coordinates agentMoveDirection = agent.GetCoordinates() + agentNextOrder.direction;
+	agentSystem.UpdateOccupiedPosition(agent.GetCoordinates(), agentMoveDirection);
+
+	BOT_LOGIC_LOG(
+		mLogger,
+		std::format("Turn{} - Agent{} - State {} - Direction choice: {} -> {}", _turnData.turnNb, agentIt->GetId(),
+			agentIt->GetStateName(), order.direction, directionCoord),
+		true);
+
+	return agentNextOrder;
 }

@@ -1,6 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <format>
 #include <string_view>
 
 #include "Framework/Globals.h"

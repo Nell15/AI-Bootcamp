@@ -1,15 +1,8 @@
 #ifndef LEVEL_DATA_H
 #define LEVEL_DATA_H
 
-#include <algorithm>
-#include <ranges>
-#include <unordered_map>
-#include <unordered_set>
-
-#include "Agent.h"
 #include "Coordinates.h"
 #include "Systems/AgentSystem.h"
-#include "Systems/Locator.h"
 
 class LevelData
 {
@@ -34,7 +27,7 @@ public:
 
 	
 
-	[[nodiscard]] std::vector<Coordinates> GetWalkableNeighbors(const Coordinates& tileCoord);
+	[[nodiscard]] static std::vector<Coordinates> GetWalkableNeighbors(const Coordinates& tileCoord);
 	[[nodiscard]] bool DoTileExist(const Coordinates& tileCoord) const;
 
 	// TODO: put this in another class ?
