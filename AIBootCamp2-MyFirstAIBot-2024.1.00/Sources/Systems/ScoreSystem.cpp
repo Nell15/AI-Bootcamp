@@ -36,11 +36,17 @@ float ScoreSystem::CalculateScore(const Coordinates position, const int distance
 	// check if has pressure plate :
 	bool hasPlate = objectSystem.HasPressurePlateAt(position);
 	// check connections && their distance
-	float plateWeight = 3.0f; // TODO
-	float plateBias = hasPlate * plateWeight;
+	//float connectionsBias = ? // bonus depending on the distance from the plate to its doors
+	float connectionsBias;
+	if (hasPlate)
+	{
+	}
+
+	float plateWeight = 3.0f; // arbitrary number rn
+	float plateScore = hasPlate * plateWeight; // + connectionsBias;
 
 	// Penalize by distance (nonlinear decay works better than linear)
-	const float score = (baseScore + plateBias) / (1.f + distancePenalty * distance * distance);
+	const float score = (baseScore + plateScore) / (1.f + distancePenalty * distance * distance);
 
 	return score;
 }

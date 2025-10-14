@@ -21,10 +21,12 @@ void ObjectSystem::StoreObjects(const SObjectInfo* objectArrayInfo, const int nb
 {
 	const span objectInfos{ objectArrayInfo, static_cast<size_t>(nbObject) };
 
+	// Store objects
 	for (const auto& objectInfo : objectInfos)
 	{
 		Object object =
 		{
+			.id = objectInfo.uid,
 			.q = objectInfo.q,
 			.r = objectInfo.r,
 			.direction = objectInfo.cellPosition,
@@ -40,6 +42,9 @@ void ObjectSystem::StoreObjects(const SObjectInfo* objectArrayInfo, const int nb
 		if (ranges::find(objectAtPos, object) == objectAtPos.end())
 			objectAtPos.emplace_back(object);
 	}
+
+	// Store object connections
+
 }
 
 bool ObjectSystem::HasPressurePlateAt(Coordinates coord) const

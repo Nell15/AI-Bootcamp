@@ -17,6 +17,8 @@ public:
 
 	bool HasPressurePlateAt(Coordinates coord) const;
 
+	Object& getObjectByID(int id) const;
+
 private:
 	ObjectList objects{};
 

@@ -15,6 +15,8 @@ struct Object
 
 	std::optional<EObjectState> state;
 
+	std::vector<std::pair<int, int> > connectionsIds;
+
 	// TODO : add connections
 
 	bool operator==(const Object& other) const noexcept
