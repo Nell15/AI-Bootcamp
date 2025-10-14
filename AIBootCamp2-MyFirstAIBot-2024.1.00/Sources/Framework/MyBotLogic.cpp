@@ -16,6 +16,7 @@
 #include "Systems/Locator.h"
 #include "Systems/ObjectSystem.h"
 #include "Systems/TileSystem.h"
+#include "Utils/Utils.h"
 
 using namespace std;
 
@@ -116,8 +117,8 @@ SOrder MyBotLogic::PlayAgentTurn(AgentSystem& agentSystem, const SNPCInfo& npcIn
 
 	BOT_LOGIC_LOG(
 		mLogger,
-		std::format("Turn{} - Agent{} - State {} - Direction choice: {} -> {}", _turnData.turnNb, agentIt->GetId(),
-			agentIt->GetStateName(), order.direction, directionCoord),
+		std::format("Turn{} - Agent{} - State {} - Direction choice: {} -> {}", LevelData::Get().currentTurn, agent.GetId(),
+			agent.GetStateName(), agentNextOrder.direction, agentMoveDirection),
 		true);
 
 	return agentNextOrder;

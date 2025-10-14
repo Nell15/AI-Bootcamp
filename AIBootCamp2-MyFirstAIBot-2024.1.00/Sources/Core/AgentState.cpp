@@ -78,23 +78,11 @@ void Exploring::UpdateState(Agent& agent)
 
 void Exploring::SetOrder(Agent& agent)
 {
-	const auto isPathCorrect = [&]
-	{
-		PathFinder pathFinder{};
 
-		const Coordinates nextMove = agent.GetNextMove();
-		const auto path = pathFinder.FindPath(agent.GetPosition(), nextMove);
-
-		return path.has_value();
-	};
-
-	if (agent.IsPathEmpty() || not isPathCorrect())
-	{
 		const Coordinates agentCoord = agent.GetPosition();
 		const auto bestExploringPath = ScoreSystem::GetBestExploringPath(agentCoord);
 
 		agent.SetPath(ConvertPathToOrder(agent, bestExploringPath));
-	}
 }
 
 void Seeking::UpdateState(Agent& agent)
@@ -112,23 +100,6 @@ void Seeking::UpdateState(Agent& agent)
 	{
 		agent.SetState(make_unique<Waiting>());
 	}
-	else
-	{
-		PathFinder pathFinder{};
-
-		for (const Coordinates& goalTile : goalTiles)
-		{
-			// TODO(opti): create a fonction DoGoalExist ?
-			const auto path = pathFinder.FindPath(agent.GetPosition(), goalTile);
-			if (path.has_value())
-			{
-				return;
-			}
-		}
-
-		agent.SetChosenGoal(std::nullopt);
-		agent.SetState(make_unique<Exploring>());
-	}
 }
 
 void Seeking::SetOrder(Agent& agent)
@@ -137,17 +108,7 @@ void Seeking::SetOrder(Agent& agent)
 	const auto& tileSystem = Locator::Get<TileSystem>();
 	const auto& availableGoalTiles = tileSystem.GetAvailableGoalTiles();
 
-	const auto isPathCorrect = [&]
-	{
-		PathFinder pathFinder{};
-
-		const Coordinates nextMove = agent.GetNextMove();
-		const auto path = pathFinder.FindPath(agent.GetPosition(), nextMove);
-
-		return path.has_value();
-	};
-
-	if (agent.IsPathEmpty() || not isPathCorrect())
+	if (agent.IsPathEmpty())
 	{
 		PathFinder pathFinder{}; // TODO(opti): make pathfinder singleton ? Avoid calculating path every turn
 
