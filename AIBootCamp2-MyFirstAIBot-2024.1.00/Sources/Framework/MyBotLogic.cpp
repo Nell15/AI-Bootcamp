@@ -74,6 +74,8 @@ void MyBotLogic::StoreTurnData(const STurnData& turnData)
 
 	tileSystem.StoreTiles(turnData.tileInfoArray, turnData.tileInfoArraySize);
 	objectSystem.StoreObjects(turnData.objectInfoArray, turnData.objectInfoArraySize);
+
+	tileSystem.StoreNonExistingTiles();
 }
 
 void MyBotLogic::SetLocators()
@@ -91,7 +93,7 @@ void MyBotLogic::StoreAgents(const SInitData& _initData)
 	for (const auto& npcInfo : npcInfos)
 	{
 		const Coordinates agentPos = { .q = npcInfo.q, .r = npcInfo.r };
-		Agent agent{ npcInfo.uid, agentPos };
+		Agent agent{ npcInfo.uid, npcInfo.visionRange, agentPos };
 
 		BOT_LOGIC_LOG(mLogger, std::format("Agent{} - Start Position: {}", npcInfo.uid, agentPos), true);
 
@@ -109,8 +111,8 @@ SOrder MyBotLogic::PlayAgentTurn(AgentSystem& agentSystem, const SNPCInfo& npcIn
 
 	const SOrder agentNextOrder = agent.PopAndReturnNextAgentMove();
 
-	const Coordinates agentMoveDirection = agent.GetCoordinates() + agentNextOrder.direction;
-	agentSystem.UpdateOccupiedPosition(agent.GetCoordinates(), agentMoveDirection);
+	const Coordinates agentMoveDirection = agent.GetPosition() + agentNextOrder.direction;
+	agentSystem.UpdateOccupiedPosition(agent.GetPosition(), agentMoveDirection);
 
 	BOT_LOGIC_LOG(
 		mLogger,

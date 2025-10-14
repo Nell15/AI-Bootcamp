@@ -58,7 +58,8 @@ bool ScoreSystem::IsWorthToExplore(const Coordinates position)
 bool ScoreSystem::CanExplore(const Coordinates position, const EHexCellDirection direction)
 {
 	const auto& objectSystem = Locator::Get<ObjectSystem>();
+	const auto& tileSystem = Locator::Get<TileSystem>();
 	const Coordinates neighborPos = position + direction;
 
-	return LevelData::Get().DoTileExist(neighborPos) and not objectSystem.IsPathBlocked(position, direction);
+	return tileSystem.DoTileExist(neighborPos) and not objectSystem.IsPathBlocked(position, direction);
 }

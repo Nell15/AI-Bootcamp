@@ -116,4 +116,10 @@ static Coordinates operator+(const EHexCellDirection dir, const Coordinates& coo
 	return coords + dir;
 }
 
+static Coordinates& operator+=(Coordinates& coords, const EHexCellDirection dir) noexcept
+{
+	const auto offset = CoordUtils::DirToCoordinates(dir);
+	coords = coords + offset;
+	return coords;
+}
 #endif

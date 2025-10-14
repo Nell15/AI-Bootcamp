@@ -16,19 +16,23 @@ class Agent
 public:
 	Agent() = delete;
 
-	explicit Agent(const int id, const Coordinates coord) : id{id}, coordinates{coord},
-	                                                        state{std::make_unique<Exploring>()}
+	explicit Agent(const int id, const int visionRange, const Coordinates coord)
+		: id{id},
+		  visionRange{visionRange},
+		  position{coord},
+		  state{std::make_unique<Exploring>()}
 	{
 	}
 
 	[[nodiscard]] int GetId() const { return id; }
-	[[nodiscard]] Coordinates GetCoordinates() const { return coordinates; }
+	[[nodiscard]] int GetVisionRange() const { return visionRange; }
+	[[nodiscard]] Coordinates GetPosition() const { return position; }
 	[[nodiscard]] const std::optional<Coordinates>& GetChosenGoal() const { return chosenGoal; }
 	[[nodiscard]] bool IsPathEmpty() const { return path.empty(); }
 
 	[[nodiscard]] Coordinates GetNextMove() const
 	{
-		const auto nextMove = coordinates + CoordUtils::DirToCoordinates(path.back().direction);
+		const auto nextMove = position + CoordUtils::DirToCoordinates(path.back().direction);
 		return nextMove;
 	}
 
@@ -36,7 +40,7 @@ public:
 
 	void UpdateState(const Coordinates& newCoord)
 	{
-		coordinates = newCoord;
+		position = newCoord;
 		state->UpdateState(*this);
 	}
 
@@ -59,7 +63,8 @@ public:
 
 private:
 	int id;
-	Coordinates coordinates;
+	int visionRange;
+	Coordinates position;
 	std::optional<Coordinates> chosenGoal = std::nullopt;
 	std::vector<SOrder> path{};
 	std::unique_ptr<AgentState> state{};

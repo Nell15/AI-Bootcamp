@@ -3,6 +3,7 @@
 #include <ranges>
 #include <span>
 
+#include "Core/LevelData.h"
 #include "Systems/Locator.h"
 #include "Systems/ObjectSystem.h"
 
@@ -18,6 +19,28 @@ void TileSystem::StoreTiles(const STileInfo* tileArrayInfo, const int nbTile)
 
 		if (type == Goal and ranges::find(goalTiles, coords) == goalTiles.end())
 			goalTiles.emplace_back(coords);
+	}
+}
+
+void TileSystem::StoreNonExistingTiles()
+{
+	const auto& objectSystem = Locator::Get<ObjectSystem>();
+	const auto& agents = Locator::Get<AgentSystem>().GetAgents();
+
+	for (const Agent& agent : agents | views::values)
+	{
+		const Coordinates agentPos = agent.GetPosition();
+
+		for (const EHexCellDirection direction : CoordUtils::neighborDirection)
+		{
+			const Coordinates neighborPos = agentPos + direction;
+
+			if (LevelData::Get().DoTileExist(neighborPos))
+				continue;
+
+			if (not IsStored(neighborPos) and not objectSystem.IsPathBlocked(agentPos, direction))
+				nonExistingTiles.emplace(neighborPos);
+		}
 	}
 }
 
@@ -39,7 +62,7 @@ vector<Coordinates> TileSystem::GetWalkableNeighbors(const Coordinates position)
 	const auto& agentSystem = Locator::Get<AgentSystem>();
 	vector<Coordinates> neighbors{};
 
-	for (const auto& direction : CoordUtils::neighborDirection)
+	for (const EHexCellDirection direction : CoordUtils::neighborDirection)
 	{
 		const Coordinates neighborPos = position + direction;
 		if (IsPossibleToWalkTo(position, direction) and not agentSystem.IsTileOccupied(neighborPos))

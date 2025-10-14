@@ -10,6 +10,8 @@
 class AgentSystem
 {
 public:
+	using AgentList = std::unordered_map<int, Agent>;
+
 	void AddOccupiedTiles(const Coordinates position) { occupiedPos.emplace(position); }
 
 	void UpdateOccupiedPosition(const Coordinates oldPos, const Coordinates newPos)
@@ -28,12 +30,13 @@ public:
 		agents.emplace(agent.GetId(), std::move(agent));
 	}
 
-	Agent& GetAgent(int id);
+	[[nodiscard]] Agent& GetAgent(int id);
+	[[nodiscard]] const AgentList& GetAgents() const { return agents; }
 
 	[[nodiscard]] bool IsGoalChosen(Coordinates goalPos) const;
 
 private:
-	std::unordered_map<int, Agent> agents{};
+	AgentList agents{};
 	std::unordered_set<Coordinates> occupiedPos{};
 };
 

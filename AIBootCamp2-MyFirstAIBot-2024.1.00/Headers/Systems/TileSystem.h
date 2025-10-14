@@ -20,10 +20,15 @@ public:
 
 	[[nodiscard]] bool IsPossibleToWalkTo(Coordinates position, EHexCellDirection direction) const;
 	void StoreTiles(const STileInfo* tileArrayInfo, int nbTile);
+	void StoreNonExistingTiles();
+
+	[[nodiscard]] bool DoTileExist(const Coordinates position) const { return not nonExistingTiles.contains(position); }
+	[[nodiscard]] bool IsStored(const Coordinates position) const { return tiles.contains(position); }
 
 private:
 	GoalTilesType goalTiles{};
 	TileArrayType tiles{};
+	std::unordered_set<Coordinates> nonExistingTiles;
 
 	[[nodiscard]] bool IsPossibleToWalkTo(Coordinates position) const;
 };

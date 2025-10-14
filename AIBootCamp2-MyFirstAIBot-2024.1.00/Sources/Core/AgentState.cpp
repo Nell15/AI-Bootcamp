@@ -19,7 +19,7 @@ namespace
 
 		npcOrders.resize(path.size());
 
-		Coordinates currCoord = agent.GetCoordinates();
+		Coordinates currCoord = agent.GetPosition();
 
 		for (size_t i = 0; i < path.size(); ++i)
 		{
@@ -55,19 +55,20 @@ void Waiting::SetOrder(Agent& agent)
 
 void Exploring::UpdateState(Agent& agent)
 {
-	auto& tileSystem = Locator::Get<TileSystem>();
+	const auto& tileSystem = Locator::Get<TileSystem>();
 	const auto& availableGoalTiles = tileSystem.GetAvailableGoalTiles();
 
 	if (not availableGoalTiles.empty())
 	{
-		PathFinder pathFinder{}; // TODO(opti): make pathfinder singleton ?
+		PathFinder pathFinder{};
 
 		for (const Coordinates& goalTile : availableGoalTiles)
 		{
 			// TODO(opti): create a fonction DoGoalExist ?
-			const auto path = pathFinder.FindPath(agent.GetCoordinates(), goalTile);
+			const auto path = pathFinder.FindPath(agent.GetPosition(), goalTile);
 			if (path.has_value())
 			{
+				agent.SetChosenGoal(std::nullopt);
 				agent.SetState(make_unique<Seeking>());
 				break;
 			}
@@ -77,36 +78,76 @@ void Exploring::UpdateState(Agent& agent)
 
 void Exploring::SetOrder(Agent& agent)
 {
-	const Coordinates agentCoord = agent.GetCoordinates();
-	const auto bestExploringPath = ScoreSystem::GetBestExploringPath(agentCoord);
+	const auto isPathCorrect = [&]
+	{
+		PathFinder pathFinder{};
 
-	agent.SetPath(ConvertPathToOrder(agent, bestExploringPath));
+		const Coordinates nextMove = agent.GetNextMove();
+		const auto path = pathFinder.FindPath(agent.GetPosition(), nextMove);
+
+		return path.has_value();
+	};
+
+	if (agent.IsPathEmpty() || not isPathCorrect())
+	{
+		const Coordinates agentCoord = agent.GetPosition();
+		const auto bestExploringPath = ScoreSystem::GetBestExploringPath(agentCoord);
+
+		agent.SetPath(ConvertPathToOrder(agent, bestExploringPath));
+	}
 }
 
 void Seeking::UpdateState(Agent& agent)
 {
-	auto& tileSystem = Locator::Get<TileSystem>();
+	const auto& tileSystem = Locator::Get<TileSystem>();
 	const auto& goalTiles = tileSystem.GetGoalTiles();
-	const Coordinates agentCoord = agent.GetCoordinates();
+	const Coordinates agentCoord = agent.GetPosition();
 
 	if (goalTiles.empty())
 	{
-		agent.SetState(make_unique<Exploring>());
 		agent.SetChosenGoal(std::nullopt);
+		agent.SetState(make_unique<Exploring>());
 	}
 	else if (ranges::find(goalTiles, agentCoord) != goalTiles.end())
 	{
 		agent.SetState(make_unique<Waiting>());
+	}
+	else
+	{
+		PathFinder pathFinder{};
+
+		for (const Coordinates& goalTile : goalTiles)
+		{
+			// TODO(opti): create a fonction DoGoalExist ?
+			const auto path = pathFinder.FindPath(agent.GetPosition(), goalTile);
+			if (path.has_value())
+			{
+				return;
+			}
+		}
+
+		agent.SetChosenGoal(std::nullopt);
+		agent.SetState(make_unique<Exploring>());
 	}
 }
 
 void Seeking::SetOrder(Agent& agent)
 {
 	const auto& agentSystem = Locator::Get<AgentSystem>();
-	auto& tileSystem = Locator::Get<TileSystem>();
+	const auto& tileSystem = Locator::Get<TileSystem>();
 	const auto& availableGoalTiles = tileSystem.GetAvailableGoalTiles();
 
-	if (agent.IsPathEmpty())
+	const auto isPathCorrect = [&]
+	{
+		PathFinder pathFinder{};
+
+		const Coordinates nextMove = agent.GetNextMove();
+		const auto path = pathFinder.FindPath(agent.GetPosition(), nextMove);
+
+		return path.has_value();
+	};
+
+	if (agent.IsPathEmpty() || not isPathCorrect())
 	{
 		PathFinder pathFinder{}; // TODO(opti): make pathfinder singleton ? Avoid calculating path every turn
 
@@ -114,7 +155,7 @@ void Seeking::SetOrder(Agent& agent)
 		vector<Coordinates> bestPath{};
 		for (const Coordinates& goalTile : availableGoalTiles)
 		{
-			const auto path = pathFinder.FindPath(agent.GetCoordinates(), goalTile);
+			const auto path = pathFinder.FindPath(agent.GetPosition(), goalTile);
 			if (path.has_value())
 			{
 				const auto pathSize = path.value().size();
