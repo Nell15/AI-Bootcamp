@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 #include "AgentSystem.h"
-#include "Algorithm/Core/Coordinates.h"
+#include "Core/Coordinates.h"
 #include "Framework/Globals.h"
 
 class TileSystem

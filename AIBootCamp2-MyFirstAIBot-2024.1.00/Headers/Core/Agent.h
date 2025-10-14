@@ -6,10 +6,10 @@
 
 #include "AgentState.h"
 #include "Coordinates.h"
-#include "Algorithm/Utils/CoordUtils.h"
+#include "Utils/CoordUtils.h"
 #include "Framework/Globals.h"
 
-#include "Algorithm/Utils/VerboseAssertion.h"
+#include "Utils/VerboseAssertion.h"
 
 class Agent
 {
@@ -51,10 +51,10 @@ public:
 	{
 		vassert(!path.empty(), "Agent path is empty: cannot pop from it");
 
-		const auto direction = path.back();
+		const SOrder order = path.back();
 		path.pop_back();
 
-		return direction;
+		return order;
 	}
 
 private:

@@ -1,10 +1,10 @@
 #include <utility>
 
-#include "Algorithm/Core/AgentState.h"
+#include "Core/AgentState.h"
 
-#include "Algorithm/Core/Agent.h"
-#include "Algorithm/Core/LevelData.h"
-#include "Algorithm/PathFinding/PathFinder.h"
+#include "Core/Agent.h"
+#include "Core/LevelData.h"
+#include "PathFinding/PathFinder.h"
 #include "Systems/Locator.h"
 #include "Systems/TileSystem.h"
 

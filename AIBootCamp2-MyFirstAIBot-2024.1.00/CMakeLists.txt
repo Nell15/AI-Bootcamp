@@ -19,15 +19,17 @@ SET( AIBOT_BUILDFILES
 )
 
 SET( AIBOT_HEADERS
-    Headers/Algorithm/PathFinding/PathFinder.h
-    Headers/Algorithm/Core/Coordinates.h
-    Headers/Algorithm/Core/Object.h
-    Headers/Algorithm/Core/LevelData.h
-    Headers/Algorithm/Core/Agent.h
-    Headers/Algorithm/Utils/Utils.h
-    Headers/Algorithm/Utils/VerboseAssertion.h
-    Headers/Algorithm/Utils/CoordUtils.h
-    Headers/Algorithm/Core/AgentState.h
+    Headers/PathFinding/PathFinder.h
+
+    Headers/Core/Coordinates.h
+    Headers/Core/Object.h
+    Headers/Core/LevelData.h
+    Headers/Core/Agent.h
+    Headers/Core/AgentState.h
+
+    Headers/Utils/Utils.h
+    Headers/Utils/VerboseAssertion.h
+    Headers/Utils/CoordUtils.h
 
     Headers/Systems/ObjectSystem.h
     Headers/Systems/TileSystem.h
@@ -49,10 +51,10 @@ SET( AIBOT_HEADERS
 )
 
 SET( AIBOT_SRC
-    Sources/Algorithm/PathFinding/PathFinder.cpp
-    Sources/Algorithm/Core/Agent.cpp
-    Sources/Algorithm/Core/LevelData.cpp
-    Sources/Algorithm/Core/AgentState.cpp
+    Sources/PathFinding/PathFinder.cpp
+
+    Sources/Core/LevelData.cpp
+    Sources/Core/AgentState.cpp
 
     Sources/Systems/ObjectSystem.cpp
     Sources/Systems/TileSystem.cpp

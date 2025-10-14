@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "Algorithm/Core/Agent.h"
+#include "Core/Agent.h"
 
 class AgentSystem
 {

@@ -23,7 +23,7 @@ public:
 	}
 
 	[[nodiscard]] int CalculateTileScore(const Coordinates& tileCoord) const;
-	[[nodiscard]] std::vector<Coordinates> GetBestExploringTile(const Coordinates& tileCoord);
+	[[nodiscard]] std::vector<Coordinates> GetBestExploringTile(const Coordinates& tileCoord) const;
 
 	
 
@@ -31,7 +31,7 @@ public:
 	[[nodiscard]] bool DoTileExist(const Coordinates& tileCoord) const;
 
 	// TODO: put this in another class ?
-	[[nodiscard]] Coordinates GetBestNeighbor(const Coordinates& tileCoord);
+	[[nodiscard]] Coordinates GetBestNeighbor(const Coordinates& tileCoord) const;
 
 private:
 	LevelData() = default;

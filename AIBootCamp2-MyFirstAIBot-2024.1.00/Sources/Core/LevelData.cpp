@@ -1,4 +1,4 @@
-#include "Algorithm/Core/LevelData.h"
+#include "Core/LevelData.h"
 
 #include <array>
 #include <span>
@@ -6,8 +6,8 @@
 #include <queue>
 #include <ranges>
 
-#include "Algorithm/PathFinding/PathFinder.h"
-#include "Algorithm/Utils/CoordUtils.h"
+#include "PathFinding/PathFinder.h"
+#include "Utils/CoordUtils.h"
 #include "Systems/Locator.h"
 #include "Systems/ObjectSystem.h"
 #include "Systems/TileSystem.h"
@@ -30,7 +30,7 @@ int LevelData::CalculateTileScore(const Coordinates& tileCoord) const
 	return score;
 }
 
-vector<Coordinates> LevelData::GetBestExploringTile(const Coordinates& tileCoord)
+vector<Coordinates> LevelData::GetBestExploringTile(const Coordinates& tileCoord) const
 {
 	using TileScore = std::pair<int, Coordinates>;
 	struct MinScoreCompare
@@ -44,7 +44,7 @@ vector<Coordinates> LevelData::GetBestExploringTile(const Coordinates& tileCoord
 	auto& tileSystem = Locator::Get<TileSystem>();
 
 	priority_queue<TileScore, vector<TileScore>, MinScoreCompare> tileScores;
-	for (const auto key : tileSystem.GetTiles() | views::keys)
+	for (const Coordinates& key : tileSystem.GetTiles() | views::keys)
 		tileScores.emplace(CalculateTileScore(key), key);
 
 	PathFinder pathFinder{};
@@ -62,7 +62,7 @@ vector<Coordinates> LevelData::GetBestExploringTile(const Coordinates& tileCoord
 	return path.value();
 }
 
-Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord)
+Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord) const
 {
 	const auto& objectSystem = Locator::Get<ObjectSystem>();
 	const auto& agentSystem = Locator::Get<AgentSystem>();
@@ -71,7 +71,7 @@ Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord)
 	Coordinates bestNeighbor = tileCoord;
 	int bestNeighborScore = -1;
 
-	for (const auto neighbor : GetWalkableNeighbors(tileCoord))
+	for (const Coordinates& neighbor : GetWalkableNeighbors(tileCoord))
 	{
 		if (agentSystem.IsTileOccupied(neighbor))
 			continue;

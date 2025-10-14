@@ -2,7 +2,7 @@
 
 #include <span>
 
-#include "Algorithm/Utils/CoordUtils.h"
+#include "Utils/CoordUtils.h"
 
 using namespace std;
 

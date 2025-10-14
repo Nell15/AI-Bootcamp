@@ -3,8 +3,8 @@
 
 #include <unordered_map>
 
-#include "Algorithm/Core/Coordinates.h"
-#include "Algorithm/Core/Object.h"
+#include "Core/Coordinates.h"
+#include "Core/Object.h"
 
 class ObjectSystem
 {

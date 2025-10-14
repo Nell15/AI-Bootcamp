@@ -2,8 +2,8 @@
 
 #include "BotLogicIF.h"
 #include "Logger.h"
-#include "Algorithm/Core/LevelData.h"
-#include "Algorithm/PathFinding/PathFinder.h"
+#include "Core/LevelData.h"
+#include "PathFinding/PathFinder.h"
 #include "Framework/Globals.h"
 
 #ifdef _DEBUG

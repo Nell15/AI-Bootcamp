@@ -10,7 +10,7 @@
 #include "Framework/ConfigData.h"
 #include "Framework/TurnData.h"
 
-#include "Algorithm/Core/Coordinates.h"
+#include "Core/Coordinates.h"
 #include "Framework/InitData.h"
 #include "Systems/Locator.h"
 #include "Systems/ObjectSystem.h"

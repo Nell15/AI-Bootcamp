@@ -1,9 +1,9 @@
-#include "Algorithm/PathFinding/PathFinder.h"
+#include "PathFinding/PathFinder.h"
 
 #include <queue>
 
-#include "Algorithm/Core/LevelData.h"
-#include "Algorithm/Utils/CoordUtils.h"
+#include "Core/LevelData.h"
+#include "Utils/CoordUtils.h"
 
 using namespace std;
 
