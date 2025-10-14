@@ -9,18 +9,20 @@
 #include "Algorithm/Utils/CoordUtils.h"
 #include "Systems/Locator.h"
 #include "Systems/ObjectSystem.h"
+#include "Systems/TileSystem.h"
 
 using namespace std;
 
 int LevelData::CalculateTileScore(const Coordinates& tileCoord) const
 {
 	const auto& objectSystem = Locator::Get<ObjectSystem>();
+	auto& tileSystem = Locator::Get<TileSystem>();
 	int score = CoordUtils::NB_NEIGHBOR_DIRECTION;
 
 	for (const auto direction : CoordUtils::neighborDirection)
 	{
 		const Coordinates neighborPos = tileCoord + direction;
-		if (tiles.contains(neighborPos) || not DoTileExist(neighborPos) || objectSystem.IsPathBlocked(tileCoord, direction))
+		if (tileSystem.GetTiles().contains(neighborPos) || not DoTileExist(neighborPos) || objectSystem.IsPathBlocked(tileCoord, direction))
 			--score;
 	}
 
@@ -38,8 +40,10 @@ vector<Coordinates> LevelData::GetBestExploringTile(const Coordinates& tileCoord
 		}
 	};
 
+	auto& tileSystem = Locator::Get<TileSystem>();
+
 	priority_queue<TileScore, vector<TileScore>, MinScoreCompare> tileScores;
-	for (const auto key : tiles | views::keys)
+	for (const auto key : tileSystem.GetTiles() | views::keys)
 		tileScores.emplace(CalculateTileScore(key), key);
 
 	PathFinder pathFinder{};
@@ -57,23 +61,11 @@ vector<Coordinates> LevelData::GetBestExploringTile(const Coordinates& tileCoord
 	return path.value();
 }
 
-void LevelData::StoreTiles(const STileInfo* tileArrayInfo, const int nbTile)
-{
-	for (const auto tilesInfo = std::span{tileArrayInfo, static_cast<size_t>(nbTile)};
-	     const auto& [q, r, type] : tilesInfo)
-	{
-		const Coordinates coords{.q = q, .r = r};
-		tiles.try_emplace(coords, type);
-
-		if (type == Goal && ranges::find(goalTiles, coords) == goalTiles.end())
-			goalTiles.emplace_back(coords);
-	}
-}
-
 Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord)
 {
 	const auto& objectSystem = Locator::Get<ObjectSystem>();
 	const auto& agentSystem = Locator::Get<AgentSystem>();
+	auto& tileSystem = Locator::Get<TileSystem>();
 
 	Coordinates bestNeighbor = tileCoord;
 	int bestNeighborScore = -1;
@@ -88,7 +80,7 @@ Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord)
 		for (const auto direction : CoordUtils::neighborDirection)
 		{
 			const Coordinates neighborPos = neighbor + direction;
-			if (tiles.contains(neighborPos) or not DoTileExist(neighborPos) or objectSystem.IsPathBlocked(
+			if (tileSystem.GetTiles().contains(neighborPos) or not DoTileExist(neighborPos) or objectSystem.IsPathBlocked(
 				neighborPos, direction))
 				--currentScore;
 		}
@@ -105,32 +97,18 @@ Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord)
 
 vector<Coordinates> LevelData::GetWalkableNeighbors(const Coordinates& tileCoord)
 {
+	auto& tileSystem = Locator::Get<TileSystem>();
 	const auto& agentSystem = Locator::Get<AgentSystem>();
 	vector<Coordinates> neighbors{};
 
 	for (const auto& direction : CoordUtils::neighborDirection)
 	{
 		const Coordinates neighborPos = tileCoord + direction;
-		if (IsPossibleToWalkTo(tileCoord, direction) and not agentSystem.IsTileOccupied(neighborPos))
+		if (tileSystem.IsPossibleToWalkTo(tileCoord, direction) and not agentSystem.IsTileOccupied(neighborPos))
 			neighbors.emplace_back(neighborPos);
 	}
 
 	return neighbors;
-}
-
-bool LevelData::IsPossibleToWalkTo(const Coordinates tileCoord, const EHexCellDirection direction)
-{
-	const auto& objectSystem = Locator::Get<ObjectSystem>();
-	const Coordinates neighborPos = tileCoord + direction;
-
-	return IsPossibleToWalkOnTile(neighborPos) && not objectSystem.IsPathBlocked(tileCoord, direction);
-}
-
-bool LevelData::IsPossibleToWalkOnTile(const Coordinates& coord)
-{
-	const auto& tileIt = tiles.find(coord);
-
-	return tileIt != tiles.end() && tileIt->second != Forbidden;
 }
 
 bool LevelData::DoTileExist(const Coordinates& tileCoord) const

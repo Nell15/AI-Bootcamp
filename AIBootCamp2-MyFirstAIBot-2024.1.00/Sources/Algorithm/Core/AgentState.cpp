@@ -4,6 +4,7 @@
 
 #include "Algorithm/Core/Agent.h"
 #include "Algorithm/PathFinding/PathFinder.h"
+#include "Systems/TileSystem.h"
 
 using namespace std;
 
@@ -51,11 +52,14 @@ void Waiting::SetOrder(Agent& agent)
 
 void Exploring::UpdateState(Agent& agent)
 {
-	if (not LevelData::Get().GetAvailableGoalTiles().empty())
+	auto& tileSystem = Locator::Get<TileSystem>();
+	const auto& availableGoalTiles = tileSystem.GetAvailableGoalTiles();
+
+	if (not availableGoalTiles.empty())
 	{
 		PathFinder pathFinder{}; // TODO(opti): make pathfinder singleton ?
 
-		for (const Coordinates& goalTile : LevelData::Get().GetAvailableGoalTiles())
+		for (const Coordinates& goalTile : availableGoalTiles)
 		{
 			// TODO(opti): create a fonction DoGoalExist ?
 			const auto path = pathFinder.FindPath(agent.GetCoordinates(), goalTile);
@@ -78,8 +82,10 @@ void Exploring::SetOrder(Agent& agent)
 
 void Seeking::UpdateState(Agent& agent)
 {
-	const auto& goalTiles = LevelData::Get().GetGoalTiles();
+	auto& tileSystem = Locator::Get<TileSystem>();
+	const auto& goalTiles = tileSystem.GetGoalTiles();
 	const Coordinates agentCoord = agent.GetCoordinates();
+
 	if (goalTiles.empty())
 	{
 		agent.SetState(make_unique<Exploring>());
@@ -94,6 +100,8 @@ void Seeking::UpdateState(Agent& agent)
 void Seeking::SetOrder(Agent& agent)
 {
 	const auto& agentSystem = Locator::Get<AgentSystem>();
+	auto& tileSystem = Locator::Get<TileSystem>();
+	const auto& availableGoalTiles = tileSystem.GetAvailableGoalTiles();
 
 	if (agent.IsPathEmpty())
 	{
@@ -101,7 +109,7 @@ void Seeking::SetOrder(Agent& agent)
 
 		size_t bestDistance = INT_MAX;
 		vector<Coordinates> bestPath{};
-		for (const Coordinates& goalTile : LevelData::Get().GetAvailableGoalTiles())
+		for (const Coordinates& goalTile : availableGoalTiles)
 		{
 			const auto path = pathFinder.FindPath(agent.GetCoordinates(), goalTile);
 			if (path.has_value())

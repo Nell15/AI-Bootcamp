@@ -14,6 +14,7 @@
 #include "Framework/InitData.h"
 #include "Systems/Locator.h"
 #include "Systems/ObjectSystem.h"
+#include "Systems/TileSystem.h"
 
 using namespace std;
 
@@ -32,6 +33,7 @@ void MyBotLogic::Init(const SInitData& _initData)
 
 	Locator::Set(make_shared<ObjectSystem>());
 	Locator::Set(make_shared<AgentSystem>());
+	Locator::Set(make_shared<TileSystem>());
 
 	auto& agentSystem = Locator::Get<AgentSystem>();
 
@@ -90,7 +92,8 @@ void MyBotLogic::StoreTurnData(const STurnData& turnData)
 #endif
 
 	auto& objectSystem = Locator::Get<ObjectSystem>();
+	auto& tileSystem = Locator::Get<TileSystem>();
 
-	LevelData::Get().StoreTiles(turnData.tileInfoArray, turnData.tileInfoArraySize);
+	tileSystem.StoreTiles(turnData.tileInfoArray, turnData.tileInfoArraySize);
 	objectSystem.StoreObjects(turnData.objectInfoArray, turnData.objectInfoArraySize);
 }
