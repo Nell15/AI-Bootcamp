@@ -10,7 +10,7 @@ class Locator
 {
 public:
 	template <typename T>
-	static void Set(std::shared_ptr<T> system)
+	static void Set(const std::shared_ptr<T>& system)
 	{
 		systems[std::type_index(typeid(T))] = system;
 	}

@@ -10,15 +10,15 @@
 class AgentSystem
 {
 public:
-	void AddOccupiedTiles(const Coordinates& position) { occupiedPos.emplace(position); }
+	void AddOccupiedTiles(const Coordinates position) { occupiedPos.emplace(position); }
 
-	void UpdateOccupiedPosition(const Coordinates& oldPos, const Coordinates& newPos)
+	void UpdateOccupiedPosition(const Coordinates oldPos, const Coordinates newPos)
 	{
 		occupiedPos.erase(oldPos);
 		occupiedPos.emplace(newPos);
 	}
 
-	[[nodiscard]] bool IsTileOccupied(const Coordinates& position) const
+	[[nodiscard]] bool IsTileOccupied(const Coordinates position) const
 	{
 		return occupiedPos.contains(position);
 	}
@@ -28,22 +28,9 @@ public:
 		agents.emplace(agent.GetId(), std::move(agent));
 	}
 
-	Agent& GetAgent(const int id)
-	{
-		const auto agentIt = agents.find(id);
+	Agent& GetAgent(int id);
 
-		vassert(agentIt != agents.end(), "Cannot find agent with ID " + id);
-
-		return agentIt->second;
-	}
-
-	[[nodiscard]] bool IsGoalChosen(const Coordinates goalPos) const
-	{
-		return std::ranges::any_of(agents, [&](const auto& agentPair)
-			{
-				return agentPair.second.GetChosenGoal() == goalPos;
-			});
-	}
+	[[nodiscard]] bool IsGoalChosen(Coordinates goalPos) const;
 
 private:
 	std::unordered_map<int, Agent> agents{};

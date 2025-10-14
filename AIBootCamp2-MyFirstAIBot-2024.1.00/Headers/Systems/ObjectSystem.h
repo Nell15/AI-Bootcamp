@@ -12,6 +12,7 @@ public:
 	using ObjectList = std::unordered_map<Coordinates, std::vector<Object>>;
 
 	[[nodiscard]] bool IsPathBlocked(Coordinates tilePos, EHexCellDirection direction) const;
+
 	void StoreObjects(const SObjectInfo* objectArrayInfo, int nbObject);
 
 private:
