@@ -93,6 +93,8 @@ void Seeking::UpdateState(Agent& agent)
 
 void Seeking::SetOrder(Agent& agent)
 {
+	const auto& agentSystem = Locator::Get<AgentSystem>();
+
 	if (agent.IsPathEmpty())
 	{
 		PathFinder pathFinder{}; // TODO(opti): make pathfinder singleton ? Avoid calculating path every turn
@@ -116,7 +118,7 @@ void Seeking::SetOrder(Agent& agent)
 
 		agent.SetPath(ConvertPathToOrder(agent, bestPath));
 	}
-	else if (LevelData::Get().IsTileOccupied(agent.GetNextMove()))
+	else if (agentSystem.IsTileOccupied(agent.GetNextMove()))
 	{
 		agent.AddOrder(
 			{

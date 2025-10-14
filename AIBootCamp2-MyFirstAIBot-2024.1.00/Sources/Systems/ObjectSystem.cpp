@@ -31,11 +31,11 @@ void ObjectSystem::StoreObjects(const SObjectInfo* objectArrayInfo, const int nb
 			.type = static_cast<EObjectType>(*objectInfo.types)
 		};
 
-		Coordinates objectCoordinates{ .q = object.q, .r = object.r };
-		auto& vec = objects[objectCoordinates];
+		Coordinates objectPos{ .q = object.q, .r = object.r };
+		auto& objectAtPos = objects[objectPos];
 
-		if (ranges::find(vec, object) == vec.end())
-			vec.emplace_back(object);
+		if (ranges::find(objectAtPos, object) == objectAtPos.end())
+			objectAtPos.emplace_back(object);
 	}
 }
 

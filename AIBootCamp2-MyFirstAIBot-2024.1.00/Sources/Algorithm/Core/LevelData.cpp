@@ -73,12 +73,14 @@ void LevelData::StoreTiles(const STileInfo* tileArrayInfo, const int nbTile)
 Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord)
 {
 	const auto& objectSystem = Locator::Get<ObjectSystem>();
+	const auto& agentSystem = Locator::Get<AgentSystem>();
+
 	Coordinates bestNeighbor = tileCoord;
 	int bestNeighborScore = -1;
 
 	for (const auto neighbor : GetWalkableNeighbors(tileCoord))
 	{
-		if (IsTileOccupied(neighbor))
+		if (agentSystem.IsTileOccupied(neighbor))
 			continue;
 
 		int currentScore = CoordUtils::NB_NEIGHBOR_DIRECTION;
@@ -86,7 +88,7 @@ Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord)
 		for (const auto direction : CoordUtils::neighborDirection)
 		{
 			const Coordinates neighborPos = neighbor + direction;
-			if (tiles.contains(neighborPos) || not DoTileExist(neighborPos) || objectSystem.IsPathBlocked(
+			if (tiles.contains(neighborPos) or not DoTileExist(neighborPos) or objectSystem.IsPathBlocked(
 				neighborPos, direction))
 				--currentScore;
 		}
@@ -103,12 +105,13 @@ Coordinates LevelData::GetBestNeighbor(const Coordinates& tileCoord)
 
 vector<Coordinates> LevelData::GetWalkableNeighbors(const Coordinates& tileCoord)
 {
+	const auto& agentSystem = Locator::Get<AgentSystem>();
 	vector<Coordinates> neighbors{};
 
 	for (const auto& direction : CoordUtils::neighborDirection)
 	{
 		const Coordinates neighborPos = tileCoord + direction;
-		if (IsPossibleToWalkTo(tileCoord, direction) && not IsTileOccupied(neighborPos))
+		if (IsPossibleToWalkTo(tileCoord, direction) and not agentSystem.IsTileOccupied(neighborPos))
 			neighbors.emplace_back(neighborPos);
 	}
 

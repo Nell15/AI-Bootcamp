@@ -8,7 +8,8 @@
 
 #include "Agent.h"
 #include "Coordinates.h"
-#include "Object.h"
+#include "Systems/AgentSystem.h"
+#include "Systems/Locator.h"
 
 class LevelData
 {
@@ -36,10 +37,12 @@ public:
 
 	[[nodiscard]] std::vector<Coordinates> GetAvailableGoalTiles()
 	{
+		const auto& agentSystem = Locator::Get<AgentSystem>();
+
 		auto availableGoals = goalTiles
-			| std::views::filter([this](const Coordinates& coord)
+			| std::views::filter([&](const Coordinates goalPos)
 			{
-				return !IsTileOccupied(coord) && !IsGoalChosen(coord);
+				return not agentSystem.IsTileOccupied(goalPos) and not agentSystem.IsGoalChosen(goalPos);
 			});
 
 		return {availableGoals.begin(), availableGoals.end()};
@@ -54,20 +57,6 @@ public:
 
 	void StoreTiles(const STileInfo* tileArrayInfo, int nbTile);
 
-	void AddOccupiedTiles(const Coordinates& tileCoord) { occupiedTiles.emplace(tileCoord); }
-
-	void UpdateOccupiedTile(const Coordinates& oldTile, const Coordinates& newTile)
-	{
-		occupiedTiles.erase(oldTile);
-		occupiedTiles.emplace(newTile);
-	}
-
-
-	[[nodiscard]] bool IsTileOccupied(const Coordinates& tileCoord) const
-	{
-		return occupiedTiles.contains(tileCoord);
-	}
-
 	[[nodiscard]] std::vector<Coordinates> GetWalkableNeighbors(const Coordinates& tileCoord);
 	[[nodiscard]] bool IsPossibleToWalkTo(Coordinates tileCoord, EHexCellDirection direction);
 	[[nodiscard]] bool IsPossibleToWalkOnTile(const Coordinates& coord);
@@ -76,26 +65,12 @@ public:
 	// TODO: put this in another class ?
 	[[nodiscard]] Coordinates GetBestNeighbor(const Coordinates& tileCoord);
 
-	[[nodiscard]] std::vector<Agent>& GetAgents() { return agents; }
-
-
 private:
 	GoalTilesType goalTiles{};
 	TileArrayType tiles{};
-	
-	std::vector<Agent> agents{};
-	std::unordered_set<Coordinates> occupiedTiles{};
 
 	LevelData() = default;
 	~LevelData() = default;
-
-	[[nodiscard]] bool IsGoalChosen(const Coordinates& goal) const
-	{
-		return std::ranges::any_of(agents, [&](const auto& agent)
-		{
-			return agent.GetChosenGoal() == goal;
-		});
-	}
 };
 
 
