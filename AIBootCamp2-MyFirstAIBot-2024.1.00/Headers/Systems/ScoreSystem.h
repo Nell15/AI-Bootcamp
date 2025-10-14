@@ -3,18 +3,22 @@
 
 #include "Core/Coordinates.h"
 #include "Framework/Globals.h"
+#include "Utils/CoordUtils.h"
 
 class ScoreSystem
 {
 public:
-	[[nodiscard]] static int CalculateScore(Coordinates position);
+	[[nodiscard]] static float CalculateScore(Coordinates position, int distance);
 	[[nodiscard]] static std::vector<Coordinates> GetBestExploringPath(Coordinates position);
 
 private:
-	using TileScore = std::pair<int, Coordinates>;
+	using TileScore = std::pair<float, Coordinates>;
 
-	struct MinScoreCompare
+	struct ScoreCompare
 	{
+		const Coordinates& origin;
+		explicit ScoreCompare(const Coordinates& origin) : origin(origin) {}
+
 		bool operator()(const TileScore& a, const TileScore& b) const
 		{
 			return a.first < b.first;

@@ -7,20 +7,32 @@
 #include "Systems/Locator.h"
 #include "Systems/ObjectSystem.h"
 #include "Systems/TileSystem.h"
-#include "Core/LevelData.h"
 
 using namespace std;
 
-int ScoreSystem::CalculateScore(const Coordinates position)
+float ScoreSystem::CalculateScore(const Coordinates position, const int distance)
 {
-	int score = 0;
+	if (distance == 0)
+		return 0.f; // don't score our own tile
 
+	float baseScore = 0.f;
 	for (const auto direction : CoordUtils::neighborDirection)
 	{
 		const Coordinates neighborPos = position + direction;
-		if (IsWorthToExplore(neighborPos) and CanExplore(position, direction))
-			++score;
+		if (IsWorthToExplore(neighborPos) && CanExplore(position, direction))
+			baseScore += 1.f;
 	}
+
+	// Reward good exploration potential but penalize distant targets
+	constexpr float distancePenalty = 0.3f;   // tune this constant
+	constexpr float frontierBonus = 1.2f;   // if near unexplored area
+
+	// Bonus if tile itself is unexplored (encourages frontier expansion)
+	if (IsWorthToExplore(position))
+		baseScore *= frontierBonus;
+
+	// Penalize by distance (nonlinear decay works better than linear)
+	const float score = baseScore / (1.f + distancePenalty * distance * distance);
 
 	return score;
 }
@@ -29,9 +41,9 @@ vector<Coordinates> ScoreSystem::GetBestExploringPath(const Coordinates position
 {
 	const auto& tileSystem = Locator::Get<TileSystem>();
 
-	priority_queue<TileScore, vector<TileScore>, MinScoreCompare> tileScores;
+	priority_queue<TileScore, vector<TileScore>, ScoreCompare> tileScores(ScoreCompare{position});
 	for (const Coordinates& tile : tileSystem.GetTiles() | views::keys)
-		tileScores.emplace(CalculateScore(tile), tile);
+		tileScores.emplace(CalculateScore(tile, CoordUtils::GetDistance(position, tile)), tile);
 
 	PathFinder pathFinder{};
 	optional<vector<Coordinates>> path;

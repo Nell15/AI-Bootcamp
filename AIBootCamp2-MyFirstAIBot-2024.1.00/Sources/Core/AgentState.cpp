@@ -78,11 +78,23 @@ void Exploring::UpdateState(Agent& agent)
 
 void Exploring::SetOrder(Agent& agent)
 {
+	const auto isNextMoveCorrect = [&]
+	{
+		PathFinder pathFinder{};
 
+		const Coordinates nextMove = agent.GetNextPosition();
+		const auto path = pathFinder.FindPath(agent.GetPosition(), nextMove);
+
+		return path.has_value() && path->back() == nextMove;
+	};
+
+	if (agent.IsPathEmpty() || not isNextMoveCorrect())
+	{
 		const Coordinates agentCoord = agent.GetPosition();
 		const auto bestExploringPath = ScoreSystem::GetBestExploringPath(agentCoord);
 
 		agent.SetPath(ConvertPathToOrder(agent, bestExploringPath));
+	}
 }
 
 void Seeking::UpdateState(Agent& agent)
@@ -100,6 +112,23 @@ void Seeking::UpdateState(Agent& agent)
 	{
 		agent.SetState(make_unique<Waiting>());
 	}
+	else
+	{
+		PathFinder pathFinder{};
+
+		for (const Coordinates& goalTile : goalTiles)
+		{
+			// TODO(opti): create a fonction DoGoalExist ?
+			const auto path = pathFinder.FindPath(agent.GetPosition(), goalTile);
+			if (path.has_value())
+			{
+				return;
+			}
+		}
+
+		agent.SetChosenGoal(std::nullopt);
+		agent.SetState(make_unique<Exploring>());
+	}
 }
 
 void Seeking::SetOrder(Agent& agent)
@@ -108,7 +137,17 @@ void Seeking::SetOrder(Agent& agent)
 	const auto& tileSystem = Locator::Get<TileSystem>();
 	const auto& availableGoalTiles = tileSystem.GetAvailableGoalTiles();
 
-	if (agent.IsPathEmpty())
+	const auto isNextMoveCorrect = [&]
+	{
+		PathFinder pathFinder{};
+
+		const Coordinates nextMove = agent.GetNextPosition();
+		const auto path = pathFinder.FindPath(agent.GetPosition(), nextMove);
+
+		return path.has_value() && path->back() == nextMove;
+	};
+
+	if (agent.IsPathEmpty() || not isNextMoveCorrect())
 	{
 		PathFinder pathFinder{}; // TODO(opti): make pathfinder singleton ? Avoid calculating path every turn
 
@@ -131,7 +170,7 @@ void Seeking::SetOrder(Agent& agent)
 
 		agent.SetPath(ConvertPathToOrder(agent, bestPath));
 	}
-	else if (agentSystem.IsTileOccupied(agent.GetNextMove()))
+	else if (agentSystem.IsTileOccupied(agent.GetNextPosition()))
 	{
 		agent.AddOrder(
 			{

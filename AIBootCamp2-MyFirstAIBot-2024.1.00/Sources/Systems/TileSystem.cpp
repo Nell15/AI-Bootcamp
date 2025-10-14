@@ -35,9 +35,6 @@ void TileSystem::StoreNonExistingTiles()
 		{
 			const Coordinates neighborPos = agentPos + direction;
 
-			if (LevelData::Get().DoTileExist(neighborPos))
-				continue;
-
 			if (not IsStored(neighborPos) and not objectSystem.IsPathBlocked(agentPos, direction))
 				nonExistingTiles.emplace(neighborPos);
 		}

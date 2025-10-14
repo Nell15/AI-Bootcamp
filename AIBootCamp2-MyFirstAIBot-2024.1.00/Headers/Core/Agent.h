@@ -30,7 +30,7 @@ public:
 	[[nodiscard]] const std::optional<Coordinates>& GetChosenGoal() const { return chosenGoal; }
 	[[nodiscard]] bool IsPathEmpty() const { return path.empty(); }
 
-	[[nodiscard]] Coordinates GetNextMove() const
+	[[nodiscard]] Coordinates GetNextPosition() const
 	{
 		const auto nextMove = position + CoordUtils::DirToCoordinates(path.back().direction);
 		return nextMove;
