@@ -3,6 +3,8 @@
 #include <queue>
 
 #include "Core/LevelData.h"
+#include "Systems/Locator.h"
+#include "Systems/TileSystem.h"
 #include "Utils/CoordUtils.h"
 
 using namespace std;
@@ -24,6 +26,7 @@ void PathFinder::Dispose()
 
 optional<vector<Coordinates>> PathFinder::FindPath(const Coordinates& start, const Coordinates& goal)
 {
+	const auto& tileSystem = Locator::Get<TileSystem>();
 	Init(start, goal);
 
 	while (!openSet.empty())
@@ -38,7 +41,7 @@ optional<vector<Coordinates>> PathFinder::FindPath(const Coordinates& start, con
 			return path;
 		}
 
-		for (const auto& neighbor : LevelData::GetWalkableNeighbors(current.position))
+		for (const auto& neighbor : tileSystem.GetWalkableNeighbors(current.position))
 			TryUpdatePath(neighbor, current, goal);
 	}
 

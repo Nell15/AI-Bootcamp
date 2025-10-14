@@ -11,6 +11,7 @@
 #include "Framework/TurnData.h"
 
 #include "Core/Coordinates.h"
+#include "Core/LevelData.h"
 #include "Framework/InitData.h"
 #include "Systems/Locator.h"
 #include "Systems/ObjectSystem.h"

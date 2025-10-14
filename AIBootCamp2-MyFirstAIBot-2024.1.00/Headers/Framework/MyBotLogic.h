@@ -2,9 +2,9 @@
 
 #include "BotLogicIF.h"
 #include "Logger.h"
-#include "Core/LevelData.h"
 #include "PathFinding/PathFinder.h"
 #include "Framework/Globals.h"
+#include "Systems/AgentSystem.h"
 
 #ifdef _DEBUG
 #define BOT_LOGIC_DEBUG

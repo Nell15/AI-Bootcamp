@@ -2,7 +2,6 @@
 #define LEVEL_DATA_H
 
 #include "Coordinates.h"
-#include "Systems/AgentSystem.h"
 
 class LevelData
 {
@@ -22,16 +21,7 @@ public:
 		return instance;
 	}
 
-	[[nodiscard]] int CalculateTileScore(const Coordinates& tileCoord) const;
-	[[nodiscard]] std::vector<Coordinates> GetBestExploringTile(const Coordinates& tileCoord) const;
-
-	
-
-	[[nodiscard]] static std::vector<Coordinates> GetWalkableNeighbors(const Coordinates& tileCoord);
-	[[nodiscard]] bool DoTileExist(const Coordinates& tileCoord) const;
-
-	// TODO: put this in another class ?
-	[[nodiscard]] Coordinates GetBestNeighbor(const Coordinates& tileCoord) const;
+	[[nodiscard]] bool DoTileExist(Coordinates tileCoord) const;
 
 private:
 	LevelData() = default;

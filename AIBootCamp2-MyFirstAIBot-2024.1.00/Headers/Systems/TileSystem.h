@@ -13,18 +13,19 @@ public:
 	using GoalTilesType = std::vector<Coordinates>;
 	using TileArrayType = std::unordered_map<Coordinates, EHexCellType>;
 
-	[[nodiscard]] const GoalTilesType& GetGoalTiles() { return goalTiles; }
-	[[nodiscard]] const TileArrayType& GetTiles() { return tiles; }
-	[[nodiscard]] std::vector<Coordinates> GetAvailableGoalTiles();
+	[[nodiscard]] const TileArrayType& GetTiles() const { return tiles; }
+	[[nodiscard]] const GoalTilesType& GetGoalTiles() const { return goalTiles; }
+	[[nodiscard]] GoalTilesType GetAvailableGoalTiles() const;
+	[[nodiscard]] std::vector<Coordinates> GetWalkableNeighbors(Coordinates position) const;
 
-	bool IsPossibleToWalkTo(Coordinates position, EHexCellDirection direction);
+	[[nodiscard]] bool IsPossibleToWalkTo(Coordinates position, EHexCellDirection direction) const;
 	void StoreTiles(const STileInfo* tileArrayInfo, int nbTile);
 
 private:
 	GoalTilesType goalTiles{};
 	TileArrayType tiles{};
 
-	[[nodiscard]] bool IsPossibleToWalkTo(Coordinates position);
+	[[nodiscard]] bool IsPossibleToWalkTo(Coordinates position) const;
 };
 
 #endif

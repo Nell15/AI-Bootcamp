@@ -6,6 +6,7 @@
 #include "Core/LevelData.h"
 #include "PathFinding/PathFinder.h"
 #include "Systems/Locator.h"
+#include "Systems/ScoreSystem.h"
 #include "Systems/TileSystem.h"
 
 using namespace std;
@@ -77,7 +78,7 @@ void Exploring::UpdateState(Agent& agent)
 void Exploring::SetOrder(Agent& agent)
 {
 	const Coordinates agentCoord = agent.GetCoordinates();
-	const auto bestExploringPath = LevelData::Get().GetBestExploringTile(agentCoord);
+	const auto bestExploringPath = ScoreSystem::GetBestExploringPath(agentCoord);
 
 	agent.SetPath(ConvertPathToOrder(agent, bestExploringPath));
 }

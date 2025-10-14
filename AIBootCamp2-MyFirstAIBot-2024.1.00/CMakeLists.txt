@@ -35,6 +35,7 @@ SET( AIBOT_HEADERS
     Headers/Systems/TileSystem.h
     Headers/Systems/Locator.h
     Headers/Systems/AgentSystem.h
+    Headers/Systems/ScoreSystem.h
 
     Headers/Framework/AIBot.h
     Headers/Framework/BotLogicIF.h
@@ -59,6 +60,7 @@ SET( AIBOT_SRC
     Sources/Systems/ObjectSystem.cpp
     Sources/Systems/TileSystem.cpp
     Sources/Systems/AgentSystem.cpp
+    Sources/Systems/ScoreSystem.cpp
 
     Sources/Framework/AIBot.cpp
     Sources/Framework/Logger.cpp
