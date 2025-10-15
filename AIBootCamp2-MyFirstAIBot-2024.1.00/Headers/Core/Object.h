@@ -7,6 +7,7 @@
 
 struct Object
 {
+	int id;
 	int q;
 	int r;
 
@@ -15,7 +16,7 @@ struct Object
 
 	std::optional<EObjectState> state;
 
-	std::vector<std::pair<int, int> > connectionsIds;
+	std::vector<int> connectionsIds;
 
 	// TODO : add connections
 

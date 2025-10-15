@@ -34,19 +34,45 @@ float ScoreSystem::CalculateScore(const Coordinates position, const int distance
 	// Bonus if contains a pressure plate, weighted by distance to linked door(s?)
 	const auto& objectSystem = Locator::Get<ObjectSystem>();
 	// check if has pressure plate :
-	bool hasPlate = objectSystem.HasPressurePlateAt(position);
+	auto optPlate = objectSystem.GetPressurePlateAt(position);
+	bool hasPlate = optPlate.has_value();
 	// check connections && their distance
 	//float connectionsBias = ? // bonus depending on the distance from the plate to its doors
-	float connectionsBias;
+	float connectionsBias = 0.0f;
+
 	if (hasPlate)
 	{
+		// get plate
+		auto& plate = optPlate.value();
+
+		// get connections
+		std::vector<int> plateConnections = plate.connectionsIds;
+		float minDistance = FLT_MAX;
+
+		// for connection in connections
+		for (int id : plateConnections)
+		{
+			// get connected object
+			auto connection = objectSystem.GetObjectById(id);
+			
+			if (!connection.has_value()) continue;
+			// get distance to plate
+			int connDistance = CoordUtils::GetDistance(
+				position,
+				{ connection.value().q, connection.value().r }
+			);
+			// update min distance
+			if (distance < minDistance) minDistance = connDistance;
+		}
+		connectionsBias = (minDistance < FLT_MAX ? 10.0f / (1.0f + minDistance * minDistance) : 0.0f);
 	}
-
-	float plateWeight = 3.0f; // arbitrary number rn
-	float plateScore = hasPlate * plateWeight; // + connectionsBias;
-
+	
+	float plateWeight = 1.0f; // arbitrary number rn
+	float plateScore = hasPlate * plateWeight + connectionsBias;
+	
 	// Penalize by distance (nonlinear decay works better than linear)
 	const float score = (baseScore + plateScore) / (1.f + distancePenalty * distance * distance);
+	//const float score = (baseScore) / (1.f + distancePenalty * distance * distance);
 
 	return score;
 }

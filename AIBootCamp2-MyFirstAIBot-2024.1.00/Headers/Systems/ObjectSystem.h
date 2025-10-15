@@ -15,9 +15,9 @@ public:
 
 	void StoreObjects(const SObjectInfo* objectArrayInfo, int nbObject);
 
-	bool HasPressurePlateAt(Coordinates coord) const;
+	std::optional<Object> GetPressurePlateAt(Coordinates coord) const;
 
-	Object& getObjectByID(int id) const;
+	std::optional<Object> GetObjectById(int id) const;
 
 private:
 	ObjectList objects{};
