@@ -22,8 +22,10 @@ struct Object
 
 	bool operator==(const Object& other) const noexcept
 	{
-		return q == other.q && r == other.r &&
-			direction == other.direction && type == other.type;
+		return q == other.q
+			&& r == other.r
+			&& direction == other.direction
+			&& type == other.type;
 	}
 };
 

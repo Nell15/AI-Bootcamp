@@ -45,8 +45,16 @@ void ObjectSystem::StoreObjects(const SObjectInfo* objectArrayInfo, const int nb
 		Coordinates objectPos{ .q = object.q, .r = object.r };
 		auto& objectAtPos = objects[objectPos];
 
-		if (ranges::find(objectAtPos, object) == objectAtPos.end())
+		// Check if the 
+		auto it = std::ranges::find(objectAtPos, object);
+		if (it == objectAtPos.end())
+		{
 			objectAtPos.emplace_back(object);
+		}
+		else
+		{
+			*it = object;
+		}
 	}
 }
 
