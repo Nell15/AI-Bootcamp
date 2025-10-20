@@ -1,11 +1,11 @@
 #include <utility>
 
 #include "Core/AgentState.h"
-
 #include "Core/Agent.h"
 #include "Core/LevelData.h"
 #include "PathFinding/PathFinder.h"
 #include "Systems/Locator.h"
+#include "Systems/ObjectSystem.h"
 #include "Systems/ScoreSystem.h"
 #include "Systems/TileSystem.h"
 
@@ -78,13 +78,42 @@ void Exploring::UpdateState(Agent& agent)
 
 void Exploring::SetOrder(Agent& agent)
 {
+	// case door
+	auto position = agent.GetPosition();
+	auto& objectSystem = Locator::Get<ObjectSystem>();
+	
+	auto objectsAtPositon = objectSystem.GetInteractableObjectsAt(position);
+
+	for (auto& object : objectsAtPositon)
+	{
+		if (objectSystem.IsObjectAlreadyUsed(object)) continue;
+
+		// todo : skip doors linked to pressure plates
+		if (object.type == Door && object.state == Closed) {
+			objectSystem.MarkUsed(object);
+
+			SOrder order = {
+				.orderType = static_cast<EOrderType>(Interact),
+				.npcUID = agent.GetId(),
+				.direction = object.direction,
+				.objectUID = object.id,
+				.interactionType = static_cast<EInteractionType>(OpenDoor)
+			};
+
+			agent.AddOrder(order);
+			return;
+		}
+	}
+	
+
+	// case movement
 	const auto isNextMoveCorrect = [&]
 	{
 		PathFinder pathFinder{};
 
 		const Coordinates nextMove = agent.GetNextPosition();
 		const auto path = pathFinder.FindPath(agent.GetPosition(), nextMove);
-
+		
 		return path.has_value() && path->back() == nextMove;
 	};
 

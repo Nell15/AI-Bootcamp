@@ -69,6 +69,21 @@ vector<Coordinates> TileSystem::GetWalkableNeighbors(const Coordinates position)
 	return neighbors;
 }
 
+[[nodiscard]] std::vector<Coordinates> TileSystem::GetNeighbors(Coordinates position) const
+{
+	const auto& agentSystem = Locator::Get<AgentSystem>();
+	vector<Coordinates> neighbors{};
+
+	for (const EHexCellDirection direction : CoordUtils::neighborDirection)
+	{
+		const Coordinates neighborPos = position + direction;
+		neighbors.emplace_back(neighborPos);
+	}
+
+	return neighbors;
+}
+
+
 bool TileSystem::IsPossibleToWalkTo(const Coordinates position) const
 {
 	const auto& tileIt = tiles.find(position);

@@ -19,8 +19,17 @@ public:
 
 	std::optional<Object> GetObjectById(int id) const;
 
+	std::vector<Object> GetObjectsAt(Coordinates coord) const;
+
+	std::vector<Object> GetInteractableObjectsAt(Coordinates coord) const;
+
+	bool IsObjectAlreadyUsed(Object object) const; // todo: might need separation for knock & open
+
+	void MarkUsed(Object& object);
+
 private:
 	ObjectList objects{};
+	std::vector<Object> usedObjects; // todo: change this for optimisation ?
 
 	static bool IsObstacle(const Object& object)
 	{

@@ -17,6 +17,7 @@ public:
 	[[nodiscard]] const GoalTilesType& GetGoalTiles() const { return goalTiles; }
 	[[nodiscard]] GoalTilesType GetAvailableGoalTiles() const;
 	[[nodiscard]] std::vector<Coordinates> GetWalkableNeighbors(Coordinates position) const;
+	[[nodiscard]] std::vector<Coordinates> GetNeighbors(Coordinates position) const;
 
 	[[nodiscard]] bool IsPossibleToWalkTo(Coordinates position, EHexCellDirection direction) const;
 	void StoreTiles(const STileInfo* tileArrayInfo, int nbTile);

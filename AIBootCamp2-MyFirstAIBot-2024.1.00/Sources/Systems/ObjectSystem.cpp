@@ -3,6 +3,8 @@
 #include <span>
 
 #include "Utils/CoordUtils.h"
+#include "Systems/Locator.h"
+#include "Systems/TileSystem.h"
 
 using namespace std;
 
@@ -34,7 +36,7 @@ void ObjectSystem::StoreObjects(const SObjectInfo* objectArrayInfo, const int nb
 		};
 
 		if (objectInfo.statesSize > 0)
-			object.state = static_cast<EObjectState>(objectInfo.states[0]); // todo verif
+			object.state = static_cast<EObjectState>(objectInfo.states[0]); // todo verif case many states ?
 
 		for (const auto connections = span{ objectInfo.connectedTo, static_cast<size_t>(objectInfo.connectedToSize) };
 			const auto& connection : connections)
@@ -102,4 +104,49 @@ std::optional<Object> ObjectSystem::GetObjectById(int id) const {
 	}
 
 	return std::nullopt;
+}
+
+// todo opti : utiliser des refs partout pour eviter les copies
+
+std::vector<Object> ObjectSystem::GetObjectsAt(Coordinates coord) const {
+	auto it = objects.find(coord);
+	if (it != objects.end()) {
+		return it->second;
+	}
+	return {};
+}
+
+std::vector<Object> ObjectSystem::GetInteractableObjectsAt(Coordinates coord) const {
+	std::vector<Object> interactables{};
+
+	// Objects on the current tile
+	auto it = objects.find(coord);
+	if (it != objects.end()) {
+		interactables.insert(interactables.end(), it->second.begin(), it->second.end());
+	}
+	// Object on neighbours on the side next to our tile
+	auto& tileSystem = Locator::Get<TileSystem>();
+	auto neightbours = tileSystem.GetNeighbors(coord);
+	for (auto& neightbour : neightbours)
+	{
+		// get direction from neighbour to current
+		auto searchedDirection = CoordUtils::GetNeighborDirection(neightbour, coord);
+		// find potential object in direction
+		auto neighbourObjects = this->GetObjectsAt(neightbour);
+		for (auto& object : neighbourObjects)
+		{
+			if (object.direction == searchedDirection)
+				interactables.push_back(object);
+		}
+	}
+	return interactables;
+}
+
+
+bool ObjectSystem::IsObjectAlreadyUsed(Object object) const {
+	return std::find(usedObjects.begin(), usedObjects.end(), object) != usedObjects.end();
+}
+
+void ObjectSystem::MarkUsed(Object& object) {
+	usedObjects.emplace_back(object);
 }
