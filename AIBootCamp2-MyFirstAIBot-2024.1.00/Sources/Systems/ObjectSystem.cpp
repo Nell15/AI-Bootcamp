@@ -135,7 +135,7 @@ std::vector<Object> ObjectSystem::GetInteractableObjectsAt(Coordinates coord) co
 		auto neighbourObjects = this->GetObjectsAt(neightbour);
 		for (auto& object : neighbourObjects)
 		{
-			if (object.direction == searchedDirection)
+			if (object.direction == searchedDirection && object.connectionsIds.size() == 0)
 				interactables.push_back(object);
 		}
 	}
