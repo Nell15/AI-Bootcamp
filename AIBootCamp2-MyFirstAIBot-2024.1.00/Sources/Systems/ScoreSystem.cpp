@@ -64,11 +64,11 @@ float ScoreSystem::CalculateScore(const Coordinates position, const int distance
 			// update min distance
 			if (distance < minDistance) minDistance = connDistance;
 		}
-		connectionsBias = (minDistance < FLT_MAX ? 10.0f / (1.0f + minDistance * minDistance) : 0.0f);
+		//connectionsBias = (minDistance < FLT_MAX ? 10.0f / (1.0f + minDistance * minDistance) : 0.0f); //Inutilisé, car trop d'influence et brise l'algo
 	}
 	
-	float plateWeight = 1.0f; // arbitrary number rn
-	float plateScore = hasPlate * plateWeight + connectionsBias;
+	float plateWeight = 1.f; // Ajout arbitraire pour prioriser les plates
+	float plateScore = hasPlate * plateWeight;// + connectionsBias; //Inutilisé, car trop d'influence et brise l'algo
 	
 	// Penalize by distance (nonlinear decay works better than linear)
 	const float score = (baseScore + plateScore) / (1.f + distancePenalty * distance * distance);
@@ -90,7 +90,7 @@ vector<Coordinates> ScoreSystem::GetBestExploringPath(const Coordinates position
 	{
 		const Coordinates goal = tileScores.top().second;
 		optional<vector<Coordinates>> path = pathFinder.FindPath(position, goal);
-		if (path.has_value() and !path->empty())
+		if (path.has_value() and !path->empty() and tileScores.top().first > 0.f)
 			return std::move(path.value());
 
 		tileScores.pop();
@@ -144,7 +144,6 @@ std::vector<Coordinates> ScoreSystem::GetBestSearchingPath(Coordinates position)
 		tileScores.pop();
 	}
 	return {};
-
 	
 }
 

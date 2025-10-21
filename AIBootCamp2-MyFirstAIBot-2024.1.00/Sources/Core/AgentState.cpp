@@ -79,16 +79,18 @@ void Exploring::UpdateState(Agent& agent)
 	}
 	else
 	{
-		// Vérifie si tous les scores sont à 0
+
+
+		/*// Vérifie si tous les scores sont à 0
 			bool allScoresZero = std::all_of(
 				tiles.begin(), tiles.end(),
 				[&](const auto& pos) {
 					int distance = CoordUtils::GetDistance(pos.first, agent.GetPosition());
-					return scoreSystem.CalculateScore(pos.first, distance) * tileSystem.IsPossibleToWalkTo(pos.first) == 0.0f;
+					return scoreSystem.GetBestSearchingPath(pos.first, distance) * tileSystem.IsPossibleToWalkTo(pos.first) == 0.0f;
 				}
-			);
+			);*/
 
-		if (allScoresZero) {
+		if (scoreSystem.GetBestExploringPath(agent.GetPosition())[0] == agent.GetPosition()) {
 			agent.SetState(make_unique<SearchingHiddenDoors>());
 		}		
 	}
