@@ -86,10 +86,8 @@ void Exploring::SetOrder(Agent& agent)
 
 	for (auto& object : objectsAtPositon)
 	{
-		if (objectSystem.IsObjectAlreadyUsed(object)) continue;
-
-		// todo : skip doors linked to pressure plates
-		if (object.type == Door && object.state == Closed) {
+		if (object.type == Door && object.state == Closed)
+		{
 			objectSystem.MarkUsed(object);
 
 			SOrder order = {

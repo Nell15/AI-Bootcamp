@@ -135,6 +135,7 @@ std::vector<Object> ObjectSystem::GetInteractableObjectsAt(Coordinates coord) co
 		auto neighbourObjects = this->GetObjectsAt(neightbour);
 		for (auto& object : neighbourObjects)
 		{
+			if (IsObjectAlreadyUsed(object)) continue;
 			if (object.direction == searchedDirection && object.connectionsIds.size() == 0)
 				interactables.push_back(object);
 		}
@@ -142,11 +143,21 @@ std::vector<Object> ObjectSystem::GetInteractableObjectsAt(Coordinates coord) co
 	return interactables;
 }
 
-
 bool ObjectSystem::IsObjectAlreadyUsed(Object object) const {
 	return std::find(usedObjects.begin(), usedObjects.end(), object) != usedObjects.end();
 }
 
+bool ObjectSystem::WallWasAlreadyTested(Object object) const {
+	return std::find(searchedWalls.begin(), searchedWalls.end(), object) != searchedWalls.end();
+}
+
 void ObjectSystem::MarkUsed(Object& object) {
-	usedObjects.emplace_back(object);
+	if (object.type == Wall)
+	{
+		searchedWalls.emplace_back(object);
+	}
+	else
+	{
+		usedObjects.emplace_back(object);
+	}
 }

@@ -24,12 +24,14 @@ public:
 	std::vector<Object> GetInteractableObjectsAt(Coordinates coord) const;
 
 	bool IsObjectAlreadyUsed(Object object) const; // todo: might need separation for knock & open
+	bool WallWasAlreadyTested(Object object) const; // todo: might need separation for knock & open
 
 	void MarkUsed(Object& object);
 
 private:
 	ObjectList objects{};
 	std::vector<Object> usedObjects; // todo: change this for optimisation ?
+	std::vector<Object> searchedWalls; // todo: change this for optimisation ?
 
 	static bool IsObstacle(const Object& object)
 	{
