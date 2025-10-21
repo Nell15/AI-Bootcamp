@@ -138,7 +138,7 @@ std::vector<Coordinates> ScoreSystem::GetBestSearchingPath(Coordinates position)
 	{
 		const Coordinates goal = tileScores.top().second;
 		optional<vector<Coordinates>> path = pathFinder.FindPath(position, goal);
-		if (path.has_value() and !path->empty())
+		if (path.has_value() and !path->empty() and tileScores.top().first > 0.f)
 			return std::move(path.value());
 
 		tileScores.pop();

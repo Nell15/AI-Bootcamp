@@ -28,11 +28,11 @@ public:
 	[[nodiscard]] int GetVisionRange() const { return visionRange; }
 	[[nodiscard]] Coordinates GetPosition() const { return position; }
 	[[nodiscard]] const std::optional<Coordinates>& GetChosenGoal() const { return chosenGoal; }
-	[[nodiscard]] bool IsPathEmpty() const { return path.empty(); }
+	[[nodiscard]] bool HasNoOrders() const { return orders.empty(); }
 
 	[[nodiscard]] Coordinates GetNextPosition() const
 	{
-		const auto nextMove = position + CoordUtils::DirToCoordinates(path.back().direction);
+		const auto nextMove = position + CoordUtils::DirToCoordinates(orders.back().direction);
 		return nextMove;
 	}
 
@@ -47,16 +47,16 @@ public:
 	void SetOrder() { state->SetOrder(*this); }
 	void SetState(std::unique_ptr<AgentState> newState) { state = std::move(newState); }
 	void SetChosenGoal(const std::optional<Coordinates> goal) { chosenGoal = goal; }
-	void SetPath(std::vector<SOrder>&& newOrders) { path = std::move(newOrders); }
+	void SetPath(std::vector<SOrder>&& newOrders) { orders = std::move(newOrders); }
 
-	void AddOrder(SOrder order) { path.emplace_back(order); }
+	void AddOrder(SOrder order) { orders.emplace_back(order); }
 
 	[[nodiscard]] SOrder PopAndReturnNextAgentMove()
 	{
-		vassert(!path.empty(), "Agent path is empty: cannot pop from it");
+		vassert(!orders.empty(), "Agent orders is empty: cannot pop from it");
 
-		const SOrder order = path.back();
-		path.pop_back();
+		const SOrder order = orders.back();
+		orders.pop_back();
 
 		return order;
 	}
@@ -66,7 +66,7 @@ private:
 	int visionRange;
 	Coordinates position;
 	std::optional<Coordinates> chosenGoal = std::nullopt;
-	std::vector<SOrder> path{};
+	std::vector<SOrder> orders{};
 	std::unique_ptr<AgentState> state{};
 };
 

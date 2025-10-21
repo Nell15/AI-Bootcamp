@@ -135,7 +135,7 @@ void Exploring::SetOrder(Agent& agent)
 		return path.has_value() && path->back() == nextMove;
 	};
 
-	if (agent.IsPathEmpty() || not isNextMoveCorrect())
+	if (agent.HasNoOrders() || not isNextMoveCorrect())
 	{
 		const Coordinates agentCoord = agent.GetPosition();
 		const auto bestExploringPath = ScoreSystem::GetBestExploringPath(agentCoord);
@@ -195,9 +195,9 @@ void Seeking::SetOrder(Agent& agent)
 		return path.has_value() && path->back() == nextMove;
 	};
 
-	if (agent.IsPathEmpty() || not isNextMoveCorrect())
+	if (agent.HasNoOrders() || not isNextMoveCorrect())
 	{
-		PathFinder pathFinder{}; // TODO(opti): make pathfinder singleton ? Avoid calculating path every turn
+		PathFinder pathFinder{}; // TODO(opti): make pathfinder singleton ? Avoid calculating orders every turn
 
 		size_t bestDistance = INT_MAX;
 		vector<Coordinates> bestPath{};
@@ -230,32 +230,45 @@ void Seeking::SetOrder(Agent& agent)
 }
 
 void SearchingHiddenDoors::SetOrder(Agent& agent) {
-	// case movement
-	const auto isNextMoveCorrect = [&]
-		{
-			PathFinder pathFinder{};
+	auto position = agent.GetPosition();
+	auto& objectSystem = Locator::Get<ObjectSystem>();
+	auto objectsAtPositon = objectSystem.GetInteractableObjectsAt(position);
 
-			const Coordinates nextMove = agent.GetNextPosition();
-			const auto path = pathFinder.FindPath(agent.GetPosition(), nextMove);
-
-			return path.has_value() && path->back() == nextMove;
-		};
-
-	if (agent.IsPathEmpty() || not isNextMoveCorrect())
+	if (agent.HasNoOrders())
 	{
-		const Coordinates agentCoord = agent.GetPosition();
-		const auto bestSearchingPath = ScoreSystem::GetBestSearchingPath(agentCoord); 
+		bool allWallsTested = true;
+		for (auto& wall : objectsAtPositon)
+		{
+			if (!objectSystem.WallWasAlreadyTested(wall))
+			{
+				allWallsTested = false;
+				break;				
+			}
+		}
 
-		if (bestSearchingPath.empty()) {
-			// case wall
-			auto position = agent.GetPosition();
-			auto& objectSystem = Locator::Get<ObjectSystem>();
+		if (objectsAtPositon.empty() || allWallsTested) //Aucun mur à tester, on bouge
+		{
+			/*const auto isNextMoveCorrect = [&]
+				{
+					PathFinder pathFinder{};
+					const Coordinates nextMove = agent.GetNextPosition();
+					const auto path = pathFinder.FindPath(agent.GetPosition(), nextMove);
+					return path.has_value() && path->back() == nextMove;
+				};
 
-			auto objectsAtPositon = objectSystem.GetInteractableObjectsAt(position);
+			if (not isNextMoveCorrect())
+			{*/
+				const Coordinates agentCoord = agent.GetPosition();
+				const auto bestSearchingPath = ScoreSystem::GetBestSearchingPath(agentCoord);
 
+				agent.SetPath(ConvertPathToOrder(agent, bestSearchingPath));				
+			
+		}
+		else //On test tous les murs sur la case
+		{
 			for (auto& object : objectsAtPositon)
 			{
-				if (objectSystem.WallWasAlreadyTested(object)) continue;
+				if (objectSystem.WallWasAlreadyTested(object)) continue; //Ne devrait pas arriver, puisque c'est testé plus haut.
 
 				if (object.type == Wall) {
 					objectSystem.MarkUsed(object);
@@ -267,16 +280,12 @@ void SearchingHiddenDoors::SetOrder(Agent& agent) {
 						.objectUID = object.id,
 						.interactionType = static_cast<EInteractionType>(SearchHiddenDoor)
 					};
-
 					agent.AddOrder(order);
-					return;
 				}
 			}
 		}
-		else {
-			agent.SetPath(ConvertPathToOrder(agent, bestSearchingPath));
-		}
 	}
+	
 }
 
 void SearchingHiddenDoors::UpdateState(Agent& agent) {
