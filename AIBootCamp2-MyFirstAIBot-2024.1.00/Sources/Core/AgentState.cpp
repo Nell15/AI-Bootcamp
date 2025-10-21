@@ -247,22 +247,10 @@ void SearchingHiddenDoors::SetOrder(Agent& agent) {
 		}
 
 		if (objectsAtPositon.empty() || allWallsTested) //Aucun mur à tester, on bouge
-		{
-			/*const auto isNextMoveCorrect = [&]
-				{
-					PathFinder pathFinder{};
-					const Coordinates nextMove = agent.GetNextPosition();
-					const auto path = pathFinder.FindPath(agent.GetPosition(), nextMove);
-					return path.has_value() && path->back() == nextMove;
-				};
-
-			if (not isNextMoveCorrect())
-			{*/
+		{			
 				const Coordinates agentCoord = agent.GetPosition();
 				const auto bestSearchingPath = ScoreSystem::GetBestSearchingPath(agentCoord);
-
 				agent.SetPath(ConvertPathToOrder(agent, bestSearchingPath));				
-			
 		}
 		else //On test tous les murs sur la case
 		{
