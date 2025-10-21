@@ -20,6 +20,7 @@ public:
 	[[nodiscard]] std::vector<Coordinates> GetNeighbors(Coordinates position) const;
 
 	[[nodiscard]] bool IsPossibleToWalkTo(Coordinates position, EHexCellDirection direction) const;
+	[[nodiscard]] bool IsPossibleToWalkTo(Coordinates position) const;
 	void StoreTiles(const STileInfo* tileArrayInfo, int nbTile);
 	void StoreNonExistingTiles();
 
@@ -31,7 +32,7 @@ private:
 	TileArrayType tiles{};
 	std::unordered_set<Coordinates> nonExistingTiles;
 
-	[[nodiscard]] bool IsPossibleToWalkTo(Coordinates position) const;
+	
 };
 
 #endif

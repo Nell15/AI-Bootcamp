@@ -24,8 +24,8 @@ struct Object
 	{
 		return q == other.q
 			&& r == other.r
-			&& direction == other.direction
-			&& type == other.type;
+			&& direction == other.direction;
+			//&& type == other.type;
 	}
 };
 

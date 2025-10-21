@@ -60,19 +60,8 @@ void Exploring::UpdateState(Agent& agent)
 	const auto& tiles = tileSystem.GetTiles();
 	const auto& scoreSystem = Locator::Get<ScoreSystem>();
 
-	// Vérifie si tous les scores sont à 0
-	bool allScoresZero = std::all_of(
-		tiles.begin(), tiles.end(),
-		[&](const auto& pos) {
-			int distance = CoordUtils::GetDistance(pos.first, agent.GetPosition());
-			return scoreSystem.CalculateScore(pos.first, distance) == 0.0f;
-		}
-	);
-
-	if (allScoresZero) {
-		agent.SetState(make_unique<SearchingHiddenDoors>());
-	}
-	else if (not availableGoalTiles.empty())
+	
+	if (not availableGoalTiles.empty())
 	{
 		PathFinder pathFinder{};
 
@@ -87,6 +76,21 @@ void Exploring::UpdateState(Agent& agent)
 				break;
 			}
 		}
+	}
+	else
+	{
+		// Vérifie si tous les scores sont à 0
+			bool allScoresZero = std::all_of(
+				tiles.begin(), tiles.end(),
+				[&](const auto& pos) {
+					int distance = CoordUtils::GetDistance(pos.first, agent.GetPosition());
+					return scoreSystem.CalculateScore(pos.first, distance) * tileSystem.IsPossibleToWalkTo(pos.first) == 0.0f;
+				}
+			);
+
+		if (allScoresZero) {
+			agent.SetState(make_unique<SearchingHiddenDoors>());
+		}		
 	}
 }
 
@@ -132,9 +136,10 @@ void Exploring::SetOrder(Agent& agent)
 	if (agent.IsPathEmpty() || not isNextMoveCorrect())
 	{
 		const Coordinates agentCoord = agent.GetPosition();
-		const auto bestExploringPath = ScoreSystem::GetBestSearchingPath(agentCoord);
-
+		const auto bestExploringPath = ScoreSystem::GetBestExploringPath(agentCoord);
+		
 		agent.SetPath(ConvertPathToOrder(agent, bestExploringPath));
+		
 	}
 }
 
@@ -223,33 +228,6 @@ void Seeking::SetOrder(Agent& agent)
 }
 
 void SearchingHiddenDoors::SetOrder(Agent& agent) {
-	// case wall
-	auto position = agent.GetPosition();
-	auto& objectSystem = Locator::Get<ObjectSystem>();
-
-	auto objectsAtPositon = objectSystem.GetInteractableObjectsAt(position);
-
-	for (auto& object : objectsAtPositon)
-	{
-		if (objectSystem.WallWasAlreadyTested(object)) continue;
-
-		if (object.type == Wall) {
-			objectSystem.MarkUsed(object);
-
-			SOrder order = {
-				.orderType = static_cast<EOrderType>(Interact),
-				.npcUID = agent.GetId(),
-				.direction = object.direction,
-				.objectUID = object.id,
-				.interactionType = static_cast<EInteractionType>(SearchHiddenDoor)
-			};
-
-			agent.AddOrder(order);
-			return;
-		}
-	}
-
-
 	// case movement
 	const auto isNextMoveCorrect = [&]
 		{
@@ -264,9 +242,38 @@ void SearchingHiddenDoors::SetOrder(Agent& agent) {
 	if (agent.IsPathEmpty() || not isNextMoveCorrect())
 	{
 		const Coordinates agentCoord = agent.GetPosition();
-		const auto bestExploringPath = ScoreSystem::GetBestExploringPath(agentCoord); //Calcul du score à modifier pour qu'il utilise les murs non testés
+		const auto bestSearchingPath = ScoreSystem::GetBestSearchingPath(agentCoord); 
 
-		agent.SetPath(ConvertPathToOrder(agent, bestExploringPath));
+		if (bestSearchingPath.empty()) {
+			// case wall
+			auto position = agent.GetPosition();
+			auto& objectSystem = Locator::Get<ObjectSystem>();
+
+			auto objectsAtPositon = objectSystem.GetInteractableObjectsAt(position);
+
+			for (auto& object : objectsAtPositon)
+			{
+				if (objectSystem.WallWasAlreadyTested(object)) continue;
+
+				if (object.type == Wall) {
+					objectSystem.MarkUsed(object);
+
+					SOrder order = {
+						.orderType = static_cast<EOrderType>(Interact),
+						.npcUID = agent.GetId(),
+						.direction = object.direction,
+						.objectUID = object.id,
+						.interactionType = static_cast<EInteractionType>(SearchHiddenDoor)
+					};
+
+					agent.AddOrder(order);
+					return;
+				}
+			}
+		}
+		else {
+			agent.SetPath(ConvertPathToOrder(agent, bestSearchingPath));
+		}
 	}
 }
 
