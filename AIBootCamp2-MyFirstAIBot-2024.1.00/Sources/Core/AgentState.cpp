@@ -57,8 +57,22 @@ void Exploring::UpdateState(Agent& agent)
 {
 	const auto& tileSystem = Locator::Get<TileSystem>();
 	const auto& availableGoalTiles = tileSystem.GetAvailableGoalTiles();
+	const auto& tiles = tileSystem.GetTiles();
+	const auto& scoreSystem = Locator::Get<ScoreSystem>();
 
-	if (not availableGoalTiles.empty())
+	// Vérifie si tous les scores sont à 0
+	bool allScoresZero = std::all_of(
+		tiles.begin(), tiles.end(),
+		[&](const auto& pos) {
+			int distance = CoordUtils::GetDistance(pos.first, agent.GetPosition());
+			return scoreSystem.CalculateScore(pos.first, distance) == 0.0f;
+		}
+	);
+
+	if (allScoresZero) {
+		agent.SetState(make_unique<SearchingHiddenDoors>());
+	}
+	else if (not availableGoalTiles.empty())
 	{
 		PathFinder pathFinder{};
 
@@ -118,7 +132,7 @@ void Exploring::SetOrder(Agent& agent)
 	if (agent.IsPathEmpty() || not isNextMoveCorrect())
 	{
 		const Coordinates agentCoord = agent.GetPosition();
-		const auto bestExploringPath = ScoreSystem::GetBestExploringPath(agentCoord);
+		const auto bestExploringPath = ScoreSystem::GetBestSearchingPath(agentCoord);
 
 		agent.SetPath(ConvertPathToOrder(agent, bestExploringPath));
 	}

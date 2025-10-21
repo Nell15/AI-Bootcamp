@@ -100,6 +100,55 @@ vector<Coordinates> ScoreSystem::GetBestExploringPath(const Coordinates position
 	return std::move(path.value());
 }
 
+float ScoreSystem::CalculateScoreByWalls(const Coordinates position, const int distance) {
+	auto& objSystem = Locator::Get<ObjectSystem>();	
+
+	float baseScore = 0.f;
+	if (distance == 0) {
+		const auto& objets = objSystem.GetInteractableObjectsAt(position);
+
+		for (auto& obj : objets) {
+			baseScore += static_cast<float>(obj.type == Wall && !objSystem.WallWasAlreadyTested(obj));
+		}
+		return baseScore;
+	}
+
+	
+	for (const auto direction : CoordUtils::neighborDirection)
+	{
+		const Coordinates neighborPos = position + direction;
+		const auto& objets = objSystem.GetInteractableObjectsAt(neighborPos);
+		for (auto& obj : objets) {
+			baseScore += static_cast<float>(obj.type == Wall && !objSystem.WallWasAlreadyTested(obj));
+		}			
+	}
+
+	return baseScore;
+}
+
+std::vector<Coordinates> ScoreSystem::GetBestSearchingPath(Coordinates position)
+{
+	const auto& tileSystem = Locator::Get<TileSystem>();
+
+	priority_queue<TileScore, vector<TileScore>, ScoreCompare> tileScores(ScoreCompare{ position });
+	for (const Coordinates& tile : tileSystem.GetTiles() | views::keys)
+		tileScores.emplace(CalculateScoreByWalls(tile, CoordUtils::GetDistance(position, tile)), tile);//On assume que c'est parfait :)
+
+	PathFinder pathFinder{};
+	optional<vector<Coordinates>> path;
+	while (true)
+	{
+		const Coordinates goal = tileScores.top().second;
+		path = pathFinder.FindPath(position, goal);
+		if (path.has_value() and !path->empty())
+			break;
+
+		tileScores.pop();
+	}
+
+	return std::move(path.value());
+}
+
 bool ScoreSystem::IsWorthToExplore(const Coordinates position)
 {
 	const auto& tiles = Locator::Get<TileSystem>().GetTiles();

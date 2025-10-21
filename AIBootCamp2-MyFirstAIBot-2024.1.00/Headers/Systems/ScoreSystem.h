@@ -10,6 +10,8 @@ class ScoreSystem
 public:
 	[[nodiscard]] static float CalculateScore(Coordinates position, int distance);
 	[[nodiscard]] static std::vector<Coordinates> GetBestExploringPath(Coordinates position);
+	[[nodiscard]] static float CalculateScoreByWalls(const Coordinates position, const int distance);
+	[[nodiscard]] static std::vector<Coordinates> GetBestSearchingPath(Coordinates position);
 
 private:
 	using TileScore = std::pair<float, Coordinates>;

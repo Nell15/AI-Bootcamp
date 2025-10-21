@@ -17,6 +17,7 @@
 #include "Systems/ObjectSystem.h"
 #include "Systems/TileSystem.h"
 #include "Utils/Utils.h"
+#include <Systems/ScoreSystem.h>
 
 using namespace std;
 
@@ -84,6 +85,7 @@ void MyBotLogic::SetLocators()
 	Locator::Set(make_shared<ObjectSystem>());
 	Locator::Set(make_shared<AgentSystem>());
 	Locator::Set(make_shared<TileSystem>());
+	Locator::Set(make_shared<ScoreSystem>());
 }
 
 void MyBotLogic::StoreAgents(const SInitData& _initData)
