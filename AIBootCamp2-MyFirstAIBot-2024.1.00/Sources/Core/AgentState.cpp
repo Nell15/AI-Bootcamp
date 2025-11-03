@@ -79,8 +79,13 @@ void Exploring::UpdateState(Agent& agent)
 	}
 	else
 	{
-		if (ScoreSystem::GetBestExploringPath(agent.GetPosition())[0] == agent.GetPosition())
+		const auto& objectSystem = Locator::Get<ObjectSystem>();
+
+		if (ScoreSystem::GetBestExploringPath(agent.GetPosition())[0] == agent.GetPosition() 
+			&& objectSystem.GetNbClosedDoorOn(agent.GetPosition()) == 0)
+		{
 			agent.SetState(make_unique<SearchingHiddenDoors>());
+		}
 	}
 }
 

@@ -26,6 +26,8 @@ public:
 	bool IsObjectAlreadyUsed(Object object) const; // todo: might need separation for knock & open
 	bool WallWasAlreadyTested(Object object) const; // todo: might need separation for knock & open
 
+	[[nodiscard]] size_t GetNbClosedDoorOn(Coordinates position) const;
+
 	void MarkUsed(Object& object);
 
 private:

@@ -151,6 +151,15 @@ bool ObjectSystem::WallWasAlreadyTested(Object object) const {
 	return std::find(searchedWalls.begin(), searchedWalls.end(), object) != searchedWalls.end();
 }
 
+size_t ObjectSystem::GetNbClosedDoorOn(const Coordinates position) const
+{
+	size_t nbClosedDoorOnTile = 0;
+	for (auto& object : GetInteractableObjectsAt(position))
+		nbClosedDoorOnTile += static_cast<size_t>(object.type == Door && object.state.has_value() && object.state == Closed);
+
+	return nbClosedDoorOnTile;
+}
+
 void ObjectSystem::MarkUsed(Object& object) {
 	if (object.type == Wall)
 	{
