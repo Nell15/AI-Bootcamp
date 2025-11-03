@@ -227,7 +227,7 @@ void SearchingHiddenDoors::SetOrder(Agent& agent) {
 		bool allWallsTested = true;
 		for (auto& wall : objectsAtPositon)
 		{
-			if (!objectSystem.WallWasAlreadyTested(wall))
+			if (wall.type == Wall && !objectSystem.WallWasAlreadyTested(wall))
 			{
 				allWallsTested = false;
 				break;				

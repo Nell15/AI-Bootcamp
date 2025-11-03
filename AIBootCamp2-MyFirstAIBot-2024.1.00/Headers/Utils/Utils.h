@@ -23,6 +23,17 @@ namespace Utils
 
 		return "?";
 	}
+
+	static constexpr std::string_view to_string(const EOrderType order) noexcept
+	{
+		switch (order)
+		{
+		case Move: return "Move";
+		case Interact: return "Interact";
+		}
+
+		return "?";
+	}
 }
 
 template <>
@@ -31,6 +42,15 @@ struct std::formatter<EHexCellDirection> : std::formatter<std::string_view>
 	auto format(const EHexCellDirection direction, std::format_context& context) const
 	{
 		return std::formatter<std::string_view>::format(Utils::to_string(direction), context);
+	}
+};
+
+template <>
+struct std::formatter<EOrderType> : std::formatter<std::string_view>
+{
+	auto format(const EOrderType order, std::format_context& context) const
+	{
+		return std::formatter<std::string_view>::format(Utils::to_string(order), context);
 	}
 };
 

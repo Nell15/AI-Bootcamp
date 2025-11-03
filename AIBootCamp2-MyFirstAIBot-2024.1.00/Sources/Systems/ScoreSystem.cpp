@@ -99,28 +99,14 @@ vector<Coordinates> ScoreSystem::GetBestExploringPath(const Coordinates position
 	return {position};
 }
 
-float ScoreSystem::CalculateScoreByWalls(const Coordinates position, const int distance) {
-	auto& objSystem = Locator::Get<ObjectSystem>();	
+float ScoreSystem::CalculateScoreByWalls(const Coordinates position, const int distance)
+{
+	const auto& objSystem = Locator::Get<ObjectSystem>();	
 
 	float baseScore = 0.f;
-	if (distance == 0) {
-		const auto& objets = objSystem.GetInteractableObjectsAt(position);
-
-		for (auto& obj : objets) {
-			baseScore += static_cast<float>(obj.type == Wall && !objSystem.WallWasAlreadyTested(obj));
-		}
-		return baseScore;
-	}
-
-	
-	for (const auto direction : CoordUtils::neighborDirection)
-	{
-		const Coordinates neighborPos = position + direction;
-		const auto& objets = objSystem.GetInteractableObjectsAt(neighborPos);
-		for (auto& obj : objets) {
-			baseScore += static_cast<float>(obj.type == Wall && !objSystem.WallWasAlreadyTested(obj));
-		}			
-	}
+	const auto& objects = objSystem.GetInteractableObjectsAt(position);
+	for (auto& obj : objects)
+		baseScore += static_cast<float>(obj.type == Wall && !objSystem.WallWasAlreadyTested(obj));
 
 	return baseScore;
 }

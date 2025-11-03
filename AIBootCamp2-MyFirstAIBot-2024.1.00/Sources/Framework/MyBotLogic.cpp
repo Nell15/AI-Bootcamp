@@ -120,8 +120,8 @@ SOrder MyBotLogic::PlayAgentTurn(AgentSystem& agentSystem, const SNPCInfo& npcIn
 
 	BOT_LOGIC_LOG(
 		mLogger,
-		std::format("Turn{} - Agent{} - State {} - Direction choice: {} -> {}", LevelData::Get().currentTurn, agent.GetId(),
-			agent.GetStateName(), agentNextOrder.direction, agentMoveDirection),
+		std::format("Turn{} - Agent{} - State {} - {} in direction: {} -> {}", LevelData::Get().currentTurn, agent.GetId(),
+			agent.GetStateName(), agentNextOrder.orderType, agentNextOrder.direction, agentMoveDirection),
 		true);
 
 	return agentNextOrder;
