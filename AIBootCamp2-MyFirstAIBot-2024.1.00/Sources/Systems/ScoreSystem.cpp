@@ -95,8 +95,8 @@ vector<Coordinates> ScoreSystem::GetBestExploringPath(const Coordinates position
 
 		tileScores.pop();
 	}
+
 	return {position};
-	
 }
 
 float ScoreSystem::CalculateScoreByWalls(const Coordinates position, const int distance) {
