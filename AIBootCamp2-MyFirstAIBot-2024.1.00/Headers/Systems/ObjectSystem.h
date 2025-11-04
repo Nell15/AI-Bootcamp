@@ -30,6 +30,8 @@ public:
 
 	void MarkUsed(Object& object);
 
+	[[nodiscard]] bool HasObject() const { return not objects.empty(); }
+
 private:
 	ObjectList objects{};
 	std::vector<Object> usedObjects; // todo: change this for optimisation ?

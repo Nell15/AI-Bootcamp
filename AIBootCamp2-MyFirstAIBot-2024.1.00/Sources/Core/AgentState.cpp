@@ -60,7 +60,7 @@ void Exploring::UpdateState(Agent& agent)
 	const auto& tiles = tileSystem.GetTiles();
 	const auto& scoreSystem = Locator::Get<ScoreSystem>();
 
-	
+
 	if (not availableGoalTiles.empty())
 	{
 		PathFinder pathFinder{};
@@ -82,6 +82,7 @@ void Exploring::UpdateState(Agent& agent)
 		const auto& objectSystem = Locator::Get<ObjectSystem>();
 
 		if (ScoreSystem::GetBestExploringPath(agent.GetPosition())[0] == agent.GetPosition() 
+			&& objectSystem.HasObject()
 			&& objectSystem.GetNbClosedDoorOn(agent.GetPosition()) == 0)
 		{
 			agent.SetState(make_unique<SearchingHiddenDoors>());
@@ -94,7 +95,7 @@ void Exploring::SetOrder(Agent& agent)
 	// case door
 	auto position = agent.GetPosition();
 	auto& objectSystem = Locator::Get<ObjectSystem>();
-	
+
 	auto objectsAtPositon = objectSystem.GetInteractableObjectsAt(position);
 
 	for (auto& object : objectsAtPositon)
@@ -104,18 +105,18 @@ void Exploring::SetOrder(Agent& agent)
 			objectSystem.MarkUsed(object);
 
 			SOrder order = {
-				.orderType = static_cast<EOrderType>(Interact),
+				.orderType = (Interact),
 				.npcUID = agent.GetId(),
 				.direction = object.direction,
 				.objectUID = object.id,
-				.interactionType = static_cast<EInteractionType>(OpenDoor)
+				.interactionType = (OpenDoor)
 			};
 
 			agent.AddOrder(order);
 			return;
 		}
 	}
-	
+
 
 	// case movement
 	const auto isNextMoveCorrect = [&]
@@ -124,7 +125,7 @@ void Exploring::SetOrder(Agent& agent)
 
 		const Coordinates nextMove = agent.GetNextPosition();
 		const auto path = pathFinder.FindPath(agent.GetPosition(), nextMove);
-		
+
 		return path.has_value() && path->back() == nextMove;
 	};
 
@@ -132,9 +133,8 @@ void Exploring::SetOrder(Agent& agent)
 	{
 		const Coordinates agentCoord = agent.GetPosition();
 		const auto bestExploringPath = ScoreSystem::GetBestExploringPath(agentCoord);
-		
+
 		agent.SetPath(ConvertPathToOrder(agent, bestExploringPath));
-		
 	}
 }
 
@@ -222,7 +222,8 @@ void Seeking::SetOrder(Agent& agent)
 	}
 }
 
-void SearchingHiddenDoors::SetOrder(Agent& agent) {
+void SearchingHiddenDoors::SetOrder(Agent& agent)
+{
 	auto position = agent.GetPosition();
 	auto& objectSystem = Locator::Get<ObjectSystem>();
 	auto objectsAtPositon = objectSystem.GetInteractableObjectsAt(position);
@@ -235,50 +236,52 @@ void SearchingHiddenDoors::SetOrder(Agent& agent) {
 			if (wall.type == Wall && !objectSystem.WallWasAlreadyTested(wall))
 			{
 				allWallsTested = false;
-				break;				
+				break;
 			}
 		}
 
 		if (objectsAtPositon.empty() || allWallsTested) //Aucun mur à tester, on bouge
-		{			
-				const Coordinates agentCoord = agent.GetPosition();
-				const auto bestSearchingPath = ScoreSystem::GetBestSearchingPath(agentCoord);
-				agent.SetPath(ConvertPathToOrder(agent, bestSearchingPath));				
+		{
+			const Coordinates agentCoord = agent.GetPosition();
+			const auto bestSearchingPath = ScoreSystem::GetBestSearchingPath(agentCoord);
+			agent.SetPath(ConvertPathToOrder(agent, bestSearchingPath));
 		}
 		else //On test tous les murs sur la case
 		{
 			for (auto& object : objectsAtPositon)
 			{
-				if (objectSystem.WallWasAlreadyTested(object)) continue; //Ne devrait pas arriver, puisque c'est testé plus haut.
+				if (objectSystem.WallWasAlreadyTested(object)) continue;
+				//Ne devrait pas arriver, puisque c'est testé plus haut.
 
-				if (object.type == Wall) {
+				if (object.type == Wall)
+				{
 					objectSystem.MarkUsed(object);
 
 					SOrder order = {
-						.orderType = static_cast<EOrderType>(Interact),
+						.orderType = (Interact),
 						.npcUID = agent.GetId(),
 						.direction = object.direction,
 						.objectUID = object.id,
-						.interactionType = static_cast<EInteractionType>(SearchHiddenDoor)
+						.interactionType = (SearchHiddenDoor)
 					};
 					agent.AddOrder(order);
 				}
 			}
 		}
 	}
-	
 }
 
-void SearchingHiddenDoors::UpdateState(Agent& agent) {
+void SearchingHiddenDoors::UpdateState(Agent& agent)
+{
 	const auto& objSystem = Locator::Get<ObjectSystem>();
 	auto objets = objSystem.GetInteractableObjectsAt(agent.GetPosition());
 
-	const auto it = ranges::find_if(objets, [](const auto& obj) 
+	const auto it = ranges::find_if(objets, [](const auto& obj)
 	{
 		return obj.type == Door && obj.state == Closed;
 	});
 
-	if (it != objets.end()) 
+	if (it != objets.end())
 	{
 		agent.SetState(make_unique<Exploring>());
 	}
