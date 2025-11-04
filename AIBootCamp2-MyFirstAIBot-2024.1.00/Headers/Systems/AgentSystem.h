@@ -35,6 +35,14 @@ public:
 
 	[[nodiscard]] bool IsGoalChosen(Coordinates goalPos) const;
 
+	[[nodiscard]] bool HasWaitingAgentOnTile(Coordinates position) const {
+		for (const auto& [id, agent] : agents) {
+			if (agent.GetPosition() == position)
+				return agent.GetStateName() != "Waiting";
+		}
+		return false;
+	}
+
 private:
 	AgentList agents{};
 	std::unordered_set<Coordinates> occupiedPos{};

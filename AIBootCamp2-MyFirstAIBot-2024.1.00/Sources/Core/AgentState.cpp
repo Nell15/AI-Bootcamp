@@ -141,6 +141,7 @@ void Exploring::SetOrder(Agent& agent)
 void Seeking::UpdateState(Agent& agent)
 {
 	const auto& tileSystem = Locator::Get<TileSystem>();
+	const auto& agentSystem = Locator::Get<AgentSystem>();
 	const auto& goalTiles = tileSystem.GetGoalTiles();
 	const Coordinates agentCoord = agent.GetPosition();
 
@@ -167,6 +168,8 @@ void Seeking::UpdateState(Agent& agent)
 				return;
 			}
 		}
+
+		if (!agentSystem.HasWaitingAgentOnTile(agent.GetNextAgentPosition())) return;
 
 		agent.SetChosenGoal(std::nullopt);
 		agent.SetState(make_unique<Exploring>());

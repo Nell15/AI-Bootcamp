@@ -61,6 +61,17 @@ public:
 		return order;
 	}
 
+	[[nodiscard]] Coordinates GetNextAgentPosition() const
+	{
+		vassert(!orders.empty(), "Agent orders is empty: cannot pop from it");
+
+		const SOrder order = orders.back();
+		const auto dir = order.direction;
+		const Coordinates pos = position + dir;
+
+		return pos;
+	}
+
 private:
 	int id;
 	int visionRange;
