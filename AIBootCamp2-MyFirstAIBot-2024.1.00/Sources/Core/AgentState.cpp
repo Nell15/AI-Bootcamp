@@ -151,6 +151,7 @@ void Seeking::UpdateState(Agent& agent)
 	}
 	else if (ranges::find(goalTiles, agentCoord) != goalTiles.end())
 	{
+		agent.SetChosenGoal(std::nullopt);
 		agent.SetState(make_unique<Waiting>());
 	}
 	else
