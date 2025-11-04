@@ -158,7 +158,7 @@ void Seeking::UpdateState(Agent& agent)
 	{
 		PathFinder pathFinder{};
 
-		for (const Coordinates& goalTile : goalTiles)
+		for (const Coordinates& goalTile : tileSystem.GetAvailableGoalTiles())
 		{
 			// TODO(opti): create a fonction DoGoalExist ?
 			const auto path = pathFinder.FindPath(agent.GetPosition(), goalTile);
