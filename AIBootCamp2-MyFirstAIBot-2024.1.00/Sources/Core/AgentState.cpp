@@ -144,30 +144,13 @@ void Seeking::UpdateState(Agent& agent)
 	const auto& goalTiles = tileSystem.GetGoalTiles();
 	const Coordinates agentCoord = agent.GetPosition();
 
-	if (goalTiles.empty())
-	{
-		agent.SetChosenGoal(std::nullopt);
-		agent.SetState(make_unique<Exploring>());
-	}
-	else if (ranges::find(goalTiles, agentCoord) != goalTiles.end())
+	if (ranges::find(goalTiles, agentCoord) != goalTiles.end())
 	{
 		agent.SetChosenGoal(std::nullopt);
 		agent.SetState(make_unique<Waiting>());
 	}
-	else
+	else if (goalTiles.empty())
 	{
-		PathFinder pathFinder{};
-
-		for (const Coordinates& goalTile : tileSystem.GetAvailableGoalTiles())
-		{
-			// TODO(opti): create a fonction DoGoalExist ?
-			const auto path = pathFinder.FindPath(agent.GetPosition(), goalTile);
-			if (path.has_value())
-			{
-				return;
-			}
-		}
-
 		agent.SetChosenGoal(std::nullopt);
 		agent.SetState(make_unique<Exploring>());
 	}
@@ -195,6 +178,7 @@ void Seeking::SetOrder(Agent& agent)
 
 		size_t bestDistance = INT_MAX;
 		vector<Coordinates> bestPath{};
+		Coordinates bestGoal{};
 		for (const Coordinates& goalTile : availableGoalTiles)
 		{
 			const auto path = pathFinder.FindPath(agent.GetPosition(), goalTile);
@@ -205,12 +189,28 @@ void Seeking::SetOrder(Agent& agent)
 				{
 					bestDistance = pathSize;
 					bestPath = path.value();
-					agent.SetChosenGoal(goalTile);
+					bestGoal = goalTile;
 				}
 			}
 		}
 
-		agent.SetPath(ConvertPathToOrder(agent, bestPath));
+		// Si on a trouvé un chemin, on l'utilise
+		if (!bestPath.empty())
+		{
+			agent.SetChosenGoal(bestGoal);
+			agent.SetPath(ConvertPathToOrder(agent, bestPath));
+		}
+		// Sinon on explore
+		else
+		{
+			agent.AddOrder({
+				.orderType = Move,
+				.npcUID = agent.GetId(),
+				.direction = CENTER
+				});
+			agent.SetChosenGoal(std::nullopt);
+			agent.SetState(make_unique<Exploring>());
+		}	
 	}
 	else if (agentSystem.IsTileOccupied(agent.GetNextPosition()))
 	{
