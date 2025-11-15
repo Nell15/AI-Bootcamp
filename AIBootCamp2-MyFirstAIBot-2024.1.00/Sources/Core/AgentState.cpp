@@ -8,6 +8,15 @@
 #include "Systems/ObjectSystem.h"
 #include "Systems/ScoreSystem.h"
 #include "Systems/TileSystem.h"
+#include "Utils/CoordUtils.h"
+#include "Utils/Utils.h"
+
+//termp
+
+#include <fstream>
+#include <iostream>
+
+
 
 using namespace std;
 
@@ -59,7 +68,13 @@ void Exploring::UpdateState(Agent& agent)
 	const auto& availableGoalTiles = tileSystem.GetAvailableGoalTiles();
 	const auto& tiles = tileSystem.GetTiles();
 	const auto& scoreSystem = Locator::Get<ScoreSystem>();
-
+	const auto& objectSystem = Locator::Get<ObjectSystem>();
+	
+	auto plate = objectSystem.GetPressurePlateAt(agent.GetPosition());
+	if (plate.has_value() && !plate.value().connectionsIds.empty())
+	{
+		agent.SetState(make_unique<Helping>());
+	}
 
 	if (not availableGoalTiles.empty())
 	{
@@ -79,8 +94,6 @@ void Exploring::UpdateState(Agent& agent)
 	}
 	else
 	{
-		const auto& objectSystem = Locator::Get<ObjectSystem>();
-
 		if (ScoreSystem::GetBestExploringPath(agent.GetPosition())[0] == agent.GetPosition() 
 			&& objectSystem.HasObject()
 			&& objectSystem.GetNbClosedDoorOn(agent.GetPosition()) == 0)
@@ -117,7 +130,6 @@ void Exploring::SetOrder(Agent& agent)
 		}
 	}
 
-
 	// case movement
 	const auto isNextMoveCorrect = [&]
 	{
@@ -140,6 +152,14 @@ void Exploring::SetOrder(Agent& agent)
 
 void Seeking::UpdateState(Agent& agent)
 {
+	const auto& objectSystem = Locator::Get<ObjectSystem>();
+
+	auto plate = objectSystem.GetPressurePlateAt(agent.GetPosition());
+	if (plate.has_value() && !plate.value().connectionsIds.empty())
+	{
+		agent.SetState(make_unique<Helping>());
+	}
+
 	const auto& tileSystem = Locator::Get<TileSystem>();
 	const auto& goalTiles = tileSystem.GetGoalTiles();
 	const Coordinates agentCoord = agent.GetPosition();
@@ -286,4 +306,77 @@ void SearchingHiddenDoors::UpdateState(Agent& agent)
 	{
 		agent.SetState(make_unique<Exploring>());
 	}
+}
+
+void Helping::UpdateState(Agent& agent)
+{
+	const auto& agentSystem = Locator::Get<AgentSystem>();
+	const auto& agents = agentSystem.GetAgents();
+	const auto& tileSystem = Locator::Get<TileSystem>();
+	const auto& objectSystem = Locator::Get<ObjectSystem>();
+
+	auto optPressurePlate = objectSystem.GetPressurePlateAt(agent.GetPosition());
+	if (!optPressurePlate.has_value()) return;
+	auto pressurePlate = optPressurePlate.value();
+	auto connectionIds = pressurePlate.connectionsIds;
+	vector<Object> connections{};
+	for (auto id : connectionIds) {
+		auto object = objectSystem.GetObjectById(id);
+		if (object.has_value()) connections.emplace_back(object.value());
+	}
+	
+	bool canMove = true;
+	bool pathFound = false;
+	bool allWaiting = true;
+
+	for (auto& [id, _agent] : agents) {
+		if (id == agent.GetId() || _agent.GetStateName() == "Waiting") continue;
+		allWaiting = false;
+
+		const auto& availableGoalTiles = tileSystem.GetAvailableGoalTiles();
+		if (availableGoalTiles.empty()) break;
+
+		PathFinder pathFinder{};
+
+		for (const Coordinates& goalTile : availableGoalTiles) {
+			const auto path = pathFinder.FindPath(agent.GetPosition(), goalTile);
+			if (!path.has_value()) continue;
+			pathFound = true;
+
+			auto previousTile = _agent.GetPosition();
+			for (const auto coord : path.value()) {
+				for (auto object : connections) {
+					auto objTile = Coordinates(object.q, object.r);
+					if (objTile == coord
+						&& object.direction == CoordUtils::CoordinatesToDir(previousTile - coord)) {
+						canMove = false;
+					}
+					else if (objTile == previousTile
+						&& object.direction == CoordUtils::CoordinatesToDir(coord - previousTile)) {
+						canMove = false;
+					}
+				}
+				previousTile = coord;
+			}
+		}
+	}
+
+	if ((canMove && pathFound) || allWaiting) {
+		if (agent.HasNoOrders()) {
+			agent.SetState(make_unique<Exploring>());
+		}
+		else {
+			agent.SetState(make_unique<Seeking>());
+		}
+	}
+}
+
+void Helping::SetOrder(Agent& agent)
+{
+	// Stay still
+	agent.AddOrder({
+		.orderType = Move,
+		.npcUID = agent.GetId(),
+		.direction = CENTER
+		});
 }

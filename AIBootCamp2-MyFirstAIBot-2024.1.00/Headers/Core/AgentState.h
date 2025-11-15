@@ -70,4 +70,16 @@ public:
 	}
 };
 
+class Helping : public AgentState
+{
+public:
+	void UpdateState(Agent& agent) override;
+	void SetOrder(Agent& agent) override;
+
+	[[nodiscard]] std::string_view GetStateName() const override
+	{
+		return "Helping";
+	}
+};
+
 #endif
