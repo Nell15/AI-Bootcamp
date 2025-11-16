@@ -143,6 +143,17 @@ std::vector<Object> ObjectSystem::GetInteractableObjectsAt(Coordinates coord) co
 	return interactables;
 }
 
+std::vector<Object> ObjectSystem::GetObjectConnections(Object object) const {
+	auto connectionIds = object.connectionsIds;
+	vector<Object> connections{};
+	for (auto id : connectionIds) {
+		auto object = GetObjectById(id);
+		if (object.has_value()) connections.emplace_back(object.value());
+	}
+	return connections;
+}
+
+
 bool ObjectSystem::IsObjectAlreadyUsed(Object object) const {
 	return std::find(usedObjects.begin(), usedObjects.end(), object) != usedObjects.end();
 }

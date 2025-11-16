@@ -23,6 +23,8 @@ public:
 
 	std::vector<Object> GetInteractableObjectsAt(Coordinates coord) const;
 
+	std::vector<Object> GetObjectConnections(Object object) const;
+
 	bool IsObjectAlreadyUsed(Object object) const; // todo: might need separation for knock & open
 	bool WallWasAlreadyTested(Object object) const; // todo: might need separation for knock & open
 

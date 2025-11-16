@@ -304,20 +304,28 @@ void SearchingHiddenDoors::UpdateState(Agent& agent)
 
 void Helping::UpdateState(Agent& agent)
 {
+
 	const auto& agentSystem = Locator::Get<AgentSystem>();
 	const auto& agents = agentSystem.GetAgents();
 	const auto& tileSystem = Locator::Get<TileSystem>();
 	const auto& objectSystem = Locator::Get<ObjectSystem>();
+	
+	auto exitHelpingState = [&] {
+		if (agent.HasNoOrders()) {
+			agent.SetState(make_unique<Exploring>());
+		}
+		else {
+			agent.SetState(make_unique<Seeking>());
+		}
+		};
 
-	auto optPressurePlate = objectSystem.GetPressurePlateAt(agent.GetPosition());
-	if (!optPressurePlate.has_value()) return;
-	auto pressurePlate = optPressurePlate.value();
-	auto connectionIds = pressurePlate.connectionsIds;
-	vector<Object> connections{};
-	for (auto id : connectionIds) {
-		auto object = objectSystem.GetObjectById(id);
-		if (object.has_value()) connections.emplace_back(object.value());
+	auto pressurePlate = objectSystem.GetPressurePlateAt(agent.GetPosition());
+	if (!pressurePlate.has_value())
+	{
+		exitHelpingState();
+		return;
 	}
+	vector<Object> connections = objectSystem.GetObjectConnections(pressurePlate.value());
 	
 	bool canMove = true;
 
@@ -355,14 +363,7 @@ void Helping::UpdateState(Agent& agent)
 		}
 	}
 
-	if (canMove) {
-		if (agent.HasNoOrders()) {
-			agent.SetState(make_unique<Exploring>());
-		}
-		else {
-			agent.SetState(make_unique<Seeking>());
-		}
-	}
+	if (canMove) exitHelpingState();
 }
 
 void Helping::SetOrder(Agent& agent)
