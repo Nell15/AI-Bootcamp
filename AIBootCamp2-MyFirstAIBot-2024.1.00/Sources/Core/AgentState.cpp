@@ -1,7 +1,7 @@
 #include <utility>
 
-#include "Core/AgentState.h"
 #include "Core/Agent.h"
+#include "Core/AgentState.h"
 #include "Core/LevelData.h"
 #include "PathFinding/PathFinder.h"
 #include "Systems/Locator.h"
@@ -10,12 +10,6 @@
 #include "Systems/TileSystem.h"
 #include "Utils/CoordUtils.h"
 #include "Utils/Utils.h"
-
-//termp
-
-#include <fstream>
-#include <iostream>
-
 
 
 using namespace std;
@@ -326,12 +320,9 @@ void Helping::UpdateState(Agent& agent)
 	}
 	
 	bool canMove = true;
-	bool pathFound = false;
-	bool allWaiting = true;
 
 	for (auto& [id, _agent] : agents) {
 		if (id == agent.GetId() || _agent.GetStateName() == "Waiting") continue;
-		allWaiting = false;
 
 		const auto& availableGoalTiles = tileSystem.GetAvailableGoalTiles();
 		if (availableGoalTiles.empty()) break;
@@ -340,8 +331,11 @@ void Helping::UpdateState(Agent& agent)
 
 		for (const Coordinates& goalTile : availableGoalTiles) {
 			const auto path = pathFinder.FindPath(agent.GetPosition(), goalTile);
-			if (!path.has_value()) continue;
-			pathFound = true;
+			if (!path.has_value())
+			{
+				canMove = false;
+				break;
+			}
 
 			auto previousTile = _agent.GetPosition();
 			for (const auto coord : path.value()) {
@@ -361,7 +355,7 @@ void Helping::UpdateState(Agent& agent)
 		}
 	}
 
-	if ((canMove && pathFound) || allWaiting) {
+	if (canMove) {
 		if (agent.HasNoOrders()) {
 			agent.SetState(make_unique<Exploring>());
 		}
