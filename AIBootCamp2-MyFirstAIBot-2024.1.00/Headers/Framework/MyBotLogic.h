@@ -19,8 +19,11 @@
 struct SConfigData;
 struct STurnData;
 
-//Custom BotLogic where the AIBot decision making algorithms should be implemented.
-//This class must be instantiated in main.cpp.
+/**
+* The mainn class for the AI Bot, configuring, initializing and reading the agents' turn logic.
+* Custom BotLogic where the AIBot decision making algorithms should be implemented.
+* This class must be instantiated in main.cpp.
+*/
 class MyBotLogic : public virtual BotLogicIF
 {
 public:

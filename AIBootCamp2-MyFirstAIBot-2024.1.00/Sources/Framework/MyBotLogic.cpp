@@ -25,6 +25,10 @@ using namespace std;
 // Core API
 // ===============================================
 
+/**
+* Method which configures MyBotLogic with SConfigData.
+* In the end, nothing special happens here.
+*/
 void MyBotLogic::Configure(const SConfigData& _configData)
 {
 #ifdef BOT_LOGIC_DEBUG
@@ -34,6 +38,10 @@ void MyBotLogic::Configure(const SConfigData& _configData)
 	BOT_LOGIC_LOG(mLogger, "Configure", true);
 }
 
+/**
+* Method which initialises MyBotLogic.
+* Various systems are prepared by calling SetLocators(), then the agents and the level data are memorized.
+*/
 void MyBotLogic::Init(const SInitData& _initData)
 {
 	BOT_LOGIC_LOG(mLogger, "Init", true);
@@ -45,6 +53,16 @@ void MyBotLogic::Init(const SInitData& _initData)
 	LevelData::Get().colCount = _initData.colCount;
 }
 
+/**
+* A method filling the list of _orders with the orders for every NPC.
+* Every turn:
+*	StoreTurnData is called.
+*		Tiles are added to or updated in the TileSystem, which treats GoalTiles differently.
+*		Objects are added to or updated in the ObjectSystem.
+*	The AgentSystem manages every agent and plays their turn in order, which is then passed to the _orders list.
+*		AgentState is updated based on the new coordinates.
+*	npcInfo is only used to pass coordinates to the AgentSystem.
+*/
 void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _orders)
 {
 	BOT_LOGIC_LOG(mLogger, "GetTurnOrders", true);
@@ -65,6 +83,10 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 // Utils function
 // ===============================================
 
+/**
+* Utility method. Tile info is passed to the TileSystem and objectInfo is passed to the ObjectSystem.
+* We also store non existing tiles for exploration purposes...
+*/
 void MyBotLogic::StoreTurnData(const STurnData& turnData)
 {
 #ifdef BOT_LOGIC_DEBUG
@@ -80,6 +102,9 @@ void MyBotLogic::StoreTurnData(const STurnData& turnData)
 	tileSystem.StoreNonExistingTiles();
 }
 
+/**
+* Utility method. Initializes all systems which can then be obtained from the Locator.
+*/
 void MyBotLogic::SetLocators()
 {
 	Locator::Set(make_shared<ObjectSystem>());
