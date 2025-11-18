@@ -3,6 +3,11 @@
 
 #include "Coordinates.h"
 
+/**
+* A class that represents information about the level being played.
+  It remembers the row and column count as well as the current turn.
+  It is mostly unused.
+*/
 class LevelData
 {
 public:

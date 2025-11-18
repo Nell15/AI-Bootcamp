@@ -11,6 +11,11 @@
 
 #include "Utils/VerboseAssertion.h"
 
+/**
+* Our class representing one of the agents who must be moved to the goal.
+  Also called NPC or player.
+  Apart from the expected ID, visionRange and coordinates taken from SNPCInfo, the agent stores it's AgentState, chosen goal and a vector of orders.
+*/
 class Agent
 {
 public:

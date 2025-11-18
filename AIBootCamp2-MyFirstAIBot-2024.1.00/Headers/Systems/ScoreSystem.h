@@ -5,6 +5,11 @@
 #include "Framework/Globals.h"
 #include "Utils/CoordUtils.h"
 
+/**
+* The system used to give score to tiles.
+* Actually, the scores are only used to generate paths. This is done differently between the Exploring and SearchHiddenDoors states.
+* Do not confuse the scores here, based on all sorts of tile information, on the ones in Pathfinder, based only on distance.
+*/
 class ScoreSystem
 {
 public:

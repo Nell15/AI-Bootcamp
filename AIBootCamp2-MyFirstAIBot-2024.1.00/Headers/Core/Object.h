@@ -5,6 +5,10 @@
 
 #include "Framework/Globals.h"
 
+/**
+* This structure represents objects in the level.
+  Although this class represents all objects, some members are only used by specific objects, namely state for doors and connexions for pressure plates.
+*/
 struct Object
 {
 	int id;

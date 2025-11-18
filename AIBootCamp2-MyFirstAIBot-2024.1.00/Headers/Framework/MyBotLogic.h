@@ -20,7 +20,8 @@ struct SConfigData;
 struct STurnData;
 
 /**
-* The mainn class for the AI Bot, configuring, initializing and reading the agents' turn logic.
+* The main class for the AI Bot, configuring, initializing and reading the agents' turn logic.
+* One of the classes given by the teacher. Unlike other such classes, it has been intensely modified.
 * Custom BotLogic where the AIBot decision making algorithms should be implemented.
 * This class must be instantiated in main.cpp.
 */

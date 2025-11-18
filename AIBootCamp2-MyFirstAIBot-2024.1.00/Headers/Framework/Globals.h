@@ -39,6 +39,10 @@ enum EInteractionType
 	SearchHiddenDoor,
 };
 
+/**
+* A structure representing an order given to an Agent.
+* This has been unchanged since it's original state as given by the teacher.
+*/
 struct SOrder
 {
 	EOrderType orderType;
@@ -48,6 +52,10 @@ struct SOrder
 	EInteractionType interactionType;
 };
 
+/**
+* A structure representing information about a tile.
+* This has been unchanged since it's original state as given by the teacher.
+*/
 struct STileInfo
 {
 	int q;
@@ -55,6 +63,11 @@ struct STileInfo
 	EHexCellType type;
 };
 
+/**
+* A structure representing information about an object.
+* This has been minimally changed since it's original state as given by the teacher.
+* The equal (==) operator may now be used with it.
+*/
 struct SObjectInfo
 {
 	int uid;
@@ -78,6 +91,10 @@ struct SObjectInfo
 	}
 };
 
+/**
+* A structure representing information about an NPC.
+* This has been unchanged since it's original state as given by the teacher.
+*/
 struct SNPCInfo
 {
 	int uid;

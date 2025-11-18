@@ -7,6 +7,9 @@
 #include "Core/Coordinates.h"
 #include "Framework/Globals.h"
 
+/**
+* The system used to manage tiles.
+*/
 class TileSystem
 {
 public:

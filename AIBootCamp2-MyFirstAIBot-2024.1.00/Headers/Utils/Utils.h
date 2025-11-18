@@ -36,6 +36,9 @@ namespace Utils
 	}
 }
 
+/**
+* This structure makes it easy to print EHexCellDirections
+*/
 template <>
 struct std::formatter<EHexCellDirection> : std::formatter<std::string_view>
 {
@@ -45,6 +48,9 @@ struct std::formatter<EHexCellDirection> : std::formatter<std::string_view>
 	}
 };
 
+/**
+* This structure makes it easy to print orders
+*/
 template <>
 struct std::formatter<EOrderType> : std::formatter<std::string_view>
 {
