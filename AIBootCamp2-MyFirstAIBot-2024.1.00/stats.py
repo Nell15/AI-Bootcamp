@@ -11,16 +11,25 @@ def analyze_numbers(file_path):
     print(f"Maximum: {max_val}")
     print(f"Mean: {data.mean()}")
 
-    n : int = 1000
+    n : int = 2000
     # Count values under n
     count_under_n = np.sum(data < n)
     total_count = data.size
     percentage = (count_under_n / total_count) * 100
     print(f"Percentage of values under {n}: {percentage:.2f}%")
 
+    # Mean of values <= n
+    values_under_n = data[data <= n]
+
+    if values_under_n.size > 0:
+        mean_under_n = values_under_n.mean()
+        print(f"Mean of values <= {n}: {mean_under_n}")
+    else:
+        print(f"No values <= {n}, cannot compute mean.")
+
     # Plot histogram (reduced, from min to 1000, bars width = 10)
     plt.figure(figsize=(12, 6))
-    plt.hist(data, bins=range(min_val, n, 10), color='skyblue', edgecolor='black')  # +2 so last number is included
+    plt.hist(data, bins=range(min_val, n, 20), color='skyblue', edgecolor='black')  # +2 so last number is included
     plt.title("Distribution des durées des tours")
     plt.xlabel("Durée (microsecondes)")
     plt.ylabel("Frequence")
