@@ -19,6 +19,10 @@
 #include "Utils/Utils.h"
 #include <Systems/ScoreSystem.h>
 
+#include <fstream>
+#include <iostream>
+#include <filesystem>
+
 using namespace std;
 
 // ===============================================
@@ -49,6 +53,11 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 {
 	BOT_LOGIC_LOG(mLogger, "GetTurnOrders", true);
 
+	std::filesystem::create_directories("measures");
+	std::ofstream out("measures\\measures.txt", std::ios::app);
+
+	auto turnStart = std::chrono::system_clock::now().time_since_epoch();
+
 	StoreTurnData(_turnData);
 
 	const span npcInfos{_turnData.npcInfoArray, static_cast<size_t>(_turnData.npcInfoArraySize)};
@@ -59,6 +68,13 @@ void MyBotLogic::GetTurnOrders(const STurnData& _turnData, std::list<SOrder>& _o
 		const SOrder npcOrder = PlayAgentTurn(agentSystem, npcInfo);
 		_orders.emplace_back(npcOrder);
 	}
+
+	auto turnEnd = std::chrono::system_clock::now().time_since_epoch();
+
+	auto turnDuration = chrono::duration_cast<chrono::microseconds>(turnEnd - turnStart).count();
+
+	out << turnDuration << std::endl;
+
 }
 
 // ===============================================

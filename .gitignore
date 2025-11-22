@@ -17,6 +17,9 @@ AIBootCamp2-MyFirstAIBot-2024.1.00/temp_output.txt
 # Replay files
 *.replay
 
+# Measures
+AIBootCamp2-MyFirstAIBot-2024.1.00/measures/
+
 # Build
 AIBootCamp2-MyFirstAIBot-2024.1.00/build-solution-x64/
 
