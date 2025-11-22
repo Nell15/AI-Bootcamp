@@ -186,8 +186,7 @@ void Seeking::SetOrder(Agent& agent)
 		return path.has_value() && path->back() == nextMove;
 	};
 
-	if (agent.HasNoOrders() || not isNextMoveCorrect())
-	{
+	auto changePathOrReturnToExplore = [&] {
 		PathFinder pathFinder{}; // TODO(opti): make pathfinder singleton ? Avoid calculating orders every turn
 
 		size_t bestDistance = INT_MAX;
@@ -224,16 +223,30 @@ void Seeking::SetOrder(Agent& agent)
 				});
 			agent.SetChosenGoal(std::nullopt);
 			agent.SetState(make_unique<Exploring>());
-		}	
-	}
-	else if (agentSystem.IsTileOccupied(agent.GetNextPosition()))
+		}
+	};
+
+	if (agent.HasNoOrders() || not isNextMoveCorrect())
 	{
-		agent.AddOrder(
-			{
-				.orderType = Move,
-				.npcUID = agent.GetId(),
-				.direction = CENTER
-			});
+		changePathOrReturnToExplore();
+	}
+	else if (auto nextPos = agent.GetNextPosition(); agentSystem.IsTileOccupied(nextPos))
+	{
+		// If the other guy is not waiting (ie: will move)
+		if (auto otherAgent = agentSystem.GetAgentAt(nextPos);
+			otherAgent.has_value() && otherAgent->get().GetStateName() != "Waiting")
+		{
+			agent.AddOrder(
+				{
+					.orderType = Move,
+					.npcUID = agent.GetId(),
+					.direction = CENTER
+				});
+		}
+		else
+		{
+			changePathOrReturnToExplore();
+		}
 	}
 }
 

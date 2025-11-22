@@ -64,12 +64,12 @@ float ScoreSystem::CalculateScore(const Coordinates position, const int distance
 			// update min distance
 			if (distance < minDistance) minDistance = connDistance;
 		}
-		connectionsBias = (minDistance < FLT_MAX ? 10.0f / (1.0f + minDistance * minDistance) : 0.0f); //Inutilisé, car trop d'influence et brise l'algo
+		connectionsBias = (minDistance < FLT_MAX ? 10.0f / (1.0f + minDistance * minDistance) : 0.0f);
 	}
 
 	
 	float plateWeight = 1.f; // Ajout arbitraire pour prioriser les plates
-	float plateScore = hasPlate * plateWeight + connectionsBias; //Inutilisé, car trop d'influence et brise l'algo
+	float plateScore = hasPlate * plateWeight + connectionsBias;
 
 	// SCORE FOR TILES WITH DOORS
 	const float doorScore = static_cast<float>(objectSystem.GetNbClosedDoorOn(position));
