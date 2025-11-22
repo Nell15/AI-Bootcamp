@@ -35,6 +35,8 @@ public:
 
 	[[nodiscard]] bool IsGoalChosen(Coordinates goalPos) const;
 
+	[[nodiscard]] std::optional<std::reference_wrapper<const Agent>> GetAgentAt(const Coordinates position) const;
+
 private:
 	AgentList agents{};
 	std::unordered_set<Coordinates> occupiedPos{};

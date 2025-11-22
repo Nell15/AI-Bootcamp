@@ -18,3 +18,13 @@ bool AgentSystem::IsGoalChosen(Coordinates goalPos) const
 		return agentPair.second.GetChosenGoal() == goalPos;
 	});
 }
+
+[[nodiscard]] std::optional<std::reference_wrapper<const Agent>> AgentSystem::GetAgentAt(const Coordinates position) const {
+	for (auto& [id, agent] : agents)
+	{
+		if (agent.GetPosition() == position)
+			return agent;
+	}
+
+	return std::nullopt;
+}
