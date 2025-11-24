@@ -19,6 +19,9 @@ struct SOrder;
 
 class BotLogicIF;
 
+/**
+* A class eventually used by the exe. This file has not changed since it's original version given by the teacher.
+*/
 class AIBot
 {
 public:

@@ -6,6 +6,9 @@
 #include <typeindex>
 #include <stdexcept>
 
+/**
+* The class used to get systems.
+*/
 class Locator
 {
 public:

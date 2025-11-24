@@ -7,6 +7,8 @@ struct SInitData;
 struct STurnData;
 struct SOrder;
 
+/** A class eventually used by the exe. This file has not changed since it's original version given by the teacher.
+*/
 class BotLogicIF
 {
 public:

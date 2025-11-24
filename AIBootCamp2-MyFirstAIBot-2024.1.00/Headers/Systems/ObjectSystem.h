@@ -6,6 +6,11 @@
 #include "Core/Coordinates.h"
 #include "Core/Object.h"
 
+/**
+* The system managing objects.
+  Used for all sorts of tests.
+  Apart from remembering objects, it also keeps tracks of which doors were used and which walls were searched.
+*/
 class ObjectSystem
 {
 public:

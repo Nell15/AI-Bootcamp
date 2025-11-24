@@ -7,6 +7,10 @@
 
 #include "Core/Agent.h"
 
+/**
+* The system managing Agents.
+  It's main role is to keep track of their position and chosen goals to help resolve conflicts.
+*/
 class AgentSystem
 {
 public:

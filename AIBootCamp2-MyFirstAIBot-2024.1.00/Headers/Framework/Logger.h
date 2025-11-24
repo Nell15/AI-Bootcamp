@@ -1,6 +1,10 @@
 #pragma once
 #include <fstream>
 
+/**
+* Class used to log information into a text file.
+* One of the classes given by the teacher. It has not been modified since.
+*/
 class Logger
 {
 public:

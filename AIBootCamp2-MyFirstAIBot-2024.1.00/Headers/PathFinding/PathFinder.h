@@ -8,6 +8,12 @@
 
 #include "Core/Coordinates.h"
 
+/**
+* A class used to find paths between two coordinates.
+  Based on the A* algorithm.
+  Used mostly by the ScoreSystem but also directly by the Exploring state to move into the Seeking state.
+  Do not confuse the scores here, based on distances, with the ones in ScoreSystem based on all sorts of things.
+*/
 class PathFinder
 {
 public:

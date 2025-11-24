@@ -1,0 +1,254 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="LevelData">
+    <Position X="16.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAgJACQAAAAAAAQAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Core\LevelData.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Agent">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAABAAhACAAQAAAAAEAIABAAAAAIACkAAIChAIABwA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Core\Agent.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AgentState">
+    <Position X="8.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAgBABAAQA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Core\AgentState.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Waiting">
+    <Position X="13" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAQA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Core\AgentState.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Exploring">
+    <Position X="4" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAQA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Core\AgentState.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Seeking">
+    <Position X="6.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAQA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Core\AgentState.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SearchingHiddenDoors">
+    <Position X="8.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAQA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Core\AgentState.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Helping">
+    <Position X="10.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAQA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Core\AgentState.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AIBot">
+    <Position X="2.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAQAAAEAACABAIAAAAAAAAAAAAACCAAAAAAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Framework\AIBot.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BotLogicIF">
+    <Position X="4" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEAAAABAAAAAAAAAAAAAAAACAAAIAAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Framework\BotLogicIF.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Logger">
+    <Position X="29" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAIAAAAAAAAAAAAAAAgAAAAAQAACAAAAAAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Framework\Logger.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MyBotLogic">
+    <Position X="4" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAIAAAEQACIBAAAAAQAAAAAAAAACCAAAAAAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Framework\MyBotLogic.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PathFinder">
+    <Position X="2.25" Y="13.25" Width="1.5" />
+    <NestedTypes>
+      <Struct Name="PathFinder::PQNode" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\PathFinding\PathFinder.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Struct Name="PathFinder::PQCompare" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\PathFinding\PathFinder.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>QAAIAAEAgCAAAAAAQAAAAABAQAAAAIAAAAAGAAAAAAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\PathFinding\PathFinder.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ObjectSystem">
+    <Position X="6.25" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AMAAgAFFMABAAgQBAAAACAAAAQAAIAAAAAAAgAAAQAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Systems\ObjectSystem.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TileSystem">
+    <Position X="10.5" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAACQAIAAAAAAAAAAAAAAAAAAwAABCAACEKAAAAEAAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Systems\TileSystem.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Locator">
+    <Position X="4" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABABAAAAAAAAAAAAAAAAAAEAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Systems\Locator.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AgentSystem">
+    <Position X="2.25" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAQAEAAIAAAAQAAgAAAAIAAAAAAAAIAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Systems\AgentSystem.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ScoreSystem">
+    <Position X="8.5" Y="17.25" Width="1.5" />
+    <NestedTypes>
+      <Struct Name="ScoreSystem::ScoreCompare" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Systems\ScoreSystem.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>ABQAAAABgAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAQAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Systems\ScoreSystem.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="Coordinates">
+    <Position X="14.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAACAhAAAAAAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Core\Coordinates.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Object">
+    <Position X="18.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAIAAAAAAQAQAAAAABAAAEACABAAAAAgA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Core\Object.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="SConfigData">
+    <Position X="6.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAACAAAAAAAE=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Framework\ConfigData.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="SOrder">
+    <Position X="23.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAgAIAAAIAAAAAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Framework\Globals.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="STileInfo">
+    <Position X="25.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAACABAAAAAAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Framework\Globals.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="SObjectInfo">
+    <Position X="21.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAEAAEAAAAAQAAAEAAAACMACABAAIAAAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Framework\Globals.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="SNPCInfo">
+    <Position X="19.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAACABAAAAAAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Framework\Globals.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="SInitData">
+    <Position X="27.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACACAAAAABAAABIAEQCAAEAAAgAAIAAAQAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Framework\InitData.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="STurnData">
+    <Position X="30.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACACAAAAABAAAAAAGACAAAAAAAAAAAAAQAAAAAAAIAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Framework\TurnData.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="EHexCellType">
+    <Position X="10.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAAAAgAAAAIAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Framework\Globals.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="EHexCellDirection">
+    <Position X="8.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACEAAAAAAAAAAAQgAAAAAAAAAAgAIIAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Framework\Globals.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="EObjectType">
+    <Position X="15.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAACAAAAAAAAAAAAAAAAAAAAAAAAQAAAAACAAAAAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Framework\Globals.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="EObjectState">
+    <Position X="13.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAACAAAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Framework\Globals.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="EOrderType">
+    <Position X="17.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Framework\Globals.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="EInteractionType">
+    <Position X="12" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAAABAAAAAAAAAAAAAAAAAQAAAA=</HashCode>
+      <FileName>C:\Users\demt6496\Desktop\test\AI-Bootcamp\AIBootCamp2-MyFirstAIBot-2024.1.00\Headers\Framework\Globals.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
