@@ -1,5 +1,6 @@
 #include "Systems/ObjectSystem.h"
 
+#include <ranges>
 #include <span>
 
 #include "Utils/CoordUtils.h"
@@ -38,6 +39,7 @@ void ObjectSystem::StoreObjects(const SObjectInfo* objectArrayInfo, const int nb
 		if (objectInfo.statesSize > 0)
 			object.state = static_cast<EObjectState>(objectInfo.states[0]); // todo verif case many states ?
 
+		// Store connections
 		for (const auto connections = span{ objectInfo.connectedTo, static_cast<size_t>(objectInfo.connectedToSize) };
 			const auto& connection : connections)
 		{
@@ -47,7 +49,7 @@ void ObjectSystem::StoreObjects(const SObjectInfo* objectArrayInfo, const int nb
 		Coordinates objectPos{ .q = object.q, .r = object.r };
 		auto& objectAtPos = objects[objectPos];
 
-		// Check if the 
+		// Store the object or replace it if exists
 		auto it = std::ranges::find(objectAtPos, object);
 		if (it == objectAtPos.end())
 		{
@@ -60,17 +62,17 @@ void ObjectSystem::StoreObjects(const SObjectInfo* objectArrayInfo, const int nb
 	}
 }
 
-std::optional<Object> ObjectSystem::GetPressurePlateAt(Coordinates coord) const
+std::optional<Object> ObjectSystem::GetPressurePlateAt(const Coordinates coord) const
 {
 	const auto objectIt = objects.find(coord);
 
-	if (objectIt == objects.end()) return std::nullopt;
+	if (objectIt == objects.end()) 
+		return std::nullopt;
 
-	std::vector<Object> objectsOnTile = objectIt->second;
+	const std::vector<Object> objectsOnTile = objectIt->second;
 	for (const auto& object : objectsOnTile)
-	{
-		if (object.type == PressurePlate) return object;
-	}
+		if (object.type == PressurePlate) 
+			return object;
 
 	return std::nullopt;
 }
@@ -94,10 +96,10 @@ bool ObjectSystem::IsPathBlocked(const Coordinates tilePos, const EHexCellDirect
 }
 
 std::optional<Object> ObjectSystem::GetObjectById(int id) const {
-	for (const auto& [coords, vec] : objects)
+	for (const auto& vec : objects | views::values)
 	{
-		auto it = std::find_if(vec.begin(), vec.end(),
-			[id](const Object& obj) { return obj.id == id; });
+		auto it = ranges::find_if(vec,
+		                          [id](const Object& obj) { return obj.id == id; });
 
 		if (it != vec.end())
 			return *it; // returns a COPY
@@ -108,43 +110,43 @@ std::optional<Object> ObjectSystem::GetObjectById(int id) const {
 
 // todo opti : utiliser des refs partout pour eviter les copies
 
-std::vector<Object> ObjectSystem::GetObjectsAt(Coordinates coord) const {
-	auto it = objects.find(coord);
+std::vector<Object> ObjectSystem::GetObjectsAt(const Coordinates coord) const {
+	const auto it = objects.find(coord);
 	if (it != objects.end()) {
 		return it->second;
 	}
 	return {};
 }
 
-std::vector<Object> ObjectSystem::GetInteractableObjectsAt(Coordinates coord) const {
+std::vector<Object> ObjectSystem::GetInteractableObjectsAt(const Coordinates coord) const {
 	std::vector<Object> interactables{};
 
 	// Objects on the current tile
-	auto it = objects.find(coord);
+	const auto it = objects.find(coord);
 	if (it != objects.end()) {
 		interactables.insert(interactables.end(), it->second.begin(), it->second.end());
 	}
 	// Object on neighbours on the side next to our tile
-	auto& tileSystem = Locator::Get<TileSystem>();
-	auto neightbours = tileSystem.GetNeighbors(coord);
+	const auto& tileSystem = Locator::Get<TileSystem>();
+	const auto neightbours = tileSystem.GetNeighbors(coord);
 	for (auto& neightbour : neightbours)
 	{
 		// get direction from neighbour to current
-		auto searchedDirection = CoordUtils::GetNeighborDirection(neightbour, coord);
+		const auto searchedDirection = CoordUtils::GetNeighborDirection(neightbour, coord);
 		// find potential object in direction
 		auto neighbourObjects = this->GetObjectsAt(neightbour);
 		for (auto& object : neighbourObjects)
 		{
 			if (IsObjectAlreadyUsed(object)) continue;
-			if (object.direction == searchedDirection && object.connectionsIds.size() == 0)
+			if (object.direction == searchedDirection && object.connectionsIds.empty())
 				interactables.push_back(object);
 		}
 	}
 	return interactables;
 }
 
-std::vector<Object> ObjectSystem::GetObjectConnections(Object object) const {
-	auto connectionIds = object.connectionsIds;
+std::vector<Object> ObjectSystem::GetObjectConnections(const Object& object) const {
+	const auto connectionIds = object.connectionsIds;
 	vector<Object> connections{};
 	for (auto id : connectionIds) {
 		auto object = GetObjectById(id);
@@ -154,12 +156,12 @@ std::vector<Object> ObjectSystem::GetObjectConnections(Object object) const {
 }
 
 
-bool ObjectSystem::IsObjectAlreadyUsed(Object object) const {
-	return std::find(usedObjects.begin(), usedObjects.end(), object) != usedObjects.end();
+bool ObjectSystem::IsObjectAlreadyUsed(const Object& object) const {
+	return ranges::find(usedObjects, object) != usedObjects.end();
 }
 
-bool ObjectSystem::WallWasAlreadyTested(Object object) const {
-	return std::find(searchedWalls.begin(), searchedWalls.end(), object) != searchedWalls.end();
+bool ObjectSystem::WallWasAlreadyTested(const Object& object) const {
+	return ranges::find(searchedWalls, object) != searchedWalls.end();
 }
 
 size_t ObjectSystem::GetNbClosedDoorOn(const Coordinates position) const

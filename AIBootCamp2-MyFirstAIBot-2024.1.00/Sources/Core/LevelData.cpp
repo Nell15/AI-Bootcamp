@@ -6,6 +6,7 @@
 
 using namespace std;
 
+// Check if the tile is between the maximum number of columns and the maximum number of rows
 bool LevelData::DoTileExist(const Coordinates tileCoord) const
 {
 	const int q = tileCoord.q;

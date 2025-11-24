@@ -137,8 +137,8 @@ SOrder MyBotLogic::PlayAgentTurn(AgentSystem& agentSystem, const SNPCInfo& npcIn
 	agent.UpdateState(Coordinates{ .q = npcInfo.q, .r = npcInfo.r });
 	agent.SetOrder();
 
+	// Update the agent position in agent system (used for collaboration)
 	const SOrder agentNextOrder = agent.PopAndReturnNextAgentMove();
-
 	const Coordinates agentMoveDirection = agent.GetPosition() + agentNextOrder.direction;
 	if (agentNextOrder.orderType == Move)
 		agentSystem.UpdateOccupiedPosition(agent.GetPosition(), agentMoveDirection);

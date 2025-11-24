@@ -3,7 +3,6 @@
 #include <ranges>
 #include <span>
 
-#include "Core/LevelData.h"
 #include "Systems/Locator.h"
 #include "Systems/ObjectSystem.h"
 
@@ -69,9 +68,8 @@ vector<Coordinates> TileSystem::GetWalkableNeighbors(const Coordinates position)
 	return neighbors;
 }
 
-[[nodiscard]] std::vector<Coordinates> TileSystem::GetNeighbors(Coordinates position) const
+[[nodiscard]] std::vector<Coordinates> TileSystem::GetNeighbors(const Coordinates position)
 {
-	const auto& agentSystem = Locator::Get<AgentSystem>();
 	vector<Coordinates> neighbors{};
 
 	for (const EHexCellDirection direction : CoordUtils::neighborDirection)

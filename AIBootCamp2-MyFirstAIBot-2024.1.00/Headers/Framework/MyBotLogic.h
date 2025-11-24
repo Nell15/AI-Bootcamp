@@ -40,8 +40,8 @@ private:
 	PathFinder pathFinder{};
 
 	static void StoreTurnData(const STurnData& turnData);
-	void StoreAgents(const SInitData& _initData);
+	static void StoreAgents(const SInitData& _initData);
 	static void SetLocators();
 
-	SOrder PlayAgentTurn(AgentSystem& agentSystem, const SNPCInfo& npcInfo);
+	static SOrder PlayAgentTurn(AgentSystem& agentSystem, const SNPCInfo& npcInfo);
 };

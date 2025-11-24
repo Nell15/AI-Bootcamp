@@ -6,7 +6,7 @@
 /**
 * A class that represents information about the level being played.
   It remembers the row and column count as well as the current turn.
-  It is mostly unused.
+  It is mostly unused now, we divided it into 4 systems during the project.
 */
 class LevelData
 {

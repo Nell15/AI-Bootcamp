@@ -10,6 +10,7 @@
 
 using namespace std;
 
+// Score for exploring state
 float ScoreSystem::CalculateScore(const Coordinates position, const int distance)
 {
 	if (distance == 0)
@@ -24,18 +25,18 @@ float ScoreSystem::CalculateScore(const Coordinates position, const int distance
 	}
 
 	// Reward good exploration potential but penalize distant targets
-	constexpr float distancePenalty = 0.3f;   // tune this constant
-	constexpr float frontierBonus = 1.2f;   // if near unexplored area
+	constexpr float distancePenalty = 0.3f; // tune this constant
+	constexpr float frontierBonus = 1.2f; // if near unexplored area
 
-	// Bonus if tile itself is unexplored (encourages frontier expansion)
+	// Bonus if tile itself is unexplored
 	if (IsWorthToExplore(position))
 		baseScore *= frontierBonus;
 
 	// Bonus if contains a pressure plate, weighted by distance to linked door(s?)
 	const auto& objectSystem = Locator::Get<ObjectSystem>();
 	// check if has pressure plate :
-	auto optPlate = objectSystem.GetPressurePlateAt(position);
-	bool hasPlate = optPlate.has_value();
+	const auto optPlate = objectSystem.GetPressurePlateAt(position);
+	const bool hasPlate = optPlate.has_value();
 	// check connections && their distance
 	//float connectionsBias = ? // bonus depending on the distance from the plate to its doors
 	float connectionsBias = 0.0f;
@@ -46,20 +47,20 @@ float ScoreSystem::CalculateScore(const Coordinates position, const int distance
 		auto& plate = optPlate.value();
 
 		// get connections
-		std::vector<int> plateConnections = plate.connectionsIds;
+		const std::vector<int> plateConnections = plate.connectionsIds;
 		float minDistance = FLT_MAX;
 
 		// for connection in connections
-		for (int id : plateConnections)
+		for (const int id : plateConnections)
 		{
 			// get connected object
 			auto connection = objectSystem.GetObjectById(id);
 			
 			if (!connection.has_value()) continue;
 			// get distance to plate
-			int connDistance = CoordUtils::GetDistance(
+			const int connDistance = CoordUtils::GetDistance(
 				position,
-				{ connection.value().q, connection.value().r }
+				{.q = connection.value().q, .r = connection.value().r }
 			);
 			// update min distance
 			if (distance < minDistance) minDistance = connDistance;
@@ -67,9 +68,9 @@ float ScoreSystem::CalculateScore(const Coordinates position, const int distance
 		connectionsBias = (minDistance < FLT_MAX ? 10.0f / (1.0f + minDistance * minDistance) : 0.0f);
 	}
 
-	
-	float plateWeight = 1.f; // Ajout arbitraire pour prioriser les plates
-	float plateScore = hasPlate * plateWeight + connectionsBias;
+
+	constexpr float plateWeight = 1.f; // Ajout arbitraire pour prioriser les plates
+	const float plateScore = hasPlate * plateWeight + connectionsBias;
 
 	// SCORE FOR TILES WITH DOORS
 	const float doorScore = static_cast<float>(objectSystem.GetNbClosedDoorOn(position));
@@ -85,10 +86,12 @@ vector<Coordinates> ScoreSystem::GetBestExploringPath(const Coordinates position
 {
 	const auto& tileSystem = Locator::Get<TileSystem>();
 
+	// For each tile, store them in a priority queue by exploring score
 	priority_queue<TileScore, vector<TileScore>, ScoreCompare> tileScores(ScoreCompare{position});
 	for (const Coordinates& tile : tileSystem.GetTiles() | views::keys)
 		tileScores.emplace(CalculateScore(tile, CoordUtils::GetDistance(position, tile)), tile);
 
+	// For each tile in order of score, we check whether there is a path to get there, and if there is one, we return it
 	PathFinder pathFinder{};
 	while (!tileScores.empty())
 	{
@@ -100,9 +103,11 @@ vector<Coordinates> ScoreSystem::GetBestExploringPath(const Coordinates position
 		tileScores.pop();
 	}
 
+	// If there is no good tile to explore, return agent position
 	return {position};
 }
 
+// Score for SearchingHiddenDoor state
 float ScoreSystem::CalculateScoreByWalls(const Coordinates position, const int distance)
 {
 	const auto& objSystem = Locator::Get<ObjectSystem>();	
@@ -115,14 +120,16 @@ float ScoreSystem::CalculateScoreByWalls(const Coordinates position, const int d
 	return baseScore;
 }
 
-std::vector<Coordinates> ScoreSystem::GetBestSearchingPath(Coordinates position)
+std::vector<Coordinates> ScoreSystem::GetBestSearchingPath(const Coordinates position)
 {
 	const auto& tileSystem = Locator::Get<TileSystem>();
 
+	// For each tile, store them in a priority queue by "searching hidden door score"
 	priority_queue<TileScore, vector<TileScore>, ScoreCompare> tileScores(ScoreCompare{ position });
 	for (const Coordinates& tile : tileSystem.GetTiles() | views::keys)
-		tileScores.emplace(CalculateScoreByWalls(tile, CoordUtils::GetDistance(position, tile)), tile);//On assume que c'est parfait :)
+		tileScores.emplace(CalculateScoreByWalls(tile, CoordUtils::GetDistance(position, tile)), tile);
 
+	// For each tile in order of score, we check whether there is a path to get there, and if there is one, we return it
 	PathFinder pathFinder{};
 	while (!tileScores.empty())
 	{
@@ -137,6 +144,7 @@ std::vector<Coordinates> ScoreSystem::GetBestSearchingPath(Coordinates position)
 	
 }
 
+// It is when the tile hasn't been explored yet
 bool ScoreSystem::IsWorthToExplore(const Coordinates position)
 {
 	const auto& tiles = Locator::Get<TileSystem>().GetTiles();

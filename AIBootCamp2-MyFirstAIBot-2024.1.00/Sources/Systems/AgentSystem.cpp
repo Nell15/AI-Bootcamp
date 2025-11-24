@@ -1,5 +1,7 @@
 #include "Systems/AgentSystem.h"
 
+#include <ranges>
+
 using namespace std;
 
 Agent& AgentSystem::GetAgent(const int id)
@@ -19,12 +21,11 @@ bool AgentSystem::IsGoalChosen(Coordinates goalPos) const
 	});
 }
 
-[[nodiscard]] std::optional<std::reference_wrapper<const Agent>> AgentSystem::GetAgentAt(const Coordinates position) const {
-	for (auto& [id, agent] : agents)
-	{
+[[nodiscard]] std::optional<std::reference_wrapper<const Agent>> AgentSystem::GetAgentAt(const Coordinates position) const
+{
+	for (const auto& agent : agents | views::values)
 		if (agent.GetPosition() == position)
 			return agent;
-	}
 
 	return std::nullopt;
 }

@@ -3,7 +3,6 @@
 
 #include "Core/Coordinates.h"
 #include "Framework/Globals.h"
-#include "Utils/CoordUtils.h"
 
 /**
 * The system used to give score to tiles.
@@ -15,7 +14,7 @@ class ScoreSystem
 public:
 	[[nodiscard]] static float CalculateScore(Coordinates position, int distance);
 	[[nodiscard]] static std::vector<Coordinates> GetBestExploringPath(Coordinates position);
-	[[nodiscard]] static float CalculateScoreByWalls(const Coordinates position, const int distance);
+	[[nodiscard]] static float CalculateScoreByWalls(Coordinates position, int distance);
 	[[nodiscard]] static std::vector<Coordinates> GetBestSearchingPath(Coordinates position);
 
 private:

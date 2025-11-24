@@ -44,10 +44,6 @@ private:
 	void Init(const Coordinates& start, const Coordinates& goal);
 	void Dispose();
 	void TryUpdatePath(const Coordinates& neighborPos, const PQNode& current, const Coordinates& goal);
-	[[nodiscard]] static bool isGoal(const Coordinates& a, const Coordinates& b)
-	{
-		return a == b;
-	}
 
 	[[nodiscard]] std::vector<Coordinates> ReconstructPath(const Coordinates& start);
 

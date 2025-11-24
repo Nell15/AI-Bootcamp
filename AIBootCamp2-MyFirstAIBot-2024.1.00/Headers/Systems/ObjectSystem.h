@@ -28,10 +28,10 @@ public:
 
 	std::vector<Object> GetInteractableObjectsAt(Coordinates coord) const;
 
-	std::vector<Object> GetObjectConnections(Object object) const;
+	std::vector<Object> GetObjectConnections(const Object& object) const;
 
-	bool IsObjectAlreadyUsed(Object object) const; // todo: might need separation for knock & open
-	bool WallWasAlreadyTested(Object object) const; // todo: might need separation for knock & open
+	bool IsObjectAlreadyUsed(const Object& object) const; // todo: might need separation for knock & open
+	bool WallWasAlreadyTested(const Object& object) const; // todo: might need separation for knock & open
 
 	[[nodiscard]] size_t GetNbClosedDoorOn(Coordinates position) const;
 

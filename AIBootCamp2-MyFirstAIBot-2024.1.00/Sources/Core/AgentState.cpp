@@ -44,7 +44,7 @@ namespace
 
 void Waiting::UpdateState(Agent& agent)
 {
-	// TODO: pour l'instant on fait rien
+	// Wait for ever
 }
 
 void Waiting::SetOrder(Agent& agent)
@@ -60,11 +60,9 @@ void Exploring::UpdateState(Agent& agent)
 {
 	const auto& tileSystem = Locator::Get<TileSystem>();
 	const auto& availableGoalTiles = tileSystem.GetAvailableGoalTiles();
-	const auto& tiles = tileSystem.GetTiles();
-	const auto& scoreSystem = Locator::Get<ScoreSystem>();
 	const auto& objectSystem = Locator::Get<ObjectSystem>();
-	
-	auto plate = objectSystem.GetPressurePlateAt(agent.GetPosition());
+
+	const auto plate = objectSystem.GetPressurePlateAt(agent.GetPosition());
 	if (plate.has_value() && !plate.value().connectionsIds.empty())
 	{
 		agent.SetState(make_unique<Helping>());
@@ -100,7 +98,7 @@ void Exploring::UpdateState(Agent& agent)
 void Exploring::SetOrder(Agent& agent)
 {
 	// case door
-	auto position = agent.GetPosition();
+	const auto position = agent.GetPosition();
 	auto& objectSystem = Locator::Get<ObjectSystem>();
 
 	auto objectsAtPositon = objectSystem.GetInteractableObjectsAt(position);
@@ -111,7 +109,7 @@ void Exploring::SetOrder(Agent& agent)
 		{
 			objectSystem.MarkUsed(object);
 
-			SOrder order = {
+			const SOrder order = {
 				.orderType = (Interact),
 				.npcUID = agent.GetId(),
 				.direction = object.direction,
@@ -148,7 +146,7 @@ void Seeking::UpdateState(Agent& agent)
 {
 	const auto& objectSystem = Locator::Get<ObjectSystem>();
 
-	auto plate = objectSystem.GetPressurePlateAt(agent.GetPosition());
+	const auto plate = objectSystem.GetPressurePlateAt(agent.GetPosition());
 	if (plate.has_value() && !plate.value().connectionsIds.empty())
 	{
 		agent.SetState(make_unique<Helping>());
@@ -230,10 +228,10 @@ void Seeking::SetOrder(Agent& agent)
 	{
 		changePathOrReturnToExplore();
 	}
-	else if (auto nextPos = agent.GetNextPosition(); agentSystem.IsTileOccupied(nextPos))
+	else if (const auto nextPos = agent.GetNextPosition(); agentSystem.IsTileOccupied(nextPos))
 	{
 		// If the other guy is not waiting (ie: will move)
-		if (auto otherAgent = agentSystem.GetAgentAt(nextPos);
+		if (const auto otherAgent = agentSystem.GetAgentAt(nextPos);
 			otherAgent.has_value() && otherAgent->get().GetStateName() != "Waiting")
 		{
 			agent.AddOrder(
@@ -252,14 +250,14 @@ void Seeking::SetOrder(Agent& agent)
 
 void SearchingHiddenDoors::SetOrder(Agent& agent)
 {
-	auto position = agent.GetPosition();
+	const auto position = agent.GetPosition();
 	auto& objectSystem = Locator::Get<ObjectSystem>();
 	auto objectsAtPositon = objectSystem.GetInteractableObjectsAt(position);
 
 	if (agent.HasNoOrders())
 	{
 		bool allWallsTested = true;
-		for (auto& wall : objectsAtPositon)
+		for (const auto& wall : objectsAtPositon)
 		{
 			if (wall.type == Wall && !objectSystem.WallWasAlreadyTested(wall))
 			{
@@ -285,14 +283,14 @@ void SearchingHiddenDoors::SetOrder(Agent& agent)
 				{
 					objectSystem.MarkUsed(object);
 
-					SOrder order = {
+					const SOrder order = {
 						.orderType = (Interact),
 						.npcUID = agent.GetId(),
 						.direction = object.direction,
 						.objectUID = object.id,
 						.interactionType = (SearchHiddenDoor)
 					};
-					agent.AddOrder(order);
+					agent.AddOrder(std::move(order));
 				}
 			}
 		}
@@ -317,7 +315,6 @@ void SearchingHiddenDoors::UpdateState(Agent& agent)
 
 void Helping::UpdateState(Agent& agent)
 {
-
 	const auto& agentSystem = Locator::Get<AgentSystem>();
 	const auto& agents = agentSystem.GetAgents();
 	const auto& tileSystem = Locator::Get<TileSystem>();
@@ -360,8 +357,8 @@ void Helping::UpdateState(Agent& agent)
 
 			auto previousTile = _agent.GetPosition();
 			for (const auto coord : path.value()) {
-				for (auto object : connections) {
-					auto objTile = Coordinates(object.q, object.r);
+				for (auto& object : connections) {
+					Coordinates objTile = { object.q, object.r };
 					if (objTile == coord
 						&& object.direction == CoordUtils::CoordinatesToDir(previousTile - coord)) {
 						canMove = false;
