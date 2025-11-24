@@ -39,7 +39,9 @@ public:
 
 	[[nodiscard]] bool IsGoalChosen(Coordinates goalPos) const;
 
-	[[nodiscard]] std::optional<std::reference_wrapper<const Agent>> GetAgentAt(const Coordinates position) const;
+	[[nodiscard]] std::optional<std::reference_wrapper<const Agent>> GetAgentAt(Coordinates position) const;
+
+	[[nodiscard]] static std::vector<SOrder> ConvertPathToOrder(const Agent& agent, const std::vector<Coordinates>& path);
 
 private:
 	AgentList agents{};

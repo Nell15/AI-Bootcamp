@@ -29,3 +29,28 @@ bool AgentSystem::IsGoalChosen(Coordinates goalPos) const
 
 	return std::nullopt;
 }
+
+std::vector<SOrder> AgentSystem::ConvertPathToOrder(const Agent& agent, const std::vector<Coordinates>& path)
+{
+	vector<SOrder> npcOrders;
+
+	npcOrders.resize(path.size());
+
+	Coordinates currCoord = agent.GetPosition();
+
+	for (size_t i = 0; i < path.size(); ++i)
+	{
+		const Coordinates& nextCoord = path[path.size() - 1 - i];
+		const SOrder order =
+		{
+			.orderType = Move,
+			.npcUID = agent.GetId(),
+			.direction = CoordUtils::GetNeighborDirection(currCoord, nextCoord)
+		};
+
+		npcOrders[path.size() - 1 - i] = order;
+		currCoord = nextCoord;
+	}
+
+	return npcOrders;
+}

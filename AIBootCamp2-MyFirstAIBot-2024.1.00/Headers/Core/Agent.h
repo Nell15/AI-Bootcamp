@@ -3,9 +3,11 @@
 
 #include <vector>
 #include <optional>
+#include <memory>
 
-#include "AgentState.h"
+#include "AgentStates/AgentState.h"
 #include "Coordinates.h"
+#include "AgentStates/Exploring.h"
 #include "Utils/CoordUtils.h"
 #include "Framework/Globals.h"
 

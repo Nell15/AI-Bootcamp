@@ -39,9 +39,9 @@ public:
 private:
 	PathFinder pathFinder{};
 
-	static void StoreTurnData(const STurnData& turnData);
-	static void StoreAgents(const SInitData& _initData);
-	static void SetLocators();
+	void StoreTurnData(const STurnData& turnData);
+	void StoreAgents(const SInitData& _initData);
+	void SetLocators();
 
-	static SOrder PlayAgentTurn(AgentSystem& agentSystem, const SNPCInfo& npcInfo);
+	SOrder PlayAgentTurn(AgentSystem& agentSystem, const SNPCInfo& npcInfo);
 };
