@@ -6,6 +6,9 @@
 #include <typeindex>
 #include <stdexcept>
 
+/**
+* The class used to get systems.
+*/
 class Locator
 {
 public:
@@ -18,11 +21,11 @@ public:
 	template <typename T>
 	static T& Get()
 	{
-		const auto it = systems.find(std::type_index(typeid(T)));
-		if (it == systems.end())
+		const auto systemIt = systems.find(std::type_index(typeid(T)));
+		if (systemIt == systems.end())
 			throw std::runtime_error("System not found");
 
-		return *std::static_pointer_cast<T>(it->second);
+		return *std::static_pointer_cast<T>(systemIt->second);
 	}
 
 private:

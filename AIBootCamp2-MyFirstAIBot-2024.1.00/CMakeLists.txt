@@ -25,7 +25,13 @@ SET( AIBOT_HEADERS
     Headers/Core/Object.h
     Headers/Core/LevelData.h
     Headers/Core/Agent.h
-    Headers/Core/AgentState.h
+
+    Headers/AgentStates/AgentState.h
+    Headers/AgentStates/Helping.h
+    Headers/AgentStates/Waiting.h
+    Headers/AgentStates/Exploring.h
+    Headers/AgentStates/Seeking.h
+    Headers/AgentStates/SearchingHiddenDoor.h
 
     Headers/Utils/Utils.h
     Headers/Utils/VerboseAssertion.h
@@ -55,7 +61,12 @@ SET( AIBOT_SRC
     Sources/PathFinding/PathFinder.cpp
 
     Sources/Core/LevelData.cpp
-    Sources/Core/AgentState.cpp
+
+    Sources/AgentStates/Helping.cpp
+    Sources/AgentStates/Waiting.cpp
+    Sources/AgentStates/Exploring.cpp
+    Sources/AgentStates/Seeking.cpp
+    Sources/AgentStates/SearchingHiddenDoor.cpp
 
     Sources/Systems/ObjectSystem.cpp
     Sources/Systems/TileSystem.cpp

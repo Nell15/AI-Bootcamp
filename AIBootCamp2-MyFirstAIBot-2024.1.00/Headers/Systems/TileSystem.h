@@ -7,6 +7,9 @@
 #include "Core/Coordinates.h"
 #include "Framework/Globals.h"
 
+/**
+* The system used to manage tiles.
+*/
 class TileSystem
 {
 public:
@@ -17,7 +20,7 @@ public:
 	[[nodiscard]] const GoalTilesType& GetGoalTiles() const { return goalTiles; }
 	[[nodiscard]] GoalTilesType GetAvailableGoalTiles() const;
 	[[nodiscard]] std::vector<Coordinates> GetWalkableNeighbors(Coordinates position) const;
-	[[nodiscard]] std::vector<Coordinates> GetNeighbors(Coordinates position) const;
+	[[nodiscard]] static std::vector<Coordinates> GetNeighbors(Coordinates position);
 
 	[[nodiscard]] bool IsPossibleToWalkTo(Coordinates position, EHexCellDirection direction) const;
 	[[nodiscard]] bool IsPossibleToWalkTo(Coordinates position) const;
@@ -32,7 +35,6 @@ private:
 	TileArrayType tiles{};
 	std::unordered_set<Coordinates> nonExistingTiles;
 
-	
 };
 
 #endif

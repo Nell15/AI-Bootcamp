@@ -3,14 +3,18 @@
 
 #include "Core/Coordinates.h"
 #include "Framework/Globals.h"
-#include "Utils/CoordUtils.h"
 
+/**
+* The system used to give score to tiles.
+* Actually, the scores are only used to generate paths. This is done differently between the Exploring and SearchHiddenDoors states.
+* Do not confuse the scores here, based on all sorts of tile information, on the ones in Pathfinder, based only on distance.
+*/
 class ScoreSystem
 {
 public:
 	[[nodiscard]] static float CalculateScore(Coordinates position, int distance);
 	[[nodiscard]] static std::vector<Coordinates> GetBestExploringPath(Coordinates position);
-	[[nodiscard]] static float CalculateScoreByWalls(const Coordinates position, const int distance);
+	[[nodiscard]] static float CalculateScoreByWalls(Coordinates position, int distance);
 	[[nodiscard]] static std::vector<Coordinates> GetBestSearchingPath(Coordinates position);
 
 private:

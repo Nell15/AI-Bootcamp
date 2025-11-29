@@ -6,6 +6,11 @@
 #include "Core/Coordinates.h"
 #include "Core/Object.h"
 
+/**
+* The system managing objects.
+  Used for all sorts of tests.
+  Apart from remembering objects, it also keeps tracks of which doors were used and which walls were searched.
+*/
 class ObjectSystem
 {
 public:
@@ -23,10 +28,10 @@ public:
 
 	std::vector<Object> GetInteractableObjectsAt(Coordinates coord) const;
 
-	std::vector<Object> GetObjectConnections(Object object) const;
+	std::vector<Object> GetObjectConnections(const Object& object) const;
 
-	bool IsObjectAlreadyUsed(Object object) const; // todo: might need separation for knock & open
-	bool WallWasAlreadyTested(Object object) const; // todo: might need separation for knock & open
+	bool IsObjectAlreadyUsed(const Object& object) const; // todo: might need separation for knock & open
+	bool WallWasAlreadyTested(const Object& object) const; // todo: might need separation for knock & open
 
 	[[nodiscard]] size_t GetNbClosedDoorOn(Coordinates position) const;
 
